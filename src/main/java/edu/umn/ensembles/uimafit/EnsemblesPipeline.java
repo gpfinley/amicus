@@ -24,9 +24,7 @@ public class EnsemblesPipeline {
 
     // todo: code this up for command-line use
 
-    public EnsemblesPipeline() throws IOException {
-
-        String path = "example_pipeline_config.yml";
+    public EnsemblesPipeline(String path, boolean runEvaluationAE) throws IOException {
 
         // todo: read configuration details from a properties file? Or some kind of script? YAML?
         // todo: implement pipeline in uimaFIT
@@ -61,6 +59,10 @@ public class EnsemblesPipeline {
             engines.add(AnalysisEngineFactory.createEngine(XmiWriter.class,
                     XmiWriter.CONFIG_OUTPUT_DIR, pipelineConfig.getOutPath()));
 
+            if (runEvaluationAE) {
+                engines.add(AnalysisEngineFactory.createEngine(EvalSummarizer.class));
+            }
+
         } catch (ResourceInitializationException e) {
             e.printStackTrace();
             throw new EnsemblesException();
@@ -90,7 +92,9 @@ public class EnsemblesPipeline {
     }
 
     public static void main(String[] args) throws IOException {
-        new EnsemblesPipeline();
+        boolean eval = "-e".equals(args[0]);
+        String path = args[eval ? 1 : 0];
+        new EnsemblesPipeline(path, eval);
     }
 
 }

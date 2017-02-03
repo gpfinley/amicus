@@ -32,8 +32,7 @@ public class SimpleCreator extends AnnotationCreator<String> {
             setterMethod.invoke(annotation, value.getValue());
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             // todo: log
-            e.printStackTrace();
-            throw new EnsemblesException();
+            throw new EnsemblesException(e);
         }
         annotation.addToIndexes();
     }

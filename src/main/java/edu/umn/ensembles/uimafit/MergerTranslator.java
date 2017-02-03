@@ -75,12 +75,8 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
     private List<AnnotationTransformer> transformers;
 
     @Override
-    public void initialize(UimaContext context) {
-        try {
-            super.initialize(context);
-        } catch(ResourceInitializationException e) {
-            throw new EnsemblesException();
-        }
+    public void initialize(UimaContext context) throws ResourceInitializationException {
+        super.initialize(context);
         LOGGER.info("Initializing MergedViewAnnotator.");
 
         try {
@@ -150,6 +146,7 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            // todo: should these exceptions be ResourceInit??
             throw new EnsemblesException("Couldn't find a class; check names in config.");
         }
     }

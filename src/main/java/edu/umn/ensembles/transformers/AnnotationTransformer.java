@@ -25,7 +25,7 @@ public abstract class AnnotationTransformer<T> {
 
     /**
      * Main method to get information out of an annotation.
-     * Unless you have a compelling reason to do otherwise, implementations of transform() should probably call this.
+     * Unless you have a compelling reason to do otherwise, most implementations of transform() should call this.
      * @param annotation
      * @return
      */
