@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <groupId>edu.umn.ensembles</groupId>
+    <artifactId>ensembles</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.uima</groupId>
+            <artifactId>jcasgen-maven-plugin</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.uima</groupId>
+            <artifactId>uimaj-core</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.17</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.uima/uimafit-core -->
+        <dependency>
+            <groupId>org.apache.uima</groupId>
+            <artifactId>uimafit-core</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp -->
+        <dependency>
+            <groupId>edu.stanford.nlp</groupId>
+            <artifactId>stanford-corenlp</artifactId>
+            <version>3.7.0</version>
+        </dependency> 
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>edu.umn.ensembles.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.uima</groupId>
+                <artifactId>jcasgen-maven-plugin</artifactId>
+                <version>2.9.0</version>  <!-- change this to the latest version -->
+                <executions>
+                    <execution>
+                        <goals><goal>generate</goal></goals>  <!-- this is the only goal -->
+                        <!-- runs in phase process-resources by default -->
+                        <configuration>
+
+                            <!-- REQUIRED -->
+                            <typeSystemIncludes>
+                                <!-- one or more ant-like file patterns
+                                     identifying top level descriptors -->
+                                <typeSystemInclude>typeSystems/*TypeSystem.xml</typeSystemInclude>
+                            </typeSystemIncludes>
+
+                            <!-- OPTIONAL -->
+                            <!-- a sequence of ant-like file patterns
+                                 to exclude from the above include list -->
+                            <typeSystemExcludes>
+                            </typeSystemExcludes>
+
+                            <!-- OPTIONAL -->
+                            <!-- where the generated files go -->
+                            <!-- default value:
+                                 ${project.build.directory}/generated-sources/jcasgen" -->
+                            <outputDirectory>
+                            </outputDirectory>
+
+                            <!-- true or false, default = false -->
+                            <!-- if true, then although the complete merged type system
+                                 will be created internally, only those types whose
+                                 definition is contained within this maven project will be
+                                 generated.  The others will be presumed to be
+                                 available via other projects. -->
+                            <!-- OPTIONAL -->
+                            <limitToProject>false</limitToProject>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

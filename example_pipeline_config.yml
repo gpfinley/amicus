@@ -1,0 +1,21 @@
+!!edu.umn.ensembles.config.PipelineConfigBean
+_pipelineName: null
+inputDirectories: [data/systemsData/biomedicus, data/systemsData/clamp, data/systemsData/ctakes]
+inputNames: [biomedicus, clamp, ctakes]
+inputViews: [SystemView, _InitialView, _InitialView]
+outPath: data/example_out
+translatorConfigurations:
+- _name: Acronym Merger
+  alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
+  creatorClass: edu.umn.ensembles.creators.SimpleCreator
+  distillerClass: edu.umn.ensembles.distillers.PriorityDistiller
+  inputs:
+  - {field: text, fromSystem: biomedicus, transformerClass: edu.umn.ensembles.transformers.GetterTransformer,
+    type: edu.umn.biomedicus.uima.type1_6.Acronym}
+  - {field: ontologyConceptArr, fromSystem: ctakes, transformerClass: edu.umn.ensembles.transformers.CtakesConceptTransformer,
+    type: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation}
+  - {field: cui, fromSystem: clamp, transformerClass: edu.umn.ensembles.transformers.CuiConceptTransformer,
+    type: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA}
+  outputAnnotationClass: edu.umn.biomedicus.uima.type1_6.Acronym
+  outputAnnotationFields: text
+  outputViewName: MergedView
