@@ -1,8 +1,9 @@
-package edu.umn.ensembles.uimafit;
+package edu.umn.ensembles.uimacomponents;
 
 import edu.umn.ensembles.Ensembles;
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.PreAnnotation;
+import edu.umn.ensembles.Util;
 import edu.umn.ensembles.aligners.AnnotationAligner;
 import edu.umn.ensembles.creators.MultiCreator;
 import edu.umn.ensembles.distillers.AnnotationDistiller;
@@ -64,7 +65,7 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
     private String outputViewName;
     @ConfigurationParameter(name = OUTPUT_ANNOTATION_TYPE, mandatory = false)
     private String outputAnnotationType;
-    // fields should be separated by semicolons if there are more than one
+    // fields should be separated by semicolons if there are more than one (and a multi-setter Creator should be used)
     @ConfigurationParameter(name = OUTPUT_ANNOTATION_FIELDS, mandatory = false)
     private String outputAnnotationFields;
 
@@ -98,7 +99,7 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
                     distiller = (AnnotationDistiller) Ensembles.DEFAULT_DISTILLER_CLASS.newInstance();
                 }
                 Constructor<? extends AnnotationCreator> creatorConstructor;
-                String[] outFields = outputAnnotationFields.split(MultiCreator.SPLITTER);
+                String[] outFields = outputAnnotationFields.split(MultiCreator.DELIMITER);
                 try {
                     if (creatorClassName != null) {
                         Class<? extends AnnotationCreator> creatorClass = (Class<? extends AnnotationCreator>) Class.forName(creatorClassName);
@@ -135,8 +136,7 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
                     transformers.add((AnnotationTransformer) clazz.getConstructor(String.class).newInstance(fieldNames[i]));
                 } catch (Exception e) {
                     // todo: log/throw/etc
-                    e.printStackTrace();
-                    throw new EnsemblesException();
+                    throw new EnsemblesException(e);
                 }
             }
 
@@ -197,7 +197,7 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
         for (int i=0; i<systemNames.length; i++) {
             JCas readView;
             try {
-                readView = jCas.getView(Ensembles.systemToViewName(systemNames[i]));
+                readView = jCas.getView(Util.systemToViewName(systemNames[i]));
             } catch (CASException e) {
                 e.printStackTrace();
                 throw new EnsemblesException("Couldn't find view for system named %s", systemNames[i]);

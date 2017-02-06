@@ -7,13 +7,13 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * Maps strings to other strings that are considered semantically equivalent.
+ * Maps strings to other strings that are considered equivalent for evaluation purposes.
  * Equivalencies are stored in the class-specific config file:
  *      one term per line, with blank lines between clusters of equivalent terms.
  *
  * Created by gpfinley on 10/13/16.
  */
-public class EquivalentAnswerMapper implements Mapper<String, String> {
+public class EquivalentAnswerMapper extends Mapper<String, String> {
 
     private static Logger LOGGER = Logger.getLogger(EquivalentAnswerMapper.class.getName());
 
@@ -45,12 +45,9 @@ public class EquivalentAnswerMapper implements Mapper<String, String> {
         return mapper;
     }
 
+    @Override
     public String map(String word) {
         return stringToHeadword.getOrDefault(word.trim().toLowerCase(), word.trim());
-    }
-
-    public static void main(String[] args) {
-
     }
 
 }

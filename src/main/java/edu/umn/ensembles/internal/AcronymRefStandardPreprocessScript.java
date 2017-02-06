@@ -1,8 +1,5 @@
 package edu.umn.ensembles.internal;
 
-import edu.umn.ensembles.Main;
-import edu.umn.ensembles.uimafit.XmiWriter;
-
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -20,6 +17,6 @@ public class AcronymRefStandardPreprocessScript {
 
     public static void main(String[] args) throws IOException {
 //        XmiWriter.setTypeSystemView("SystemView");
-        Main.runCpe(Main.xmlToCpe(Paths.get(PREPROCESS_CPE)));
+//        Main.runCpe(Main.xmlToCpe(Paths.get(PREPROCESS_CPE)));
     }
 }

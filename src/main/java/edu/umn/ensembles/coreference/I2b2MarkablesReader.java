@@ -1,8 +1,8 @@
-package edu.umn.ensembles.internal;
+package edu.umn.ensembles.coreference;
 
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.SingleFieldAnnotation;
-import edu.umn.ensembles.uimafit.Util;
+import edu.umn.ensembles.Util;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -68,7 +68,6 @@ public class I2b2MarkablesReader extends CasCollectionReader_ImplBase {
      */
     @Override
     public void getNext(CAS cas) {
-//        Util.setDocumentID(cas, fileIDs.get(index));
         JCas jCas;
         try {
             jCas = cas.getJCas();
@@ -85,7 +84,6 @@ public class I2b2MarkablesReader extends CasCollectionReader_ImplBase {
 
         if (markablesDirectory != null) {
             File markablesFile = new File(markableFilePaths.get(index));
-//        if (markablesFile.exists()) {
 
             String[] lines = text.split("\\n");
             // get the number of chars before each line to facilitate character index lookup later

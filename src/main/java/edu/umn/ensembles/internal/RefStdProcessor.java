@@ -89,7 +89,6 @@ public class RefStdProcessor extends JCasAnnotator_ImplBase {
             expansions.get(thisAbbr).increment(acronym.getText());
 
         }
-//        acronymsToAdd.forEach(Acronym::addToIndexes);
     }
 
     private boolean isAcronym(TokenAnnotation annotation) {

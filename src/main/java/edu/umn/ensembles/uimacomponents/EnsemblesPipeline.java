@@ -1,4 +1,4 @@
-package edu.umn.ensembles.uimafit;
+package edu.umn.ensembles.uimacomponents;
 
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.config.MergerConfigBean;
@@ -22,17 +22,12 @@ import java.util.List;
  */
 public class EnsemblesPipeline {
 
-    // todo: code this up for command-line use
-
-    public EnsemblesPipeline(String path, boolean runEvaluationAE) throws IOException {
-
-        // todo: read configuration details from a properties file? Or some kind of script? YAML?
-        // todo: implement pipeline in uimaFIT
+    public EnsemblesPipeline(String configFilePath, boolean runEvaluationAE) throws IOException {
 
         PipelineConfigBean pipelineConfig;
 
         Yaml yaml = new Yaml();
-        pipelineConfig = (PipelineConfigBean) yaml.load(new FileInputStream(path));
+        pipelineConfig = (PipelineConfigBean) yaml.load(new FileInputStream(configFilePath));
 
         CollectionReader reader;
         List<AnalysisEngine> engines = new ArrayList<>();
@@ -40,7 +35,7 @@ public class EnsemblesPipeline {
             reader = CollectionReaderFactory.createReader(CommonFilenameReader.class,
                     CommonFilenameReader.SYSTEM_DATA_DIRS, pipelineConfig.getInputDirectories());
 
-            for (MergerConfigBean mergerConfig : pipelineConfig.getTranslatorConfigurations()) {
+            for (MergerConfigBean mergerConfig : pipelineConfig.getMergerConfigurations()) {
                 engines.add(
                         AnalysisEngineFactory.createEngine(MergerTranslator.class,
                                 MergerTranslator.ALIGNER_CLASS, mergerConfig.getAlignerClass(),
@@ -64,37 +59,21 @@ public class EnsemblesPipeline {
             }
 
         } catch (ResourceInitializationException e) {
-            e.printStackTrace();
-            throw new EnsemblesException();
+            throw new EnsemblesException(e);
         }
         try {
             SimplePipeline.runPipeline(reader,
                     engines.toArray(new AnalysisEngine[engines.size()]));
         } catch (IOException | UIMAException e) {
-            //todo log
             throw new EnsemblesException(e);
         }
-
-        /*
-         * CommonFilenameReader
-         *
-         * CasAdder
-         * ...
-         * CasAdder (one per system)
-         *
-         * MergerTranslator
-         * ...
-         * MergerTranslator (one per annotation to merge or translate)
-         *
-         * XmiWriter
-         */
 
     }
 
     public static void main(String[] args) throws IOException {
         boolean eval = "-e".equals(args[0]);
-        String path = args[eval ? 1 : 0];
-        new EnsemblesPipeline(path, eval);
+        String configFilePath = args[eval ? 1 : 0];
+        new EnsemblesPipeline(configFilePath, eval);
     }
 
 }

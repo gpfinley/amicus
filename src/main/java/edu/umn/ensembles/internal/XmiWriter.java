@@ -1,7 +1,7 @@
 //package edu.umn.ensembles.internal;
 //
 //import edu.umn.ensembles.Ensembles;
-//import edu.umn.ensembles.uimafit.Util;
+//import edu.umn.ensembles.uimacomponents.Util;
 //import org.apache.uima.UimaContext;
 //import org.apache.uima.analysis_component.CasAnnotator_ImplBase;
 //import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -63,7 +63,7 @@
 //    @Override
 //    public void process(CAS cas) throws AnalysisEngineProcessException {
 //
-//        CAS mergedView = cas.getView(mergedViewName == null ? Ensembles.MERGED_VIEW : mergedViewName);
+//        CAS mergedView = cas.getView(mergedViewName == null ? Ensembles.DEFAULT_MERGED_VIEW : mergedViewName);
 //        TypeSystem typeSystem = mergedView.getTypeSystem();
 //        TypeSystemDescription typeSystemDescription = TypeSystemUtil.typeSystem2TypeSystemDescription(typeSystem);
 //        try {

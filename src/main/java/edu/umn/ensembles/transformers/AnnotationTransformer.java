@@ -1,8 +1,8 @@
 package edu.umn.ensembles.transformers;
 
-import edu.umn.ensembles.Ensembles;
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.PreAnnotation;
+import edu.umn.ensembles.Util;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.lang.reflect.InvocationTargetException;
@@ -32,11 +32,10 @@ public abstract class AnnotationTransformer<T> {
     protected Object callAnnotationGetter(Annotation annotation) {
         Class<? extends Annotation> clazz = annotation.getClass();
         try {
-            Method toCall = clazz.getMethod(Ensembles.getGetterFor(fieldName));
+            Method toCall = clazz.getMethod(Util.getGetterFor(fieldName));
             return toCall.invoke(annotation);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            // todo: log
-            throw new EnsemblesException();
+            throw new EnsemblesException(e);
         }
     }
 

@@ -19,3 +19,10 @@ mergerConfigurations:
   outputAnnotationClass: edu.umn.biomedicus.uima.type1_6.Acronym
   outputAnnotationFields: text
   outputViewName: MergedView
+
+
+inputs:
+  type and field [optional; used by transformer], fromSystem, transformer(s)
+aligner: ...
+outputs:
+  view to output to, distiller, creator, output type and field [optional; used by setter], setter(s?)

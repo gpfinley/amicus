@@ -1,6 +1,6 @@
-package edu.umn.ensembles.uimafit;
+package edu.umn.ensembles.uimacomponents;
 
-import edu.umn.ensembles.Ensembles;
+import edu.umn.ensembles.Util;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.impl.XCASDeserializer;
 import org.apache.uima.cas.impl.XmiCasDeserializer;
@@ -65,7 +65,7 @@ public class CasAdder extends CasMultiplier_ImplBase {
             e.printStackTrace();
             throw new RuntimeException();
         }
-        CAS newSysView = cas.createView(Ensembles.systemToViewName(systemName));
+        CAS newSysView = cas.createView(Util.systemToViewName(systemName));
         CasCopier casCopier = new CasCopier(tempCas, cas);
         CAS relevantView;
         try {

@@ -15,16 +15,15 @@ public class MergerConfigBean {
 
     private String _name;
 
-    private InputTypeBean[] inputs;
+    private SingleInputConfig[] inputs;
+    private SingleInputConfig[] outputs;
 
     // what kind of type to output
     private String outputAnnotationClass;
     // can have multiple if separated by ;
     private String outputAnnotationFields;
 
-    private String distillerClass;
     private String alignerClass;
-    private String creatorClass;
 
     // view to write output annotation to
     private String outputViewName;
@@ -37,7 +36,7 @@ public class MergerConfigBean {
                 || outputAnnotationClass == null || outputAnnotationFields == null || outputViewName == null) {
             throw new EnsemblesException("Translator or merger configuration incomplete");
         }
-        Arrays.asList(inputs).forEach(InputTypeBean::verify);
+        Arrays.asList(inputs).forEach(SingleInputConfig::verify);
     }
 
     /**
@@ -47,29 +46,29 @@ public class MergerConfigBean {
      */
     public String[] getInputSystemNames() {
         List<String> inputSystemNames = new ArrayList<>();
-        for (InputTypeBean inputBean : getInputs()) {
-            inputSystemNames.add(inputBean.getFromSystem());
+        for (SingleInputConfig inputConfig : getInputs()) {
+            inputSystemNames.add(inputConfig.fromSystem);
         }
         return inputSystemNames.toArray(new String[inputSystemNames.size()]);
     }
     public String[] getInputTypes() {
         List<String> inputTypes = new ArrayList<>();
-        for (InputTypeBean inputBean : getInputs()) {
-            inputTypes.add(inputBean.getType());
+        for (SingleInputConfig inputConfig : getInputs()) {
+            inputTypes.add(inputConfig.annotationType);
         }
         return inputTypes.toArray(new String[inputTypes.size()]);
     }
     public String[] getInputFields() {
         List<String> inputFields = new ArrayList<>();
-        for (InputTypeBean inputBean : getInputs()) {
-            inputFields.add(inputBean.getField());
+        for (SingleInputConfig inputConfig : getInputs()) {
+            inputFields.add(inputConfig.annotationField);
         }
         return inputFields.toArray(new String[inputFields.size()]);
     }
     public String[] getInputTransformers() {
         List<String> inputTransformers = new ArrayList<>();
-        for (InputTypeBean inputBean : getInputs()) {
-            inputTransformers.add(inputBean.getTransformerClass());
+        for (SingleInputConfig inputConfig : getInputs()) {
+            inputTransformers.add(inputConfig.transformerClass);
         }
         return inputTransformers.toArray(new String[inputTransformers.size()]);
     }
@@ -84,11 +83,11 @@ public class MergerConfigBean {
         this._name = name;
     }
 
-    public InputTypeBean[] getInputs() {
+    public SingleInputConfig[] getInputs() {
         return inputs;
     }
 
-    public void setInputs(InputTypeBean[] inputs) {
+    public void setInputs(SingleInputConfig[] inputs) {
         this.inputs = inputs;
     }
 
@@ -108,14 +107,6 @@ public class MergerConfigBean {
         this.outputAnnotationFields = outputAnnotationFields;
     }
 
-    public String getDistillerClass() {
-                                    return distillerClass;
-                                                                                  }
-
-    public void setDistillerClass(String distillerClass) {
-                                                       this.distillerClass = distillerClass;
-                                                                                                                                       }
-
     public String getAlignerClass() {
                                   return alignerClass;
                                                                             }
@@ -124,19 +115,19 @@ public class MergerConfigBean {
         this.alignerClass = alignerClass;
     }
 
-    public String getCreatorClass() {
-        return creatorClass;
-    }
-
-    public void setCreatorClass(String creatorClass) {
-        this.creatorClass = creatorClass;
-    }
-
     public String getOutputViewName() {
         return outputViewName;
     }
 
     public void setOutputViewName(String outputViewName) {
         this.outputViewName = outputViewName;
+    }
+
+    public SingleInputConfig[] getOutputs() {
+        return outputs;
+    }
+
+    public void setOutputs(SingleInputConfig[] outputs) {
+        this.outputs = outputs;
     }
 }

@@ -1,5 +1,6 @@
-package edu.umn.ensembles.uimafit;
+package edu.umn.ensembles.uimacomponents;
 
+import edu.umn.ensembles.Util;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasCollectionReader_ImplBase;

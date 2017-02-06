@@ -1,7 +1,8 @@
-package edu.umn.ensembles.internal;
+package edu.umn.ensembles.coreference;
 
+import edu.umn.ensembles.Ensembles;
 import edu.umn.ensembles.EnsemblesException;
-import edu.umn.ensembles.uimafit.XmiWriter;
+import edu.umn.ensembles.uimacomponents.XmiWriter;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
@@ -22,28 +23,38 @@ import java.util.List;
 public class NerMain {
 
     public static void main(String[] args) {
-        String textDir = "/Users/gpfinley/i2b2_past/2011/Beth_Train/docs";
-        String markablesDir = "/Users/gpfinley/i2b2_past/2011/Beth_Train/concepts";
+        // todo: parse args
+//        String textDir = "/Users/gpfinley/i2b2_past/2011/Beth_Train/docs";
+//        String markablesDir = "/Users/gpfinley/i2b2_past/2011/Beth_Train/concepts";
+//        String xmiOut = "data/xmiOutTest";
+//        String textOut = "data/stanfordTextOut";
 
-        // for debugging purposes
-        String xmiOut = "data/xmiOutTest";
+        String textDir = "/Users/gpfinley/corefEvalTest/docs";
+        String markablesDir = "/Users/gpfinley/corefEvalTest/mentions";
+        String xmiOut = "/Users/gpfinley/corefEvalTest/xmi";
+        String textOut = "/Users/gpfinley/corefEvalTest/hyp_no_ner";
+//        boolean ignoreNer = false;
+        boolean ignoreNer = true;
 
         CollectionReader reader;
         List<AnalysisEngine> engines = new ArrayList<>();
         try {
-            TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("typeSystems/EnsemblesTypeSystem.xml");
+            TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(Ensembles.MY_TYPE_SYSTEM.toString());
             reader = CollectionReaderFactory.createReader(I2b2MarkablesReader.class,
                     typeSystem,
                     I2b2MarkablesReader.TEXT_DIRECTORY, textDir,
                     I2b2MarkablesReader.MARKABLES_DIRECTORY, markablesDir);
 
             engines.add(AnalysisEngineFactory.createEngine(StanfordNerInterceptor.class,
-                    StanfordNerInterceptor.CONFIG_VIEW_NAME, "_InitialView",
-                    StanfordNerInterceptor.CONFIG_ANNOTATION_CLASS, "edu.umn.ensembles.SingleFieldAnnotation",
-                    StanfordNerInterceptor.CONFIG_ANNOTATION_FIELD, "field"));
+//                    StanfordNerInterceptor.CONFIG_VIEW_NAME, "_InitialView",
+//                    StanfordNerInterceptor.CONFIG_ANNOTATION_CLASS, "edu.umn.ensembles.SingleFieldAnnotation",
+//                    StanfordNerInterceptor.CONFIG_ANNOTATION_FIELD, "field",
+                    StanfordNerInterceptor.TEXT_OUTPUT_PATH, textOut,
+                    StanfordNerInterceptor.IGNORE_NER, ignoreNer));
 
             engines.add(AnalysisEngineFactory.createEngine(XmiWriter.class,
-                    XmiWriter.CONFIG_OUTPUT_DIR, xmiOut));
+                    XmiWriter.CONFIG_OUTPUT_DIR, xmiOut,
+                    XmiWriter.TYPE_SYSTEM_VIEW, "_InitialView"));
 
         } catch (ResourceInitializationException e) {
             e.printStackTrace();

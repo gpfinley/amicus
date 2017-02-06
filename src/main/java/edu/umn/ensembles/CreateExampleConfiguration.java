@@ -1,6 +1,6 @@
 package edu.umn.ensembles;
 
-import edu.umn.ensembles.config.InputTypeBean;
+import edu.umn.ensembles.config.SingleInputConfig;
 import edu.umn.ensembles.config.MergerConfigBean;
 import edu.umn.ensembles.config.PipelineConfigBean;
 import org.yaml.snakeyaml.Yaml;
@@ -44,13 +44,13 @@ public class CreateExampleConfiguration {
         bean.setAlignerClass("edu.umn.ensembles.aligners.PerfectOverlapAligner");
         bean.setDistillerClass("edu.umn.ensembles.distillers.PriorityDistiller");
         bean.setCreatorClass("edu.umn.ensembles.creators.SimpleCreator");
-        bean.setOutputViewName(Ensembles.MERGED_VIEW);
+        bean.setOutputViewName(Ensembles.DEFAULT_MERGED_VIEW);
         bean.setOutputAnnotationClass("edu.umn.biomedicus.uima.type1_6.Acronym");
         bean.setOutputAnnotationFields("text");
 
-        InputTypeBean biomedicusAcronymInput = new InputTypeBean();
-        InputTypeBean ctakesAcronymInput = new InputTypeBean();
-        InputTypeBean clampAcronymInput = new InputTypeBean();
+        SingleInputConfig biomedicusAcronymInput = new SingleInputConfig();
+        SingleInputConfig ctakesAcronymInput = new SingleInputConfig();
+        SingleInputConfig clampAcronymInput = new SingleInputConfig();
 
         biomedicusAcronymInput.setFromSystem("biomedicus");
         biomedicusAcronymInput.setType("edu.umn.biomedicus.uima.type1_6.Acronym");
@@ -67,13 +67,13 @@ public class CreateExampleConfiguration {
         clampAcronymInput.setField("cui");
         clampAcronymInput.setTransformerClass("edu.umn.ensembles.transformers.CuiConceptTransformer");
 
-        InputTypeBean[] inputs = {biomedicusAcronymInput, ctakesAcronymInput, clampAcronymInput};
+        SingleInputConfig[] inputs = {biomedicusAcronymInput, ctakesAcronymInput, clampAcronymInput};
         bean.setInputs(inputs);
         bean.setOutputViewName("MergedView");
         List<MergerConfigBean> beans = new ArrayList<>();
         beans.add(bean);
 
-        config.setTranslatorConfigurations(beans);
+        config.setMergerConfigurations(beans);
 
         config.verify();
         Yaml yaml = new Yaml();
@@ -93,7 +93,7 @@ public class CreateExampleConfiguration {
 //        AppConfiguration eval = new AppConfiguration();
 //
 //        Map<String, String> evalViews = new HashMap<>();
-//        evalViews.put("merged", Ensembles.MERGED_VIEW);
+//        evalViews.put("merged", Ensembles.DEFAULT_MERGED_VIEW);
 ////        evalViews.put("manual", "OriginalDocumentView");
 //        evalViews.put("manual", "SystemView");
 //        eval.setViewNames(evalViews);
@@ -101,8 +101,8 @@ public class CreateExampleConfiguration {
 //        MergerConfigBean bean = new MergerConfigBean();
 //        bean.set_name("Acronym Evaluator");
 //        bean.setAlignerClass("edu.umn.ensembles.aligners.PerfectOverlapAligner");
-//        InputTypeBean mergedInput = new InputTypeBean();
-//        InputTypeBean goldInput = new InputTypeBean();
+//        SingleInputConfig mergedInput = new SingleInputConfig();
+//        SingleInputConfig goldInput = new SingleInputConfig();
 //
 //        mergedInput.setFromSystem("merged");
 //        mergedInput.setType("edu.umn.biomedicus.uima.type1_6.Acronym");
@@ -114,7 +114,7 @@ public class CreateExampleConfiguration {
 //        goldInput.setFromSystem("manual");
 //        goldInput.setTransformerClass("edu.umn.ensembles.transformers.GetterTransformer");
 //
-//        InputTypeBean[] inputs = {goldInput, mergedInput};
+//        SingleInputConfig[] inputs = {goldInput, mergedInput};
 //        bean.setInputs(inputs);
 //        List<MergerConfigBean> beans = new ArrayList<>();
 //        bean.setOutputViewName("MergedView");

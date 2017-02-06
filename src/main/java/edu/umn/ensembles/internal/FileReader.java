@@ -1,6 +1,6 @@
 package edu.umn.ensembles.internal;
 
-import edu.umn.ensembles.uimafit.Util;
+import edu.umn.ensembles.Util;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.impl.XmiCasDeserializer;
 import org.apache.uima.collection.CollectionReader_ImplBase;
@@ -20,6 +20,7 @@ import java.util.logging.Logger;
  *
  * Created by gpfinley on 10/14/16.
  */
+@Deprecated
 public class FileReader extends CollectionReader_ImplBase {
 
     private static final Logger LOGGER = Logger.getLogger(FileReader.class.getName());

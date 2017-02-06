@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class MultiCreator extends AnnotationCreator<List> {
 
-    public static final String SPLITTER = ";";
+    public static final String DELIMITER = ";";
 
     private final Constructor<? extends Annotation> annotationConstructor;
     private final List<Method> setterMethods;
@@ -28,7 +28,7 @@ public class MultiCreator extends AnnotationCreator<List> {
         Class<? extends Annotation> annotationClass = getClassFromName(typeName);
         annotationConstructor = getAnnotationConstructor(annotationClass);
 
-        List<String> fieldNames = Arrays.asList(fieldNamesDelimited.split(SPLITTER));
+        List<String> fieldNames = Arrays.asList(fieldNamesDelimited.split(DELIMITER));
         setterMethods = fieldNames
                 .stream()
                 .map(m -> getSetterForField(annotationClass, m))
@@ -51,9 +51,7 @@ public class MultiCreator extends AnnotationCreator<List> {
                 setterMethods.get(i).invoke(annotation, value.getValue().get(i));
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            // todo: log
-            e.printStackTrace();
-            throw new EnsemblesException();
+            throw new EnsemblesException(e);
         }
         annotation.addToIndexes();
     }

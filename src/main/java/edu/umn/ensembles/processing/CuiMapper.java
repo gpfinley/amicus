@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  *
  * Created by gpfinley on 10/13/16.
  */
-public class CuiMapper implements Mapper<String, String> {
+public class CuiMapper extends Mapper<String, String> {
 
     private static Logger LOGGER = Logger.getLogger(CuiMapper.class.getName());
 
@@ -65,6 +65,7 @@ public class CuiMapper implements Mapper<String, String> {
         }
     }
 
+    @Override
     public String map(String cui) {
         return cuiToString.getOrDefault(cui, cui);
     }

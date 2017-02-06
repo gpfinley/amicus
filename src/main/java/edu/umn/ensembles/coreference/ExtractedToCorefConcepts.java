@@ -1,4 +1,4 @@
-package edu.umn.ensembles.filetools;
+package edu.umn.ensembles.coreference;
 
 import edu.umn.ensembles.EnsemblesException;
 

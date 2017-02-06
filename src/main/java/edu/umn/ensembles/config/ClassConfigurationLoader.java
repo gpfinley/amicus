@@ -1,5 +1,6 @@
 package edu.umn.ensembles.config;
 
+import edu.umn.ensembles.Ensembles;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -21,17 +22,14 @@ import java.util.logging.Logger;
 public class ClassConfigurationLoader {
 
     private static Logger LOGGER = Logger.getLogger(ClassConfigurationLoader.class.getName());
-
     private static final Yaml yaml = new Yaml();
 
-    private static Path CLASS_CONFIG_DIR = Paths.get("classConfigurations");
-
     public static Object load(Class clazz) throws FileNotFoundException {
-        File file = new File(CLASS_CONFIG_DIR.resolve(clazz.getName()) + ".yml");
+        File file = new File(Ensembles.CLASS_CONFIG_DIR.resolve(clazz.getName()) + ".yml");
         if (file.exists()) {
             return yaml.load(new FileInputStream(file));
         } else {
-            file = new File(CLASS_CONFIG_DIR.resolve(clazz.getName()) + ".txt");
+            file = new File(Ensembles.CLASS_CONFIG_DIR.resolve(clazz.getName()) + ".txt");
             if (!file.exists()) {
                 LOGGER.severe("No configuration file with .yml or .txt extension found for class " + clazz.getName());
                 throw new FileNotFoundException();

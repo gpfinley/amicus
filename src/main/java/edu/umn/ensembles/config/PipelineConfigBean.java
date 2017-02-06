@@ -13,7 +13,7 @@ public class PipelineConfigBean {
     private List<String> inputNames;
     private List<String> inputDirectories;
     private List<String> inputViews;
-    private List<MergerConfigBean> translatorConfigurations;
+    private List<MergerConfigBean> mergerConfigurations;
     private String outPath;
 
     /**
@@ -24,7 +24,7 @@ public class PipelineConfigBean {
                 || inputNames.size() != inputDirectories.size() || inputNames.size() != inputViews.size()) {
             throw new EnsemblesException("Pipeline configuration incomplete");
         }
-        translatorConfigurations.forEach(MergerConfigBean::verify);
+        mergerConfigurations.forEach(MergerConfigBean::verify);
     }
 
     public String get_pipelineName() {
@@ -67,11 +67,11 @@ public class PipelineConfigBean {
         this.inputViews = inputViews;
     }
 
-    public List<MergerConfigBean> getTranslatorConfigurations() {
-        return translatorConfigurations;
+    public List<MergerConfigBean> getMergerConfigurations() {
+        return mergerConfigurations;
     }
 
-    public void setTranslatorConfigurations(List<MergerConfigBean> translatorConfigurations) {
-        this.translatorConfigurations = translatorConfigurations;
+    public void setMergerConfigurations(List<MergerConfigBean> mergerConfigurations) {
+        this.mergerConfigurations = mergerConfigurations;
     }
 }

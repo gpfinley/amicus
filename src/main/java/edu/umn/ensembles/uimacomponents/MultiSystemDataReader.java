@@ -1,7 +1,7 @@
-package edu.umn.ensembles.uimafit;
+package edu.umn.ensembles.uimacomponents;
 
-import edu.umn.ensembles.Ensembles;
 import edu.umn.ensembles.EnsemblesException;
+import edu.umn.ensembles.Util;
 import org.apache.uima.cas.AbstractCas;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.impl.XCASDeserializer;
@@ -29,13 +29,13 @@ public class MultiSystemDataReader extends CasMultiplier_ImplBase {
 
     public static final String SYSTEM_NAMES = "systemNames";
     public static final String DATA_DIRS = "dataDirs";
-    public static final String VIEW_NAMES = "viewNames";
+    public static final String FROM_VIEW_NAMES = "viewNames";
 
     @ConfigurationParameter(name = SYSTEM_NAMES)
     private String[] systemNames;
     @ConfigurationParameter(name = DATA_DIRS)
     private String[] dataDirs;
-    @ConfigurationParameter(name = VIEW_NAMES)
+    @ConfigurationParameter(name = FROM_VIEW_NAMES)
     private String[] viewNames;
 
     @Override
@@ -76,7 +76,7 @@ public class MultiSystemDataReader extends CasMultiplier_ImplBase {
                 e.printStackTrace();
                 throw new RuntimeException();
             }
-            CAS newSysView = cas.createView(Ensembles.systemToViewName(systemName));
+            CAS newSysView = cas.createView(Util.systemToViewName(systemName));
             CasCopier casCopier = new CasCopier(tempCas, cas);
             CAS relevantView;
             try {

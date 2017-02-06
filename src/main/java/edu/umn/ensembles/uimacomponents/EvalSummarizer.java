@@ -1,4 +1,4 @@
-package edu.umn.ensembles.uimafit;
+package edu.umn.ensembles.uimacomponents;
 
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.EvalAnnotation;

@@ -1,6 +1,7 @@
-package edu.umn.ensembles.uimafit;
+package edu.umn.ensembles.uimacomponents;
 
 import edu.umn.ensembles.Ensembles;
+import edu.umn.ensembles.Util;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.*;
@@ -32,7 +33,7 @@ public class XmiWriter extends CasAnnotator_ImplBase {
 
     @ConfigurationParameter(name = CONFIG_OUTPUT_DIR)
     private String outputDirName;
-    @ConfigurationParameter(name = TYPE_SYSTEM_VIEW, defaultValue = Ensembles.MERGED_VIEW)
+    @ConfigurationParameter(name = TYPE_SYSTEM_VIEW, defaultValue = Ensembles.DEFAULT_MERGED_VIEW)
     private static String typeSystemView;
 
     private Path outputDir;
@@ -59,7 +60,7 @@ public class XmiWriter extends CasAnnotator_ImplBase {
 
         // todo: implement concurrency/semaphores for this (can copy from biomedicus) so that it only writes TS once
 
-//        String typeSystemView = mergedViewName == null ? Ensembles.MERGED_VIEW : mergedViewName;
+//        String typeSystemView = mergedViewName == null ? Ensembles.DEFAULT_MERGED_VIEW : mergedViewName;
         try {
             CAS mergedView = cas.getView(typeSystemView);
             TypeSystem typeSystem = mergedView.getTypeSystem();

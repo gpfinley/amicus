@@ -1,8 +1,8 @@
 package edu.umn.ensembles.creators;
 
-import edu.umn.ensembles.Ensembles;
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.PreAnnotation;
+import edu.umn.ensembles.Util;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
@@ -51,7 +51,7 @@ public abstract class AnnotationCreator<T> {
 
     protected static Method getSetterForField(Class clazz, String name) {
         try {
-            return clazz.getMethod(Ensembles.getSetterFor(name));
+            return clazz.getMethod(Util.getSetterFor(name));
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             throw new EnsemblesException();
