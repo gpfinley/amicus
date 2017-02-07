@@ -7,26 +7,27 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A serializable bean for a single merge engine
+ * A serializable bean for a single merge engine.
+ * Contains methods for aggregating options across its inputs and outputs, which is needed for uimaFIT configurations.
  *
  * Created by gpfinley on 10/24/16.
  */
 public class MergerConfigBean {
 
-    private String _name;
+    public String _name;
 
-    private SingleInputConfig[] inputs;
-    private SingleInputConfig[] outputs;
+    public SingleInputConfig[] inputs;
+    public SingleOutputConfig[] outputs;
 
     // what kind of type to output
-    private String outputAnnotationClass;
+    public String outputAnnotationClass;
     // can have multiple if separated by ;
-    private String outputAnnotationFields;
+    public String outputAnnotationFields;
 
-    private String alignerClass;
+    public String alignerClass;
 
     // view to write output annotation to
-    private String outputViewName;
+    public String outputViewName;
 
     /**
      * Verify that these mergers have enough config info
@@ -44,90 +45,70 @@ public class MergerConfigBean {
      * Used for converting input type beans into the String[] needed as UIMA config params
      * @return
      */
+    // todo: confirm these are getting fields from inputs correctly
     public String[] getInputSystemNames() {
         List<String> inputSystemNames = new ArrayList<>();
-        for (SingleInputConfig inputConfig : getInputs()) {
+        for (SingleInputConfig inputConfig : inputs) {
             inputSystemNames.add(inputConfig.fromSystem);
         }
         return inputSystemNames.toArray(new String[inputSystemNames.size()]);
     }
     public String[] getInputTypes() {
         List<String> inputTypes = new ArrayList<>();
-        for (SingleInputConfig inputConfig : getInputs()) {
+        for (SingleInputConfig inputConfig : inputs) {
             inputTypes.add(inputConfig.annotationType);
         }
         return inputTypes.toArray(new String[inputTypes.size()]);
     }
     public String[] getInputFields() {
         List<String> inputFields = new ArrayList<>();
-        for (SingleInputConfig inputConfig : getInputs()) {
+        for (SingleInputConfig inputConfig : inputs) {
             inputFields.add(inputConfig.annotationField);
         }
         return inputFields.toArray(new String[inputFields.size()]);
     }
     public String[] getInputTransformers() {
         List<String> inputTransformers = new ArrayList<>();
-        for (SingleInputConfig inputConfig : getInputs()) {
+        for (SingleInputConfig inputConfig : inputs) {
             inputTransformers.add(inputConfig.transformerClass);
         }
         return inputTransformers.toArray(new String[inputTransformers.size()]);
     }
 
-
-
-    public String get_name() {
-        return _name;
+    public String[] getOutputAnnotationClasses() {
+        String[] outputClasses = new String[outputs.length];
+        for (int i=0; i<outputs.length; i++) {
+            outputClasses[i] = outputs[i].annotationType;
+        }
+        return outputClasses;
+    }
+    public String[] getOutputAnnotationFields() {
+        String[] outputFields = new String[outputs.length];
+        for (int i=0; i<outputs.length; i++) {
+            outputFields[i] = outputs[i].annotationType;
+        }
+        return outputFields;
+    }
+    public String[] getOutputViewNames() {
+        String[] outputViews = new String[outputs.length];
+        for (int i=0; i<outputs.length; i++) {
+            outputViews[i] = outputs[i].writeView;
+        }
+        return outputViews;
+    }
+    public String[] getCreatorClasses() {
+        String[] creators = new String[outputs.length];
+        for (int i=0; i<outputs.length; i++) {
+            creators[i] = outputs[i].writeView;
+        }
+        return creators;
+    }
+    public String[] getDistillerClasses() {
+        String[] distillers = new String[outputs.length];
+        for (int i=0; i<outputs.length; i++) {
+            distillers[i] = outputs[i].writeView;
+        }
+        return distillers;
     }
 
-    public void set_name(String name) {
-        this._name = name;
-    }
-
-    public SingleInputConfig[] getInputs() {
-        return inputs;
-    }
-
-    public void setInputs(SingleInputConfig[] inputs) {
-        this.inputs = inputs;
-    }
-
-    public String getOutputAnnotationClass() {
-                                           return outputAnnotationClass;
-                                                                                                       }
-
-    public void setOutputAnnotationClass(String outputAnnotationClass) {
-        this.outputAnnotationClass = outputAnnotationClass;
-    }
-
-    public String getOutputAnnotationFields() {
-        return outputAnnotationFields;
-    }
-
-    public void setOutputAnnotationFields(String outputAnnotationFields) {
-        this.outputAnnotationFields = outputAnnotationFields;
-    }
-
-    public String getAlignerClass() {
-                                  return alignerClass;
-                                                                            }
-
-    public void setAlignerClass(String alignerClass) {
-        this.alignerClass = alignerClass;
-    }
-
-    public String getOutputViewName() {
-        return outputViewName;
-    }
-
-    public void setOutputViewName(String outputViewName) {
-        this.outputViewName = outputViewName;
-    }
-
-    public SingleInputConfig[] getOutputs() {
-        return outputs;
-    }
-
-    public void setOutputs(SingleInputConfig[] outputs) {
-        this.outputs = outputs;
-    }
 }

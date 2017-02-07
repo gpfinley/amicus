@@ -38,17 +38,17 @@ public class EnsemblesPipeline {
             for (MergerConfigBean mergerConfig : pipelineConfig.getMergerConfigurations()) {
                 engines.add(
                         AnalysisEngineFactory.createEngine(MergerTranslator.class,
-                                MergerTranslator.ALIGNER_CLASS, mergerConfig.getAlignerClass(),
-                                MergerTranslator.CREATOR_CLASS, mergerConfig.getCreatorClass(),
-                                MergerTranslator.DISTILLER_CLASS, mergerConfig.getDistillerClass(),
-                                MergerTranslator.OUTPUT_ANNOTATION_TYPE, mergerConfig.getOutputAnnotationClass(),
-                                MergerTranslator.OUTPUT_ANNOTATION_FIELDS, mergerConfig.getOutputAnnotationFields(),
-                                MergerTranslator.OUTPUT_VIEW_NAME, mergerConfig.getOutputViewName(),
                                 MergerTranslator.SYSTEM_NAMES, mergerConfig.getInputSystemNames(),
                                 MergerTranslator.TYPE_CLASSES, mergerConfig.getInputTypes(),
                                 MergerTranslator.FIELD_NAMES, mergerConfig.getInputFields(),
-                                MergerTranslator.TRANSFORMER_CLASSES, mergerConfig.getInputTransformers())
-                );
+                                MergerTranslator.TRANSFORMER_CLASSES, mergerConfig.getInputTransformers(),
+                                MergerTranslator.ALIGNER_CLASS, mergerConfig.alignerClass,
+                                MergerTranslator.DISTILLER_CLASSES, mergerConfig.getDistillerClasses(),
+                                MergerTranslator.OUTPUT_ANNOTATION_TYPES, mergerConfig.getOutputAnnotationClasses(),
+                                MergerTranslator.OUTPUT_ANNOTATION_FIELDS, mergerConfig.getOutputAnnotationFields(),
+                                MergerTranslator.CREATOR_CLASSES, mergerConfig.getCreatorClasses(),
+                                MergerTranslator.OUTPUT_VIEW_NAMES, mergerConfig.getOutputViewNames()
+                ));
             }
 
             engines.add(AnalysisEngineFactory.createEngine(XmiWriter.class,

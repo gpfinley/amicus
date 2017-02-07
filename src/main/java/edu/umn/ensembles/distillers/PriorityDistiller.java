@@ -20,11 +20,12 @@ public class PriorityDistiller extends AnnotationDistiller<Object> {
      */
     @Override
     public PreAnnotation distill(List<PreAnnotation> annotations) {
-        try {
-            return annotations.get(0);
-        } catch (Exception e) {
-            return null;
+        for (PreAnnotation pa : annotations) {
+            if (pa != null) {
+                return pa;
+            }
         }
+        return null;
     }
 
 }
