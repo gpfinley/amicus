@@ -1,4 +1,4 @@
-package edu.umn.ensembles.transformers;
+package edu.umn.ensembles.pullers;
 
 import edu.umn.ensembles.PreAnnotation;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -10,9 +10,9 @@ import org.apache.uima.jcas.tcas.Annotation;
  * with a different getter each time.)
  * Created by gpfinley on 12/19/16.
  */
-public class PassThroughTransformer extends AnnotationTransformer<Annotation> {
+public class PassThroughPuller extends AnnotationPuller<Annotation> {
 
-    public PassThroughTransformer(String fieldName) {
+    public PassThroughPuller(String fieldName) {
         super(fieldName);
     }
 

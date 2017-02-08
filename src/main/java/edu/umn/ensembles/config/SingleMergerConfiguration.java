@@ -29,7 +29,8 @@ import java.util.List;
                 || outputs == null) {
             throw new EnsemblesException("Translator or merger configuration incomplete");
         }
-        Arrays.asList(inputs).forEach(SingleInputConfig::verify);
+        for(SingleInputConfig c : inputs) c.verify();
+        for(SingleOutputConfig c : outputs) c.verify();
     }
 
     /**

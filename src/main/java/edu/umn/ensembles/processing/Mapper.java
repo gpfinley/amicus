@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 /**
- * Simple class for storing and calling a mapping between values. Used by MapperTransformer.
+ * Simple class for storing and calling a mapping between values. Used by MapperPuller.
  * Map must be stored in YAML in the class configuration file corresponding to this class.
  * In the current implementation, only one Mapper can be active during a single run of the application.
  * This is to prevent confusing which configured map goes with which Mapper instantiation.

@@ -10,22 +10,22 @@ mergerConfigurations:
   alignerClass: null
   inputs:
   - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
-    fromView: ctakes, transformerClass: edu.umn.ensembles.transformers.CtakesCuiTransformer}
+    fromView: ctakes, transformerClass: edu.umn.ensembles.pullersesCuiTransformer}
   outputs:
   - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation,
-    creatorClass: edu.umn.ensembles.creators.SimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,
+    creatorClass: edu.umn.ensembles.pushersSimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,
     writeView: CtakesView}
 - _mergerName: Acronym Merger
   alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
   inputs:
   - {annotationField: text, annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
-    fromView: BiomedicusView, transformerClass: edu.umn.ensembles.transformers.GetterTransformer}
+    fromView: BiomedicusView, transformerClass: edu.umn.ensembles.pullerserTransformer}
   - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
-    fromView: CtakesView, transformerClass: edu.umn.ensembles.transformers.CuiConceptTransformer}
+    fromView: CtakesView, transformerClass: edu.umn.ensembles.pullersonceptTransformer}
   - {annotationField: cui, annotationType: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA,
-    fromView: ClampView, transformerClass: edu.umn.ensembles.transformers.CuiConceptTransformer}
+    fromView: ClampView, transformerClass: edu.umn.ensembles.pullersonceptTransformer}
   outputs:
   - {annotationField: text, annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
-    creatorClass: edu.umn.ensembles.creators.SimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,
+    creatorClass: edu.umn.ensembles.pushersSimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,
     writeView: MergedView}
 xmiOutPath: data/xmi_out

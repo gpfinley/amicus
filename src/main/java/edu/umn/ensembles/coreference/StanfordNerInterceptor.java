@@ -189,7 +189,11 @@ public class StanfordNerInterceptor extends JCasAnnotator_ImplBase {
             for(CoreMap sentence: sentences) {
                 List<Integer> wordOffsets = new ArrayList<>();
                 sentenceWordOffsets.add(wordOffsets);
-                sentence.get(CoreAnnotations.TokensAnnotation.class).forEach(t -> wordOffsets.add(t.beginPosition()));
+                for (CoreLabel c : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
+                    wordOffsets.add(c.beginPosition());
+                }
+                // java 8
+//                sentence.get(CoreAnnotations.TokensAnnotation.class).forEach(t -> wordOffsets.add(t.beginPosition()));
             }
 
             try {
@@ -202,7 +206,7 @@ public class StanfordNerInterceptor extends JCasAnnotator_ImplBase {
                 for (Set<CorefChain.CorefMention> corefMentions : chain.getMentionMap().values()) {
                     if (corefMentions.size() > 1) {
                         System.out.println("~~~~~");
-                        corefMentions.forEach(cm -> {
+                        for (CorefChain.CorefMention cm : corefMentions) {
                             String coveredText = cm.mentionSpan;
 
                             // subtract one from sentNum and startIndex b/c these indices start at 1
@@ -233,7 +237,7 @@ public class StanfordNerInterceptor extends JCasAnnotator_ImplBase {
                             toWrite.append(":");
                             toWrite.append(endWord);
                             toWrite.append("||");
-                        });
+                        }
                         // Not bothering to differentiate coref chains by type (i2b2 eval better not use -i flag!).
                         toWrite.append("t=\"coref pronoun\"\n");
                     }
@@ -257,74 +261,3 @@ public class StanfordNerInterceptor extends JCasAnnotator_ImplBase {
     }
 
 }
-
-
-
-
-
-// todo: Delete graveyard
-
-//
-//        // todo: delete the whole following chunk
-//        // these are all the sentences in this document
-//        // a CoreMap is essentially a Map that uses class objects as keys and has values with custom types
-//        List<CoreMap> sentences = stanfordDocument.get(CoreAnnotations.SentencesAnnotation.class);
-//        for(CoreMap sentence: sentences) {
-//            System.out.println(sentence);
-//            // traversing the words in the current sentence
-//            // a CoreLabel is a CoreMap with additional token-specific methods
-//            for (CoreLabel token: sentence.get(CoreAnnotations.TokensAnnotation.class)) {
-//                // this is the text of the token
-//                String word = token.get(CoreAnnotations.TextAnnotation.class);
-//                // this is the POS tag of the token
-//                String pos = token.get(CoreAnnotations.PartOfSpeechAnnotation.class);
-//                // this is the NER label of the token
-////                token.set(CoreAnnotations.NamedEntityTagAnnotation.class, "dummy");
-//                String ne = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
-//                System.out.println(ne);
-//            }
-//            // this is the parse tree of the current sentence
-//            Tree tree = sentence.get(TreeCoreAnnotations.TreeAnnotation.class);
-//            // this is the Stanford dependency graph of the current sentence
-//            SemanticGraph dependencies = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
-//        }
-//
-//        // todo: delete below
-//        // todo: is this actually what we want...or the reverse of what we want??
-//        // map sentence/word indices to character offsets
-//        // list of sentences, each with a list of words
-//        List<List<Integer>> wordBegins = new ArrayList<>();
-//        List<List<Integer>> wordEnds = new ArrayList<>();
-//        // pad with nulls (sentence numberings start from 1)
-//        wordBegins.add(null);
-//        wordEnds.add(null);
-//        List<CoreMap> sentences = stanfordDocument.get(CoreAnnotations.SentencesAnnotation.class);
-//        for(CoreMap sentence: sentences) {
-//            List<Integer> theseBegins = new ArrayList<>();
-//            List<Integer> theseEnds = new ArrayList<>();
-//            // pad with nulls (word numberings start from 1)
-//            theseBegins.add(null);
-//            theseEnds.add(null);
-//            wordBegins.add(theseBegins);
-//            wordEnds.add(theseEnds);
-//            for (CoreLabel token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
-//                theseBegins.add(token.beginPosition());
-//                theseEnds.add(token.beginPosition());
-//            }
-//        }
-//
-//        // Find all annotations in the jCas and write a new Stanford NER annotation for each one
-//        // todo: figure out word/sentence-to-character mapping (system annotations will be char offsets; Stanford wants whole words)
-//        jCas.getAnnotationIndex().iterator().forEachRemaining(a -> {
-//            // todo: use Biomed concept annotation or something else?
-//            ConceptAnnotation concept;
-//            try {
-//                concept = (ConceptAnnotation) a;
-//            } catch(ClassCastException e) {
-//                return;
-//            }
-//
-//            Now--find the words and sentences that these offsets map to and set new stanford NER annotations.
-//
-//            // todo: add NER annotations to the document from the jCas
-//        });

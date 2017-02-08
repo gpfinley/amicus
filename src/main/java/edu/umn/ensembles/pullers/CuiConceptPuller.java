@@ -1,4 +1,4 @@
-package edu.umn.ensembles.transformers;
+package edu.umn.ensembles.pullers;
 
 import edu.umn.ensembles.PreAnnotation;
 import edu.umn.ensembles.processing.CuiMapper;
@@ -10,9 +10,9 @@ import org.apache.uima.jcas.tcas.Annotation;
  *
  * Created by gpfinley on 10/20/16.
  */
-public class CuiConceptTransformer extends AnnotationTransformer<String> {
+public class CuiConceptPuller extends AnnotationPuller<String> {
 
-    public CuiConceptTransformer(String fieldName) {
+    public CuiConceptPuller(String fieldName) {
         super(fieldName);
     }
 

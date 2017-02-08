@@ -10,10 +10,7 @@ import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -50,11 +47,17 @@ public class RefStdProcessor extends JCasAnnotator_ImplBase {
             e.printStackTrace();
             throw new RuntimeException();
         }
-        jCas.getAnnotationIndex(TokenAnnotation.class).forEach(a -> {
-            if (isAcronym(a))
-                acrTokens.add(a);
+        for (TokenAnnotation a : jCas.getAnnotationIndex(TokenAnnotation.class)) {
+            if (isAcronym(a)) acrTokens.add(a);
+        }
+        acrTokens.sort(new Comparator<TokenAnnotation>() {
+            @Override
+            public int compare(TokenAnnotation o1, TokenAnnotation o2) {
+                return ((Integer) o1.getBegin()).compareTo(o2.getBegin());
+            }
         });
-        acrTokens.sort((x, y) -> ((Integer) x.getBegin()).compareTo(y.getBegin()));
+        // java 8
+//        acrTokens.sort((x, y) -> ((Integer) x.getBegin()).compareTo(y.getBegin()));
 
         // might remove annotations from this list as we cycle through the original annotations
         List<Acronym> acronymsToAdd = new ArrayList<>();
@@ -87,7 +90,7 @@ public class RefStdProcessor extends JCasAnnotator_ImplBase {
 
             String thisAbbr = acronym.getCoveredText();
             if (abbrs.increment(thisAbbr) == 1) {
-                expansions.put(thisAbbr, new Counter<>());
+                expansions.put(thisAbbr, new Counter<String>());
             }
             expansions.get(thisAbbr).increment(acronym.getText());
 

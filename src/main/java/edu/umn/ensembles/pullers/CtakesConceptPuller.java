@@ -1,4 +1,4 @@
-package edu.umn.ensembles.transformers;
+package edu.umn.ensembles.pullers;
 
 import edu.umn.ensembles.PreAnnotation;
 import edu.umn.ensembles.processing.CuiMapper;
@@ -7,14 +7,14 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 /**
  * Parse the FSArray of UmlsConcepts provided by cTAKES and choose the best string for this annotation.
- * This Transformer is equivalent to a mini-pipeline of the CtakesCuiTransformer and the CuiConceptTransformer.
+ * This Transformer is equivalent to a mini-pipeline of the CtakesCuiPuller and the CuiConceptPuller.
  * Created by gpfinley on 10/20/16.
  */
-public class CtakesConceptTransformer extends CtakesCuiTransformer {
+public class CtakesConceptPuller extends CtakesCuiPuller {
 
     private Mapper<String, String> mapper;
 
-    public CtakesConceptTransformer(String fieldName) {
+    public CtakesConceptPuller(String fieldName) {
         super(fieldName);
         mapper = CuiMapper.getInstance();
     }

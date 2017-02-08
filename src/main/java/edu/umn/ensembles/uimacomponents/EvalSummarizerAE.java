@@ -6,7 +6,6 @@ import edu.umn.ensembles.eval.EvalMatch;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.component.CasAnnotator_ImplBase;
-import org.apache.uima.fit.component.CasConsumer_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 
@@ -19,6 +18,8 @@ import java.util.TreeMap;
  * Created by gpfinley on 2/3/17.
  */
 public class EvalSummarizerAE extends CasAnnotator_ImplBase {
+
+    // todo: this will report for only a single document!!! Make it summarize
 
     public static final String EVAL_VIEW_NAME = "evalViewName";
 
@@ -36,7 +37,7 @@ public class EvalSummarizerAE extends CasAnnotator_ImplBase {
         // use a treemap for easy reporting of stats ordered by system
         final Map<Integer, Stats> statsMap = new TreeMap<>();
 
-        evalView.getAnnotationIndex(EvalAnnotation.class).forEach(a -> {
+        for (EvalAnnotation a : evalView.getAnnotationIndex(EvalAnnotation.class)) {
             Stats stats = statsMap.get(a.getSystemIndex());
             if (stats == null) {
                 stats = new Stats();
@@ -54,7 +55,7 @@ public class EvalSummarizerAE extends CasAnnotator_ImplBase {
                     stats.totalHitScore += a.getScore();
                     break;
             }
-        });
+        }
 
         for (Map.Entry<Integer, Stats> entry : statsMap.entrySet()) {
             System.out.println(entry.getKey());

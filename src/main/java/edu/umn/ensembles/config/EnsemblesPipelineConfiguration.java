@@ -1,7 +1,5 @@
 package edu.umn.ensembles.config;
 
-import java.util.Arrays;
-
 /**
  * Created by gpfinley on 1/20/17.
  */
@@ -20,8 +18,11 @@ public class EnsemblesPipelineConfiguration {
 //                || inputNames.size() != inputDirectories.size() || inputNames.size() != inputViews.size()) {
 //            throw new EnsemblesException("Pipeline configuration incomplete");
 //        }
-        Arrays.stream(mergerConfigurations).forEach(SingleMergerConfiguration::verify);
-        Arrays.stream(allSystemsUsed).forEach(SingleSystemConfig::verify);
+        for (SingleMergerConfiguration c : mergerConfigurations) c.verify();
+        for (SingleSystemConfig c : allSystemsUsed) c.verify();
+        // todo: java 8 (delete)
+//        Arrays.stream(mergerConfigurations).forEach(SingleMergerConfiguration::verify);
+//        Arrays.stream(allSystemsUsed).forEach(SingleSystemConfig::verify);
     }
 
     public String[] aggregateInputDirectories() {
@@ -31,6 +32,4 @@ public class EnsemblesPipelineConfiguration {
         }
         return inputs;
     }
-
-    // todo: write aggregators for allSystemsUsed (like MergerConfiguration has)
 }

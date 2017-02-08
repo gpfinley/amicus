@@ -57,15 +57,15 @@ public class EnsemblesPipeline {
         for (SingleMergerConfiguration mergerConfig : pipelineConfig.mergerConfigurations) {
             engines.add(
                     AnalysisEngineFactory.createEngine(MergerAE.class,
-                            MergerAE.SYSTEM_NAMES, mergerConfig.aggregateInputSystemNames(),
+                            MergerAE.READ_VIEWS, mergerConfig.aggregateInputSystemNames(),
                             MergerAE.TYPE_CLASSES, mergerConfig.aggregateInputTypes(),
                             MergerAE.FIELD_NAMES, mergerConfig.aggregateInputFields(),
-                            MergerAE.TRANSFORMER_CLASSES, mergerConfig.aggregateInputTransformers(),
+                            MergerAE.PULLER_CLASSES, mergerConfig.aggregateInputTransformers(),
                             MergerAE.ALIGNER_CLASS, mergerConfig.alignerClass,
                             MergerAE.DISTILLER_CLASSES, mergerConfig.aggregateDistillerClasses(),
                             MergerAE.OUTPUT_ANNOTATION_TYPES, mergerConfig.aggregateOutputAnnotationClasses(),
                             MergerAE.OUTPUT_ANNOTATION_FIELDS, mergerConfig.aggregateOutputAnnotationFields(),
-                            MergerAE.CREATOR_CLASSES, mergerConfig.aggregateCreatorClasses(),
+                            MergerAE.PUSHER_CLASSES, mergerConfig.aggregateCreatorClasses(),
                             MergerAE.OUTPUT_VIEW_NAMES, mergerConfig.aggregateOutputViewNames()
             ));
         }

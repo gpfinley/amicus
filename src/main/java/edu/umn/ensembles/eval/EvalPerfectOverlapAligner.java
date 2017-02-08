@@ -23,13 +23,17 @@ public class EvalPerfectOverlapAligner extends AnnotationAligner {
         List<List<Annotation>> evalTuples = new ArrayList<>();
 
         // create a map for each system (first system gold, all others hypotheses)
-        List<Map<BeginEnd, Annotation>> beginEndMaps =
-                allAnnotations.stream().map(x -> new HashMap<BeginEnd, Annotation>()).collect(Collectors.toList());
+        List<HashMap<BeginEnd, Annotation>> beginEndMaps =
+                Collections.nCopies(allAnnotations.size(), new HashMap<BeginEnd, Annotation>());
 
         // map all annotations from their begin/end values, for all systems
         for (int i=0; i<allAnnotations.size(); i++) {
             final Map<BeginEnd, Annotation> thisMap = beginEndMaps.get(i);
-            allAnnotations.get(i).forEach(a -> thisMap.put(new BeginEnd(a.getBegin(), a.getEnd()), a));
+            for (Annotation a : allAnnotations.get(i)) {
+                thisMap.put(new BeginEnd(a.getBegin(), a.getEnd()), a);
+            }
+            // java 8
+//            allAnnotations.get(i).forEach(a -> thisMap.put(new BeginEnd(a.getBegin(), a.getEnd()), a));
         }
 
         // build truePositive-cum-falseNegative tuples

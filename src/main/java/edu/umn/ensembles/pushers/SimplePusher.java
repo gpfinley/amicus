@@ -1,4 +1,4 @@
-package edu.umn.ensembles.creators;
+package edu.umn.ensembles.pushers;
 
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.PreAnnotation;
@@ -13,12 +13,12 @@ import java.lang.reflect.Method;
  * todo: doc
  * Created by gpfinley on 1/20/17.
  */
-public class SimpleCreator extends AnnotationCreator<String> {
+public class SimplePusher extends AnnotationPusher<String> {
 
     private final Constructor<? extends Annotation> annotationConstructor;
     private final Method setterMethod;
 
-    public SimpleCreator(String typeName, String fieldName) {
+    public SimplePusher(String typeName, String fieldName) {
         Class<? extends Annotation> annotationClass = getClassFromName(typeName);
         annotationConstructor = getAnnotationConstructor(annotationClass);
         setterMethod = getSetterForField(annotationClass, fieldName);

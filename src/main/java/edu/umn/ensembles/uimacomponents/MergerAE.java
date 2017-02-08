@@ -3,14 +3,14 @@ package edu.umn.ensembles.uimacomponents;
 import edu.umn.ensembles.Ensembles;
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.PreAnnotation;
-import edu.umn.ensembles.Util;
 import edu.umn.ensembles.aligners.AnnotationAligner;
-import edu.umn.ensembles.creators.MultiCreator;
+import edu.umn.ensembles.pushers.AnnotationPusher;
+import edu.umn.ensembles.pushers.MultiPusher;
 import edu.umn.ensembles.distillers.AnnotationDistiller;
-import edu.umn.ensembles.creators.AnnotationCreator;
-import edu.umn.ensembles.transformers.AnnotationTransformer;
+import edu.umn.ensembles.pullers.AnnotationPuller;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.FSIndex;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
@@ -29,38 +29,38 @@ public class MergerAE extends JCasAnnotator_ImplBase {
 
     private static final Logger LOGGER = Logger.getLogger(MergerAE.class.getName());
 
-    public static final String SYSTEM_NAMES = "systemName";
+    public static final String READ_VIEWS = "readViews";
     public static final String TYPE_CLASSES = "typeClasses";
     public static final String FIELD_NAMES = "fieldNames";
-    public static final String TRANSFORMER_CLASSES = "transformerClasses";
+    public static final String PULLER_CLASSES = "pullerClasses";
 
     public static final String ALIGNER_CLASS = "alignerClass";
 
     public static final String DISTILLER_CLASSES = "distillerClasses";
-    public static final String CREATOR_CLASSES = "creatorClasses";
+    public static final String PUSHER_CLASSES = "pusherClasses";
     public static final String OUTPUT_VIEW_NAMES = "outputViewNames";
     public static final String OUTPUT_ANNOTATION_TYPES = "outputAnnotationTypes";
     public static final String OUTPUT_ANNOTATION_FIELDS = "outputAnnotationFields";
 
     // Some things are not mandatory because there are defaults available (anything with CLASS).
-    // Others are not mandatory because specialized transformers/creators might not use them (but the defaults do!).
+    // Others are not mandatory because specialized pullers/pushers might not use them (but the defaults do!).
 
-    @ConfigurationParameter(name = SYSTEM_NAMES)
-    private String[] systemNames;
-    @ConfigurationParameter(name = TYPE_CLASSES)
+    @ConfigurationParameter(name = READ_VIEWS)
+    private String[] readViews;
+    @ConfigurationParameter(name = TYPE_CLASSES, mandatory = false)
     private String[] typeClassNames;
     @ConfigurationParameter(name = FIELD_NAMES, mandatory = false)
     private String[] fieldNames;
-    @ConfigurationParameter(name = TRANSFORMER_CLASSES, mandatory = false)
-    private String[] transformerClassNames;
+    @ConfigurationParameter(name = PULLER_CLASSES, mandatory = false)
+    private String[] pullerClassNames;
 
     @ConfigurationParameter(name = ALIGNER_CLASS, mandatory = false)
     private String alignerClassName;
 
     @ConfigurationParameter(name = DISTILLER_CLASSES, mandatory = false)
     private String[] distillerClassNames;
-    @ConfigurationParameter(name = CREATOR_CLASSES, mandatory = false)
-    private String[] creatorClassNames;
+    @ConfigurationParameter(name = PUSHER_CLASSES, mandatory = false)
+    private String[] pusherClassNames;
     @ConfigurationParameter(name = OUTPUT_VIEW_NAMES)
     private String[] outputViewNames;
     @ConfigurationParameter(name = OUTPUT_ANNOTATION_TYPES, mandatory = false)
@@ -71,8 +71,8 @@ public class MergerAE extends JCasAnnotator_ImplBase {
 
     private List<Class> typeClasses;
     private List<AnnotationDistiller> distillers;
-    private List<AnnotationCreator> creators;
-    private List<AnnotationTransformer> transformers;
+    private List<AnnotationPusher> creators;
+    private List<AnnotationPuller> transformers;
     private AnnotationAligner aligner;
 
     @Override
@@ -80,28 +80,28 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         super.initialize(context);
         LOGGER.info("Initializing MergedViewAnnotator.");
 
-        int numInputs = systemNames.length;
+        int numInputs = readViews.length;
         int numOutputs = outputViewNames.length;
 
         // check lengths of input and output lists to hopefully detect user-caused misalignment in config file
+//        // todo: i don't think these checks do anything b/c of how the arrays are built in the config class. delete.
+//        try {
+//            assert numInputs == typeClassNames.length;
+//            assert pullerClassNames == null || numInputs == pullerClassNames.length;
+//            assert fieldNames == null || numInputs == fieldNames.length;
+//        } catch (AssertionError e) {
+//            throw new EnsemblesException("Configuration parameters for inputs do not line up! Check parameter lists.");
+//        }
+//        try {
+//            assert distillerClassNames == null || numOutputs == distillerClassNames.length;
+//            assert pusherClassNames == null || numOutputs == pusherClassNames.length;
+//            assert outputAnnotationTypes == null || numOutputs == outputAnnotationTypes.length;
+//            assert outputAnnotationFields == null || numOutputs == outputAnnotationFields.length;
+//        } catch (AssertionError e) {
+//            throw new EnsemblesException("Configuration parameters for outputs do not line up! Check parameter lists.");
+//        }
 
-        // todo: i don't think these checks do anything b/c of how the arrays are built in the config class
-        try {
-            assert numInputs == typeClassNames.length;
-            assert transformerClassNames == null || numInputs == transformerClassNames.length;
-            assert fieldNames == null || numInputs == fieldNames.length;
-        } catch (AssertionError e) {
-            throw new EnsemblesException("Configuration parameters for inputs do not line up! Check parameter lists.");
-        }
-        try {
-            assert distillerClassNames == null || numOutputs == distillerClassNames.length;
-            assert creatorClassNames == null || numOutputs == creatorClassNames.length;
-            assert outputAnnotationTypes == null || numOutputs == outputAnnotationTypes.length;
-            assert outputAnnotationFields == null || numOutputs == outputAnnotationFields.length;
-        } catch (AssertionError e) {
-            throw new EnsemblesException("Configuration parameters for outputs do not line up! Check parameter lists.");
-        }
-
+        // todo: take out null checks here?? Defaults should only be specified in one place and they're also in the config classes
         try {
             if (alignerClassName != null) {
                 aligner = (AnnotationAligner) Class.forName(alignerClassName).newInstance();
@@ -130,13 +130,13 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         try {
             creators = new ArrayList<>();
             for (int i=0; i < numOutputs; i++) {
-                if(creatorClassNames[i] == null) {
+                if(pusherClassNames[i] == null) {
                     if (outputAnnotationFields[i] == null | outputAnnotationTypes[i] == null) {
                         throw new EnsemblesException("Need to provide output annnotation fields and types UNLESS using" +
-                                " a custom AnnotationCreator implementation that can ignore them.");
+                                " a custom AnnotationPusher implementation that can ignore them.");
                     }
-                    Constructor<? extends AnnotationCreator> creatorConstructor;
-                    String[] outFields = outputAnnotationFields[i].split(MultiCreator.DELIMITER);
+                    Constructor<? extends AnnotationPusher> creatorConstructor;
+                    String[] outFields = outputAnnotationFields[i].split(MultiPusher.DELIMITER);
                     if (outFields.length <= 1) {
                         creatorConstructor = Ensembles.DEFAULT_CREATOR_CLASS.getConstructor(String.class, String.class);
                     } else {
@@ -147,38 +147,38 @@ public class MergerAE extends JCasAnnotator_ImplBase {
                     // if output annotation types or fields are null, the custom creator class better be able to handle that
                     String outputAnnotationType = outputAnnotationTypes != null ? outputAnnotationTypes[i] : null;
                     String outputAnnotationField = outputAnnotationFields != null ? outputAnnotationFields[i] : null;
-                    Class<? extends AnnotationCreator> creatorClass =
-                            (Class<? extends AnnotationCreator>) Class.forName(creatorClassNames[i]);
+                    Class<? extends AnnotationPusher> creatorClass =
+                            (Class<? extends AnnotationPusher>) Class.forName(pusherClassNames[i]);
                     Constructor creatorConstructor = creatorClass.getConstructor(String.class, String.class);
-                    creators.add((AnnotationCreator) creatorConstructor
+                    creators.add((AnnotationPusher) creatorConstructor
                             .newInstance(outputAnnotationType, outputAnnotationField));
                 }
             }
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException
                 | InvocationTargetException e) {
-            LOGGER.severe("Could not initialize annotation creators.");
+            LOGGER.severe("Could not initialize annotation pushers.");
             throw new EnsemblesException(e);
         }
 
         transformers = new ArrayList<>();
         try {
             for (int i=0; i<numInputs; i++) {
-                if (transformerClassNames[i] == null) {
+                if (pullerClassNames[i] == null) {
                     if (fieldNames == null) {
                         throw new EnsemblesException("Need to specify field names" +
-                                " unless using a custom AnnotationTransformer implementation.");
+                                " unless using a custom AnnotationPuller implementation.");
                     }
-                    transformers.add((AnnotationTransformer) Ensembles.DEFAULT_TRANSFORMER_CLASS
+                    transformers.add((AnnotationPuller) Ensembles.DEFAULT_TRANSFORMER_CLASS
                             .getConstructor(String.class).newInstance(fieldNames[i]));
                 } else {
                     String fieldName = fieldNames != null ? fieldNames[i] : null;
-                    Constructor constructor = Class.forName(transformerClassNames[i]).getConstructor(String.class);
-                    transformers.add((AnnotationTransformer) constructor.newInstance(fieldName));
+                    Constructor constructor = Class.forName(pullerClassNames[i]).getConstructor(String.class);
+                    transformers.add((AnnotationPuller) constructor.newInstance(fieldName));
                 }
             }
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException
                 | InvocationTargetException e) {
-            LOGGER.severe("Could not initialize annotation transformers.");
+            LOGGER.severe("Could not initialize annotation pullers.");
             throw new EnsemblesException(e);
         }
 
@@ -207,60 +207,92 @@ public class MergerAE extends JCasAnnotator_ImplBase {
             if ("".equals(sofaData)) {
                 LOGGER.warning("No sofaData found in any view!");
             }
-//            viewIter.next();
-//            JCas firstView = viewIter.next();
-//            sofaData = firstView.getSofaDataString();
         } catch (CASException e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
         final String text = sofaData;
 
-        aligner.alignAndIterate(getAnnotations(jCas))
-                .forEachRemaining(annotations -> {
-                            List<PreAnnotation> preannotations = new ArrayList<>();
-                            for (int i = 0; i < annotations.size(); i++) {
-                                preannotations.add(transformers.get(i).transform(annotations.get(i)));
+        Iterator<List<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
+        while (listIter.hasNext()) {
+            List<Annotation> annotations = listIter.next();
+            List<PreAnnotation> preannotations = new ArrayList<>();
+            for (int i = 0; i < annotations.size(); i++) {
+                preannotations.add(transformers.get(i).transform(annotations.get(i)));
+            }
+            for (int i = 0; i < annotations.size(); i++) {
+                String outputViewName = outputViewNames[i];
+                if (outputViewName == null) outputViewName = Ensembles.DEFAULT_MERGED_VIEW;
+                JCas outputView;
+                try {
+                    Iterator<JCas> viewIter = jCas.getViewIterator();
+                    createNewView: {
+                        while (viewIter.hasNext()) {
+                            outputView = viewIter.next();
+                            if (outputView.getViewName().equals(outputViewName)) {
+                                break createNewView;
                             }
-                            for (int i = 0; i < annotations.size(); i++) {
-                                String outputViewName = outputViewNames[i];
-                                if (outputViewName == null) outputViewName = Ensembles.DEFAULT_MERGED_VIEW;
-                                JCas outputView;
-                                try {
-                                    Iterator<JCas> viewIter = jCas.getViewIterator();
-                                    createNewView: {
-                                        while (viewIter.hasNext()) {
-                                            outputView = viewIter.next();
-                                            if (outputView.getViewName().equals(outputViewName)) {
-                                                break createNewView;
-                                            }
-                                        }
-                                        outputView = jCas.createView(outputViewName);
-                                        outputView.setSofaDataString(text, "text");
-                                    }
-                                } catch (CASException e) {
-                                    throw new EnsemblesException(e);
-                                }
-                                PreAnnotation distilled = distillers.get(i).distill(preannotations);
-                                creators.get(i).set(outputView, distilled);
-                            }
-                        });
+                        }
+                        outputView = jCas.createView(outputViewName);
+                        outputView.setSofaDataString(text, "text");
+                    }
+                } catch (CASException e) {
+                    throw new EnsemblesException(e);
+                }
+                PreAnnotation distilled = distillers.get(i).distill(preannotations);
+                creators.get(i).set(outputView, distilled);
+            }
+        }
+        // java 8
+//        aligner.alignAndIterate(getAnnotations(jCas))
+//                .forEachRemaining(annotations -> {
+//                            List<PreAnnotation> preannotations = new ArrayList<>();
+//                            for (int i = 0; i < annotations.size(); i++) {
+//                                preannotations.add(transformers.get(i).transform(annotations.get(i)));
+//                            }
+//                            for (int i = 0; i < annotations.size(); i++) {
+//                                String outputViewName = outputViewNames[i];
+//                                if (outputViewName == null) outputViewName = Ensembles.DEFAULT_MERGED_VIEW;
+//                                JCas outputView;
+//                                try {
+//                                    Iterator<JCas> viewIter = jCas.getViewIterator();
+//                                    createNewView: {
+//                                        while (viewIter.hasNext()) {
+//                                            outputView = viewIter.next();
+//                                            if (outputView.getViewName().equals(outputViewName)) {
+//                                                break createNewView;
+//                                            }
+//                                        }
+//                                        outputView = jCas.createView(outputViewName);
+//                                        outputView.setSofaDataString(text, "text");
+//                                    }
+//                                } catch (CASException e) {
+//                                    throw new EnsemblesException(e);
+//                                }
+//                                PreAnnotation distilled = distillers.get(i).distill(preannotations);
+//                                creators.get(i).set(outputView, distilled);
+//                            }
+//                        });
     }
 
     private List<List<Annotation>> getAnnotations(JCas jCas) {
         List<List<Annotation>> allAnnotations = new ArrayList<>();
-        for (int i=0; i<systemNames.length; i++) {
+        for (int i=0; i< readViews.length; i++) {
             JCas readView;
             try {
-                readView = jCas.getView(Util.systemToViewName(systemNames[i]));
+                readView = jCas.getView(readViews[i]);
             } catch (CASException e) {
                 e.printStackTrace();
-                throw new EnsemblesException("Couldn't find view for system named %s", systemNames[i]);
+                throw new EnsemblesException("Couldn't find view for system named %s", readViews[i]);
             }
             List<Annotation> theseAnnotations = new ArrayList<>();
             allAnnotations.add(theseAnnotations);
             // Get all annotations of this class and add them to the index
-            readView.getAnnotationIndex(typeClasses.get(i)).forEach(a -> theseAnnotations.add((Annotation) a));
+            for (Annotation a : (FSIndex<Annotation>) readView.getAnnotationIndex(typeClasses.get(i))) {
+                theseAnnotations.add(a);
+            }
+            // todo: delete (java 8)
+//            readView.getAnnotationIndex(typeClasses.get(i)).forEach(a -> theseAnnotations.add((Annotation) a));
         }
 
         return allAnnotations;

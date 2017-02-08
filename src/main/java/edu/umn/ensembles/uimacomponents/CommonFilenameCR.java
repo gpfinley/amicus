@@ -39,12 +39,24 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
     public void initialize(UimaContext context) {
         LOGGER.info("Initializing filename reader.");
 
-        Function<String, String> chopExt = s -> s.substring(0, s.lastIndexOf('.'));
+        Function<String, String> chopExt = new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+                return s.substring(0, s.lastIndexOf('.'));
+            }
+        };
+        // java 8
+//        Function<String, String> chopExt = s -> s.substring(0, s.lastIndexOf('.'));
 
-        List<File> directories = Arrays.asList(dirnameStrings)
-                .stream()
-                .map(File::new)
-                .collect(Collectors.toList());
+        List<File> directories = new ArrayList<>();
+        for (String d : dirnameStrings) {
+            directories.add(new File(d));
+        }
+        // java 8
+//        List<File> directories = Arrays.asList(dirnameStrings)
+//                .stream()
+//                .map(File::new)
+//                .collect(Collectors.toList());
 
         Set<String> commonNames = null;
         for (File dir : directories) {
@@ -52,11 +64,16 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
                 LOGGER.severe(String.format("Directory %s does not exist; check config file!", dir.getAbsolutePath()));
                 throw new RuntimeException();
             }
-            Set<String> filesThisDir = Arrays.asList(dir.listFiles())
-                    .stream()
-                    .map(File::getName)
-                    .map(chopExt)
-                    .collect(Collectors.toSet());
+            Set<String> filesThisDir = new HashSet<>();
+            for (File f : dir.listFiles()) {
+                filesThisDir.add(chopExt.apply(f.getName()));
+            }
+            // java 8
+//            Set<String> filesThisDir = Arrays.asList(dir.listFiles())
+//                    .stream()
+//                    .map(File::getName)
+//                    .map(chopExt)
+//                    .collect(Collectors.toSet());
             if (commonNames == null) {
                 commonNames = filesThisDir;
             } else {
@@ -101,6 +118,14 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
             LOGGER.severe(directory + " is not a directory; check configuration parameters");
             throw new RuntimeException();
         }
-        return Arrays.asList(directory.listFiles()).stream().filter(x -> x.isDirectory()).collect(Collectors.toList());
+        List<File> subDirs = new ArrayList<>();
+        for (File f : directory.listFiles()) {
+            if (f.isDirectory()) {
+                subDirs.add(f);
+            }
+        }
+        return subDirs;
+        // java 8
+//        return Arrays.asList(directory.listFiles()).stream().filter(x -> x.isDirectory()).collect(Collectors.toList());
     }
 }

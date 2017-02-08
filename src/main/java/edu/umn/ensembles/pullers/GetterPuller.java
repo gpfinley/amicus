@@ -1,4 +1,4 @@
-package edu.umn.ensembles.transformers;
+package edu.umn.ensembles.pullers;
 
 import edu.umn.ensembles.PreAnnotation;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -8,9 +8,9 @@ import org.apache.uima.jcas.tcas.Annotation;
  * If no transformer is specified, this is the default.
  * Created by gpfinley on 10/20/16.
  */
-public class GetterTransformer extends AnnotationTransformer {
+public class GetterPuller extends AnnotationPuller {
 
-    public GetterTransformer(String fieldName) {
+    public GetterPuller(String fieldName) {
         super(fieldName);
     }
 

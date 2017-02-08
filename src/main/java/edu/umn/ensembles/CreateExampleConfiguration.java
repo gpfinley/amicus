@@ -45,7 +45,7 @@ public class CreateExampleConfiguration {
         ctakesPreprocessorBean.inputs = new SingleInputConfig[] {
                 new SingleInputConfig().annotationType("org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation")
                         .annotationField("ontologyConceptArr")
-                        .transformerClass("edu.umn.ensembles.transformers.CtakesCuiTransformer")
+                        .transformerClass("edu.umn.ensembles.pullers.CtakesCuiPuller")
                         .fromView("ctakes")
         };
 
@@ -62,21 +62,21 @@ public class CreateExampleConfiguration {
                 new SingleInputConfig().fromView("BiomedicusView")
                                         .annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")
                                         .annotationField("text")
-                                        .transformerClass("edu.umn.ensembles.transformers.GetterTransformer"),
+                                        .transformerClass("edu.umn.ensembles.pullers.GetterPuller"),
                 new SingleInputConfig().fromView("CtakesView")
                         .annotationType("org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation")
                         .annotationField("ontologyConceptArr")
-                        .transformerClass("edu.umn.ensembles.transformers.CuiConceptTransformer"),
+                        .transformerClass("edu.umn.ensembles.pullers.CuiConceptPuller"),
                 new SingleInputConfig().fromView("ClampView")
                         .annotationType("edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA")
                         .annotationField("cui")
-                        .transformerClass("edu.umn.ensembles.transformers.CuiConceptTransformer"),
+                        .transformerClass("edu.umn.ensembles.pullers.CuiConceptPuller"),
         };
         acronymMergerBean.outputs = new SingleOutputConfig[]{
                 new SingleOutputConfig().annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")
                         .annotationField("text")
                         .distillerClass("edu.umn.ensembles.distillers.PriorityDistiller")
-                        .creatorClass("edu.umn.ensembles.creators.SimpleCreator")
+                        .creatorClass("edu.umn.ensembles.pushers.SimplePusher")
                         .writeView(Ensembles.DEFAULT_MERGED_VIEW)
         };
 

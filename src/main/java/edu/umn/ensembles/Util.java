@@ -13,10 +13,6 @@ import org.apache.uima.jcas.JFSIndexRepository;
  */
 public final class Util {
 
-    public static String systemToViewName(String systemName) {
-        return systemName + "View";
-    }
-
     /**
      * Get the name of a getter method for a given field.
      * Should operate under the exact same rules that UIMA uses when generating sources.

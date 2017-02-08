@@ -1,10 +1,10 @@
 package edu.umn.ensembles;
 
 import edu.umn.ensembles.aligners.PerfectOverlapAligner;
-import edu.umn.ensembles.creators.MultiCreator;
+import edu.umn.ensembles.pushers.MultiPusher;
 import edu.umn.ensembles.distillers.PriorityDistiller;
-import edu.umn.ensembles.creators.SimpleCreator;
-import edu.umn.ensembles.transformers.GetterTransformer;
+import edu.umn.ensembles.pushers.SimplePusher;
+import edu.umn.ensembles.pullers.GetterPuller;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,10 +23,10 @@ public final class Ensembles {
     public final static Path MY_TYPE_SYSTEM = TYPE_SYSTEMS_DIR.resolve("EnsemblesTypeSystem.xml");
 
     public final static Class DEFAULT_ALIGNER_CLASS = PerfectOverlapAligner.class;
-    public final static Class DEFAULT_TRANSFORMER_CLASS = GetterTransformer.class;
+    public final static Class DEFAULT_TRANSFORMER_CLASS = GetterPuller.class;
     public final static Class DEFAULT_DISTILLER_CLASS = PriorityDistiller.class;
-    public final static Class DEFAULT_CREATOR_CLASS = SimpleCreator.class;
-    public final static Class DEFAULT_MULTI_CREATOR_CLASS = MultiCreator.class;
+    public final static Class DEFAULT_CREATOR_CLASS = SimplePusher.class;
+    public final static Class DEFAULT_MULTI_CREATOR_CLASS = MultiPusher.class;
 
     /**
      * View names used by UIMA modules

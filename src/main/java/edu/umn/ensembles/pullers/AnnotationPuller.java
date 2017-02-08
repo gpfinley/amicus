@@ -1,4 +1,4 @@
-package edu.umn.ensembles.transformers;
+package edu.umn.ensembles.pullers;
 
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.PreAnnotation;
@@ -13,11 +13,11 @@ import java.lang.reflect.Method;
  * Extend this class and override transform(...) to process the Annotation values.
  * Created by gpfinley on 10/20/16.
  */
-public abstract class AnnotationTransformer<T> {
+public abstract class AnnotationPuller<T> {
 
     protected final String fieldName;
 
-    protected AnnotationTransformer(String fieldName) {
+    protected AnnotationPuller(String fieldName) {
         this.fieldName = fieldName;
     }
 

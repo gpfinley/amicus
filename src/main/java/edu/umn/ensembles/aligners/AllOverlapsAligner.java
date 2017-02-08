@@ -24,7 +24,7 @@ public class AllOverlapsAligner extends AnnotationAligner {
         for (List<Annotation> annotations : allAnnotations) {
             for (Annotation annotation : annotations) {
                 while (annotationsAtIndex.size() < annotation.getEnd()) {
-                    annotationsAtIndex.add(new ArrayList<>());
+                    annotationsAtIndex.add(new ArrayList<Annotation>());
                 }
                 for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
                     annotationsAtIndex.get(i).add(annotation);

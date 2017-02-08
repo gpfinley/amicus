@@ -1,4 +1,4 @@
-package edu.umn.ensembles.creators;
+package edu.umn.ensembles.pushers;
 
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.PreAnnotation;
@@ -14,15 +14,15 @@ import java.lang.reflect.Method;
  *
  * Created by gpfinley on 1/20/17.
  */
-public abstract class AnnotationCreator<T> {
+public abstract class AnnotationPusher<T> {
 
-    // Multi-field creators will probably ignore this
+    // Multi-field pushers will probably ignore this
     protected String typeName;
     protected String fieldName;
 
-    protected AnnotationCreator() {}
+    protected AnnotationPusher() {}
 
-    public AnnotationCreator(String typeName, String fieldName) {
+    public AnnotationPusher(String typeName, String fieldName) {
         this.typeName = typeName;
         this.fieldName = fieldName;
     }

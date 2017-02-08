@@ -1,4 +1,4 @@
-package edu.umn.ensembles.creators;
+package edu.umn.ensembles.pushers;
 
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.PreAnnotation;
@@ -8,6 +8,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,22 +18,26 @@ import java.util.stream.Collectors;
  *
  * Created by gpfinley on 1/20/17.
  */
-public class MultiCreator extends AnnotationCreator<List> {
+public class MultiPusher extends AnnotationPusher<List> {
 
     public static final String DELIMITER = ";";
 
     private final Constructor<? extends Annotation> annotationConstructor;
     private final List<Method> setterMethods;
 
-    public MultiCreator(String typeName, String fieldNamesDelimited) {
+    public MultiPusher(String typeName, String fieldNamesDelimited) {
         Class<? extends Annotation> annotationClass = getClassFromName(typeName);
         annotationConstructor = getAnnotationConstructor(annotationClass);
 
         List<String> fieldNames = Arrays.asList(fieldNamesDelimited.split(DELIMITER));
-        setterMethods = fieldNames
-                .stream()
-                .map(m -> getSetterForField(annotationClass, m))
-                .collect(Collectors.toList());
+        setterMethods = new ArrayList<>();
+        for (String f : fieldNames) {
+            setterMethods.add(getSetterForField(annotationClass, f));
+        }
+//        setterMethods = fieldNames
+//                .stream()
+//                .map(m -> getSetterForField(annotationClass, m))
+//                .collect(Collectors.toList());
     }
 
     @Override

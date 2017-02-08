@@ -1,7 +1,7 @@
 package edu.umn.ensembles.eval;
 
 import edu.umn.ensembles.PreAnnotation;
-import edu.umn.ensembles.creators.AnnotationCreator;
+import edu.umn.ensembles.pushers.AnnotationPusher;
 import org.apache.uima.jcas.JCas;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * Creates annotations based on a specific scheme for evaluating multiple systems at once
  * Created by gpfinley on 2/3/17.
  */
-public class EvalCreator extends AnnotationCreator<List<EvalMatch>> {
+public class EvalPusher extends AnnotationPusher<List<EvalMatch>> {
 
     /**
      * todo: doc

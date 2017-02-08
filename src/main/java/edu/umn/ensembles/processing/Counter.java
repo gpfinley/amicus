@@ -17,9 +17,11 @@ public class Counter<T> implements Map<T, Integer> {
         counts = new HashMap<>();
     }
 
-    public Counter(Collection<T> itemsToCount) {
+    public Counter(Iterable<T> itemsToCount) {
         counts = new HashMap<>();
-        itemsToCount.stream().forEach(this::increment);
+        for (T t : itemsToCount) {
+            increment(t);
+        }
     }
 
     public int increment(T t) {
@@ -65,11 +67,16 @@ public class Counter<T> implements Map<T, Integer> {
     }
 
     public TreeMap<T, Integer> createSortedMap() {
-        TreeMap<T, Integer> map = new TreeMap<>((x, y) -> {
-            int comp = get(x).compareTo(get(y));
-            return comp == 0 ? ((Comparable) x).compareTo(y) : comp;
+        TreeMap<T, Integer> map = new TreeMap<>(new Comparator<T>() {
+            @Override
+            public int compare(T o1, T o2) {
+                int comp = get(o1).compareTo(get(o2));
+                return comp == 0 ? ((Comparable) o1).compareTo(o2) : comp;
+            }
         });
-        counts.forEach((k, v) -> map.put(k, v.get()));
+        for (Map.Entry<T, MutableInt> e : counts.entrySet()) {
+            map.put(e.getKey(), e.getValue().get());
+        }
         return map;
     }
 
@@ -80,7 +87,9 @@ public class Counter<T> implements Map<T, Integer> {
 
     @Override
     public void putAll(Map<? extends T, ? extends Integer> map) {
-        map.entrySet().forEach(e -> counts.put(e.getKey(), new MutableInt(e.getValue())));
+        for (Map.Entry<? extends T, ? extends Integer> e : map.entrySet()) {
+            counts.put(e.getKey(), new MutableInt(e.getValue()));
+        }
     }
 
     @Override
@@ -110,7 +119,13 @@ public class Counter<T> implements Map<T, Integer> {
 
     @Override
     public List<Integer> values() {
-        return counts.values().stream().map(MutableInt::get).collect(Collectors.toList());
+        List<Integer> vals = new ArrayList<>();
+        for (MutableInt i : counts.values()) {
+            vals.add(i.get());
+        }
+        return vals;
+        // java 8
+//        return counts.values().stream().map(MutableInt::get).collect(Collectors.toList());
     }
 
     @Override
@@ -135,7 +150,13 @@ public class Counter<T> implements Map<T, Integer> {
 
     @Override
     public Set<Map.Entry<T, Integer>> entrySet() {
-        return counts.entrySet().stream().map(Entry::new).collect(Collectors.toSet());
+        Set<Map.Entry<T, Integer>> entrySet = new HashSet<>();
+        for (Map.Entry<T, MutableInt> e : counts.entrySet()) {
+            entrySet.add(new Entry(e));
+        }
+        return entrySet;
+        // java 8
+//        return counts.entrySet().stream().map(Entry::new).collect(Collectors.toSet());
     }
 
     @Override

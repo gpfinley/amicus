@@ -9,28 +9,28 @@ inputViews: [_InitialView]
 outPath: data/example_out
 
 mergerConfigurations:
-- _name: test
+- _mergerName: test
 
   alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
 
   inputs:
   - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
-    fromSystem: ctakes, transformerClass: edu.umn.ensembles.transformers.CtakesCuiTransformer}
+    fromView: ctakes, transformerClass: edu.umn.ensembles.pullersesCuiTransformer}
 
   outputs:
   - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation,
     writeView: ctakesView}
 
 
-- _name: test2
+- _mergerName: test2
 
   inputs:
-  - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation, fromSystem: ctakes,
-    transformerClass: edu.umn.ensembles.transformers.CuiConceptTransformer}
+  - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation, fromView: ctakes,
+    transformerClass: edu.umn.ensembles.pullersonceptTransformer}
 
   outputs:
   - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation}
 
 # TODO: allow pulling from specific views, not just systems
 
-#    creatorClass: edu.umn.ensembles.creators.SimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,
+#    creatorClass: edu.umn.ensembles.pushers.SimplePusher, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,

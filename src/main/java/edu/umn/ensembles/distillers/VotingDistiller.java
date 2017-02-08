@@ -5,6 +5,7 @@ import edu.umn.ensembles.config.ClassConfigurationLoader;
 import edu.umn.ensembles.processing.Counter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +33,12 @@ public class VotingDistiller extends AnnotationDistiller<Object> {
      */
     @Override
     public PreAnnotation<Object> distill(List<PreAnnotation> annotations) {
-        List<Object> values = annotations.stream().map(PreAnnotation::getValue).collect(Collectors.toList());
+        List<Object> values = new ArrayList<>();
+        for (PreAnnotation pa : annotations) {
+            values.add(pa.getValue());
+        }
+        // todo: delete (java 8)
+//        List<Object> values = annotations.stream().map(PreAnnotation::getValue).collect(Collectors.toList());
         Counter<Object> annotationsCounter = new Counter<>(values);
         int maxCount = 0;
         Object highestCount = null;

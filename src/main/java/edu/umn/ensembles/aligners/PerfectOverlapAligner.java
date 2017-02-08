@@ -24,7 +24,9 @@ public class PerfectOverlapAligner extends AnnotationAligner {
                 BeginEnd beginEnd = new BeginEnd(annotation.getBegin(), annotation.getEnd());
                 if (!beMap.containsKey(beginEnd)) {
                     List<Annotation> newList = new ArrayList<>();
-                    allAnnotations.forEach(x -> newList.add(null));
+                    for (List<Annotation> a : allAnnotations) {
+                        newList.add(null);
+                    }
                     beMap.put(beginEnd, newList);
                 }
                 beMap.get(beginEnd).set(i, annotation);

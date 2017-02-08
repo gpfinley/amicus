@@ -1,4 +1,4 @@
-package edu.umn.ensembles.transformers;
+package edu.umn.ensembles.pullers;
 
 import edu.umn.ensembles.PreAnnotation;
 import edu.umn.ensembles.processing.Mapper;
@@ -10,11 +10,11 @@ import org.apache.uima.jcas.tcas.Annotation;
  * Should not have more than one of these in the pipeline unless they all use the same Mapper.
  * Created by gpfinley on 10/20/16.
  */
-public class MapperTransformer extends AnnotationTransformer {
+public class MapperPuller extends AnnotationPuller {
 
     private final Mapper mapper;
 
-    public MapperTransformer(String fieldName) {
+    public MapperPuller(String fieldName) {
         super(fieldName);
         mapper = Mapper.getInstance();
     }

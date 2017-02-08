@@ -1,4 +1,4 @@
-package edu.umn.ensembles.transformers;
+package edu.umn.ensembles.pullers;
 
 import edu.umn.ensembles.PreAnnotation;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
@@ -9,9 +9,9 @@ import org.apache.uima.jcas.tcas.Annotation;
  * Parse the FSArray of UmlsConcepts provided by cTAKES and return the first CUI.
  * Created by gpfinley on 10/20/16.
  */
-public class CtakesCuiTransformer extends AnnotationTransformer<String> {
+public class CtakesCuiPuller extends AnnotationPuller<String> {
 
-    public CtakesCuiTransformer(String fieldName) {
+    public CtakesCuiPuller(String fieldName) {
         super(fieldName);
     }
 
