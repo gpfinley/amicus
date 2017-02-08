@@ -24,9 +24,9 @@ public class CuiMapper extends Mapper<String, String> {
     private static CuiMapper cuiMapper;
 
     protected static class Config {
-        String mrconsoPath;
-        String language;
-        Set<String> cuisToUse;
+        public String mrconsoPath;
+        public String language;
+        public Set<String> cuisToUse;
     }
 
     protected final Map<String, String> cuiToString;

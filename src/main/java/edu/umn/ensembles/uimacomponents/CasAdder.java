@@ -1,5 +1,6 @@
 package edu.umn.ensembles.uimacomponents;
 
+import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.Util;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.impl.XCASDeserializer;
@@ -62,8 +63,7 @@ public class CasAdder extends CasMultiplier_ImplBase {
             }
         } catch (SAXException | IOException e) {
             LOGGER.severe("Couldn't parse xmi or xml file");
-            e.printStackTrace();
-            throw new RuntimeException();
+            throw new EnsemblesException(e);
         }
         CAS newSysView = cas.createView(Util.systemToViewName(systemName));
         CasCopier casCopier = new CasCopier(tempCas, cas);

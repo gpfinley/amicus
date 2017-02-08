@@ -64,6 +64,7 @@ public class CommonFilenameReader extends CasCollectionReader_ImplBase {
             }
         }
         commonNames.remove("TypeSystem");
+        commonNames.remove("");
         fileIDs = new ArrayList<>(commonNames);
     }
 

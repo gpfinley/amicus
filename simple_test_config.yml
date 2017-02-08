@@ -1,0 +1,36 @@
+!!edu.umn.ensembles.config.EnsemblesPipelineConfiguration
+
+_pipelineName: simpletest
+
+inputNames: [ctakes]
+inputDirectories: [data/ctakes]
+inputViews: [_InitialView]
+
+outPath: data/example_out
+
+mergerConfigurations:
+- _name: test
+
+  alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
+
+  inputs:
+  - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
+    fromSystem: ctakes, transformerClass: edu.umn.ensembles.transformers.CtakesCuiTransformer}
+
+  outputs:
+  - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation,
+    writeView: ctakesView}
+
+
+- _name: test2
+
+  inputs:
+  - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation, fromSystem: ctakes,
+    transformerClass: edu.umn.ensembles.transformers.CuiConceptTransformer}
+
+  outputs:
+  - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation}
+
+# TODO: allow pulling from specific views, not just systems
+
+#    creatorClass: edu.umn.ensembles.creators.SimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,

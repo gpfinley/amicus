@@ -11,6 +11,7 @@ import edu.umn.ensembles.creators.AnnotationCreator;
 import edu.umn.ensembles.transformers.AnnotationTransformer;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
@@ -20,10 +21,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import javax.management.ReflectionException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -89,6 +87,7 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
 
         // check lengths of input and output lists to hopefully detect user-caused misalignment in config file
 
+        // todo: i don't think these checks do anything b/c of how the arrays are built in the config class
         try {
             assert numInputs == typeClassNames.length;
             assert transformerClassNames == null || numInputs == transformerClassNames.length;
@@ -96,7 +95,6 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
         } catch (AssertionError e) {
             throw new EnsemblesException("Configuration parameters for inputs do not line up! Check parameter lists.");
         }
-
         try {
             assert distillerClassNames == null || numOutputs == distillerClassNames.length;
             assert creatorClassNames == null || numOutputs == creatorClassNames.length;
@@ -119,13 +117,11 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
 
         try {
             distillers = new ArrayList<>();
-            if (distillerClassNames != null) {
-                for (String distillerName : distillerClassNames) {
-                    distillers.add((AnnotationDistiller) Class.forName(distillerName).newInstance());
-                }
-            } else {
-                for (int i = 0; i < numOutputs; i++) {
+            for (String distillerName : distillerClassNames) {
+                if (distillerName == null) {
                     distillers.add((AnnotationDistiller) Ensembles.DEFAULT_DISTILLER_CLASS.newInstance());
+                } else {
+                    distillers.add((AnnotationDistiller) Class.forName(distillerName).newInstance());
                 }
             }
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
@@ -135,12 +131,12 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
 
         try {
             creators = new ArrayList<>();
-            if (creatorClassNames == null) {
-                if (outputAnnotationFields == null | outputAnnotationTypes == null) {
-                    throw new EnsemblesException("Need to provide output annnotation fields and types UNLESS using" +
-                            " a custom AnnotationCreator implementation that can ignore them.");
-                }
-                for (int i=0; i < numOutputs; i++) {
+            for (int i=0; i < numOutputs; i++) {
+                if(creatorClassNames[i] == null) {
+                    if (outputAnnotationFields[i] == null | outputAnnotationTypes[i] == null) {
+                        throw new EnsemblesException("Need to provide output annnotation fields and types UNLESS using" +
+                                " a custom AnnotationCreator implementation that can ignore them.");
+                    }
                     Constructor<? extends AnnotationCreator> creatorConstructor;
                     String[] outFields = outputAnnotationFields[i].split(MultiCreator.DELIMITER);
                     if (outFields.length <= 1) {
@@ -149,9 +145,7 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
                         creatorConstructor = Ensembles.DEFAULT_MULTI_CREATOR_CLASS.getConstructor(String.class, String.class);
                     }
                     creators.add(creatorConstructor.newInstance(outputAnnotationTypes[i], outputAnnotationFields[i]));
-                }
-            } else {
-                for (int i=0; i < numOutputs; i++) {
+                } else {
                     // if output annotation types or fields are null, the custom creator class better be able to handle that
                     String outputAnnotationType = outputAnnotationTypes != null ? outputAnnotationTypes[i] : null;
                     String outputAnnotationField = outputAnnotationFields != null ? outputAnnotationFields[i] : null;
@@ -170,17 +164,15 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
 
         transformers = new ArrayList<>();
         try {
-            if (transformerClassNames == null) {
-                if (fieldNames == null) {
-                    throw new EnsemblesException("Need to specify field names" +
-                            " unless using a custom AnnotationTransformer implementation.");
-                }
-                for (int i=0; i<numInputs; i++) {
+            for (int i=0; i<numInputs; i++) {
+                if (transformerClassNames[i] == null) {
+                    if (fieldNames == null) {
+                        throw new EnsemblesException("Need to specify field names" +
+                                " unless using a custom AnnotationTransformer implementation.");
+                    }
                     transformers.add((AnnotationTransformer) Ensembles.DEFAULT_TRANSFORMER_CLASS
                             .getConstructor(String.class).newInstance(fieldNames[i]));
-                }
-            } else {
-                for (int i = 0; i < numInputs; i++) {
+                } else {
                     String fieldName = fieldNames != null ? fieldNames[i] : null;
                     Constructor constructor = Class.forName(transformerClassNames[i]).getConstructor(String.class);
                     transformers.add((AnnotationTransformer) constructor.newInstance(fieldName));
@@ -208,18 +200,23 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
     public void process(JCas jCas) {
 
         // todo: modify this so that we can get strings or arrays (for audio, etc.)
-        String sofaData;
+        String sofaData = "";
         try {
             Iterator<JCas> viewIter = jCas.getViewIterator();
-            viewIter.next();
-            JCas firstView = viewIter.next();
-            sofaData = firstView.getSofaDataString();
+            while (viewIter.hasNext() && "".equals(sofaData)) {
+                sofaData = viewIter.next().getSofaDataString();
+            }
+            if ("".equals(sofaData)) {
+                LOGGER.warning("No sofaData found in any view!");
+            }
+//            viewIter.next();
+//            JCas firstView = viewIter.next();
+//            sofaData = firstView.getSofaDataString();
         } catch (CASException e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
-
-//        final JCas outputViewFinal = outputView;
+        final String text = sofaData;
 
         aligner.alignAndIterate(getAnnotations(jCas))
                 .forEachRemaining(annotations -> {
@@ -228,18 +225,23 @@ public class MergerTranslator extends JCasAnnotator_ImplBase {
                                 preannotations.add(transformers.get(i).transform(annotations.get(i)));
                             }
                             for (int i = 0; i < annotations.size(); i++) {
+                                String outputViewName = outputViewNames[i];
+                                if (outputViewName == null) outputViewName = Ensembles.DEFAULT_MERGED_VIEW;
                                 JCas outputView;
                                 try {
-                                    // todo: does this return null when there is no view of this name, or does it throw an exception??
-                                    outputView = jCas.getView(outputViewNames[i]);
-                                } catch (CASException e) {
-                                    try {
-                                        outputView = jCas.createView(outputViewNames[i]);
-                                        outputView.setSofaDataString(sofaData, "text");
-                                    } catch (CASException e2) {
-                                        e2.printStackTrace();
-                                        throw new EnsemblesException();
+                                    Iterator<JCas> viewIter = jCas.getViewIterator();
+                                    createNewView: {
+                                        while (viewIter.hasNext()) {
+                                            outputView = viewIter.next();
+                                            if (outputView.getViewName().equals(outputViewName)) {
+                                                break createNewView;
+                                            }
+                                        }
+                                        outputView = jCas.createView(outputViewName);
+                                        outputView.setSofaDataString(text, "text");
                                     }
+                                } catch (CASException e) {
+                                    throw new EnsemblesException(e);
                                 }
                                 PreAnnotation distilled = distillers.get(i).distill(preannotations);
                                 creators.get(i).set(outputView, distilled);

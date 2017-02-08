@@ -50,12 +50,19 @@ public abstract class AnnotationCreator<T> {
     }
 
     protected static Method getSetterForField(Class clazz, String name) {
-        try {
-            return clazz.getMethod(Util.getSetterFor(name));
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            throw new EnsemblesException();
-        }
+//        try {
+        String setterName = Util.getSetterFor(name);
+            for(Method method : clazz.getMethods()) {
+                if (method.getName().equals(setterName)) {
+                    return method;
+                }
+            }
+            throw new EnsemblesException(new NoSuchMethodException(setterName));
+//            return clazz.getMethod(Util.getSetterFor(name));
+//        } catch (NoSuchMethodException e) {
+//            e.printStackTrace();
+//            throw new EnsemblesException();
+//        }
     }
 
 }
