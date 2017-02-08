@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
  * Created by gpfinley on 10/14/16.
  * Converted to use UIMA config parameters (for uimaFIT use) rather than application params on 1/18/17.
  */
-public class CommonFilenameReader extends CasCollectionReader_ImplBase {
+public class CommonFilenameCR extends CasCollectionReader_ImplBase {
 
-    private static final Logger LOGGER = Logger.getLogger(CommonFilenameReader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CommonFilenameCR.class.getName());
 
     public static final String SYSTEM_DATA_DIRS = "systemDataDirectories";
 

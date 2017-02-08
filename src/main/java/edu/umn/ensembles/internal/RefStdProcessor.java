@@ -17,7 +17,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * Used only to process UMN-internal data
+ * Used only to process UMN-internal data.
+ * Our abbreviation reference standard includes inconsistent strings for the same concept in many cases.
+ * This processor collapses those down (via a manually generated mapping).
+ * Be sure the correct configuration file for the EquivalentAnswerMapper is in place.
  *
  * Created by gpfinley on 11/10/16.
  */

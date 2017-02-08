@@ -5,6 +5,7 @@ import edu.umn.ensembles.EvalAnnotation;
 import edu.umn.ensembles.eval.EvalMatch;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.fit.component.CasAnnotator_ImplBase;
 import org.apache.uima.fit.component.CasConsumer_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
@@ -13,11 +14,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Simple CAS consumer to print basic statistics for evaluation
+ * Simple CAS consumer to print basic statistics for evaluation.
  *
  * Created by gpfinley on 2/3/17.
  */
-public class EvalSummarizer extends CasConsumer_ImplBase {
+public class EvalSummarizerAE extends CasAnnotator_ImplBase {
 
     public static final String EVAL_VIEW_NAME = "evalViewName";
 

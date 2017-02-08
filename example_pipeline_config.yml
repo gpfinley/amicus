@@ -1,21 +1,31 @@
-!!edu.umn.ensembles.config.PipelineConfigBean
-_pipelineName: null
-inputDirectories: [data/systemsData/biomedicus, data/systemsData/clamp, data/systemsData/ctakes]
-inputNames: [biomedicus, clamp, ctakes]
-inputViews: [SystemView, _InitialView, _InitialView]
-outPath: data/example_out
+!!edu.umn.ensembles.config.EnsemblesPipelineConfiguration
+_pipelineName: Example Ensembles pipeline
+allSystemsUsed:
+- {_systemName: biomedicus, saveIntoView: BiomedicusView, dataPath: data/biomedicus,
+  readFromView: SystemView}
+- {_systemName: ctakes, saveIntoView: CtakesView, dataPath: data/biomedicus, readFromView: _InitialView}
+- {_systemName: clamp, saveIntoView: ClampView, dataPath: data/biomedicus, readFromView: _InitialView}
 mergerConfigurations:
-- _name: Acronym Merger
-  alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
-  creatorClass: edu.umn.ensembles.creators.SimpleCreator
-  distillerClass: edu.umn.ensembles.distillers.PriorityDistiller
+- _mergerName: cTAKES preprocessor
+  alignerClass: null
   inputs:
-  - {field: text, fromSystem: biomedicus, transformerClass: edu.umn.ensembles.transformers.GetterTransformer,
-    type: edu.umn.biomedicus.uima.type1_6.Acronym}
-  - {field: ontologyConceptArr, fromSystem: ctakes, transformerClass: edu.umn.ensembles.transformers.CtakesConceptTransformer,
-    type: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation}
-  - {field: cui, fromSystem: clamp, transformerClass: edu.umn.ensembles.transformers.CuiConceptTransformer,
-    type: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA}
-  outputAnnotationClass: edu.umn.biomedicus.uima.type1_6.Acronym
-  outputAnnotationFields: text
-  outputViewName: MergedView
+  - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
+    fromView: ctakes, transformerClass: edu.umn.ensembles.transformers.CtakesCuiTransformer}
+  outputs:
+  - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation,
+    creatorClass: edu.umn.ensembles.creators.SimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,
+    writeView: CtakesView}
+- _mergerName: Acronym Merger
+  alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
+  inputs:
+  - {annotationField: text, annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
+    fromView: BiomedicusView, transformerClass: edu.umn.ensembles.transformers.GetterTransformer}
+  - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
+    fromView: CtakesView, transformerClass: edu.umn.ensembles.transformers.CuiConceptTransformer}
+  - {annotationField: cui, annotationType: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA,
+    fromView: ClampView, transformerClass: edu.umn.ensembles.transformers.CuiConceptTransformer}
+  outputs:
+  - {annotationField: text, annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
+    creatorClass: edu.umn.ensembles.creators.SimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,
+    writeView: MergedView}
+xmiOutPath: data/xmi_out

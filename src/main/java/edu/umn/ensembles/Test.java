@@ -66,8 +66,8 @@ public class Test {
 //
 //            engines.add(AnalysisEngineFactory.createEngine(StanfordNerInterceptor.class));
 //
-////            engines.add(AnalysisEngineFactory.createEngine(XmiWriter.class,
-////                    XmiWriter.CONFIG_OUTPUT_DIR, xmiOut));
+////            engines.add(AnalysisEngineFactory.createEngine(XmiWriterAE.class,
+////                    XmiWriterAE.CONFIG_OUTPUT_DIR, xmiOut));
 //
 //        } catch (ResourceInitializationException e) {
 //            e.printStackTrace();

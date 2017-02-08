@@ -1,5 +1,6 @@
 package edu.umn.ensembles.config;
 
+import edu.umn.ensembles.Ensembles;
 import edu.umn.ensembles.EnsemblesException;
 
 import java.util.ArrayList;
@@ -13,12 +14,12 @@ import java.util.List;
  * Created by gpfinley on 10/24/16.
  */ public class SingleMergerConfiguration {
 
-    public String _name;
+    public String _mergerName = "untitled merger";
 
     public SingleInputConfig[] inputs;
     public SingleOutputConfig[] outputs;
 
-    public String alignerClass;
+    public String alignerClass = Ensembles.DEFAULT_ALIGNER_CLASS.getName();
 
     /**
      * Verify that these mergers have enough config info
@@ -38,7 +39,7 @@ import java.util.List;
     public String[] aggregateInputSystemNames() {
         List<String> inputSystemNames = new ArrayList<>();
         for (SingleInputConfig inputConfig : inputs) {
-            inputSystemNames.add(inputConfig.fromSystem);
+            inputSystemNames.add(inputConfig.fromView);
         }
         return inputSystemNames.toArray(new String[inputSystemNames.size()]);
     }

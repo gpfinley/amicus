@@ -26,9 +26,9 @@
 // *
 // * Created by gpfinley on 10/17/16.
 // */
-//public class XmiWriter extends CasAnnotator_ImplBase {
+//public class XmiWriterAE extends CasAnnotator_ImplBase {
 //
-//    private static final Logger LOGGER = Logger.getLogger(XmiWriter.class.getName());
+//    private static final Logger LOGGER = Logger.getLogger(XmiWriterAE.class.getName());
 //
 //    private static String mergedViewName;
 //

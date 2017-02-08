@@ -2,7 +2,7 @@ package edu.umn.ensembles.coreference;
 
 import edu.umn.ensembles.Ensembles;
 import edu.umn.ensembles.EnsemblesException;
-import edu.umn.ensembles.uimacomponents.XmiWriter;
+import edu.umn.ensembles.uimacomponents.XmiWriterAE;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
@@ -52,9 +52,9 @@ public class NerMain {
                     StanfordNerInterceptor.TEXT_OUTPUT_PATH, textOut,
                     StanfordNerInterceptor.IGNORE_NER, ignoreNer));
 
-            engines.add(AnalysisEngineFactory.createEngine(XmiWriter.class,
-                    XmiWriter.CONFIG_OUTPUT_DIR, xmiOut,
-                    XmiWriter.TYPE_SYSTEM_VIEW, "_InitialView"));
+            engines.add(AnalysisEngineFactory.createEngine(XmiWriterAE.class,
+                    XmiWriterAE.CONFIG_OUTPUT_DIR, xmiOut,
+                    XmiWriterAE.TYPE_SYSTEM_VIEW, "_InitialView"));
 
         } catch (ResourceInitializationException e) {
             e.printStackTrace();

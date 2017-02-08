@@ -11,14 +11,12 @@ import edu.umn.ensembles.creators.AnnotationCreator;
 import edu.umn.ensembles.transformers.AnnotationTransformer;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import javax.management.ReflectionException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -27,9 +25,9 @@ import java.util.logging.Logger;
 /**
  * Created by gpfinley on 1/18/17.
  */
-public class MergerTranslator extends JCasAnnotator_ImplBase {
+public class MergerAE extends JCasAnnotator_ImplBase {
 
-    private static final Logger LOGGER = Logger.getLogger(MergerTranslator.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MergerAE.class.getName());
 
     public static final String SYSTEM_NAMES = "systemName";
     public static final String TYPE_CLASSES = "typeClasses";

@@ -16,7 +16,7 @@ public class AcronymRefStandardPreprocessScript {
     private static final String PREPROCESS_CPE = "descriptors/umn-internal/RefStdPreprocessCPE.xml";
 
     public static void main(String[] args) throws IOException {
-//        XmiWriter.setTypeSystemView("SystemView");
+//        XmiWriterAE.setTypeSystemView("SystemView");
 //        Main.runCpe(Main.xmlToCpe(Paths.get(PREPROCESS_CPE)));
     }
 }

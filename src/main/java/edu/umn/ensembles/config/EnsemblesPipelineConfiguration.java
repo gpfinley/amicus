@@ -1,7 +1,6 @@
 package edu.umn.ensembles.config;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by gpfinley on 1/20/17.
@@ -9,8 +8,9 @@ import java.util.List;
 public class EnsemblesPipelineConfiguration {
 
     public String _pipelineName;
-    public SingleSystemConfig[] systemsUsed;
+    public SingleSystemConfig[] allSystemsUsed;
     public SingleMergerConfiguration[] mergerConfigurations;
+    public String xmiOutPath;
 
     /**
      * Throw an exception if not enough information was provided
@@ -21,8 +21,16 @@ public class EnsemblesPipelineConfiguration {
 //            throw new EnsemblesException("Pipeline configuration incomplete");
 //        }
         Arrays.stream(mergerConfigurations).forEach(SingleMergerConfiguration::verify);
-        Arrays.stream(systemsUsed).forEach(SingleSystemConfig::verify);
+        Arrays.stream(allSystemsUsed).forEach(SingleSystemConfig::verify);
     }
 
-    // todo: write aggregators for systemsUsed (like MergerConfiguration has)
+    public String[] aggregateInputDirectories() {
+        String[] inputs = new String[allSystemsUsed.length];
+        for (int i=0; i<inputs.length; i++) {
+            inputs[i] = allSystemsUsed[i].dataPath;
+        }
+        return inputs;
+    }
+
+    // todo: write aggregators for allSystemsUsed (like MergerConfiguration has)
 }

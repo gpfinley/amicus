@@ -24,9 +24,9 @@ import java.util.logging.Logger;
 /**
  * Created by gpfinley on 10/17/16.
  */
-public class XmiWriter extends CasAnnotator_ImplBase {
+public class XmiWriterAE extends CasAnnotator_ImplBase {
 
-    private static final Logger LOGGER = Logger.getLogger(XmiWriter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(XmiWriterAE.class.getName());
 
     public final static String CONFIG_OUTPUT_DIR = "outputDir";
     public final static String TYPE_SYSTEM_VIEW = "typeSystemView";
@@ -35,6 +35,7 @@ public class XmiWriter extends CasAnnotator_ImplBase {
     private String outputDirName;
     @ConfigurationParameter(name = TYPE_SYSTEM_VIEW, defaultValue = Ensembles.DEFAULT_MERGED_VIEW)
     private static String typeSystemView;
+    // todo: have user specify typeSystemView parameter (optionally)
 
     private Path outputDir;
 

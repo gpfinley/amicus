@@ -23,6 +23,7 @@ import java.util.logging.Logger;
  *
  * Created by gpfinley on 1/18/17 (converted to uimaFIT from old MultiCasReader).
  */
+@Deprecated
 public class MultiSystemDataReader extends CasMultiplier_ImplBase {
 
     private static final Logger LOGGER = Logger.getLogger(MultiSystemDataReader.class.getName());

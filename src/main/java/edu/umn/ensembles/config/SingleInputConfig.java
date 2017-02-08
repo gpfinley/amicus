@@ -12,14 +12,14 @@ import edu.umn.ensembles.EnsemblesException;
 public class SingleInputConfig {
     public String annotationType;
     public String annotationField;
-    public String fromSystem;
+    public String fromView;
     public String transformerClass = Ensembles.DEFAULT_TRANSFORMER_CLASS.getName();
 
     /**
      * Verify that these mergers have enough config info
      */
     public void verify() {
-        if (fromSystem == null) {
+        if (fromView == null) {
             throw new EnsemblesException("Input type configuration incomplete");
         }
     }
@@ -34,8 +34,8 @@ public class SingleInputConfig {
         this.annotationField = annotationField;
         return this;
     }
-    public SingleInputConfig fromSystem(String fromSystem) {
-        this.fromSystem = fromSystem;
+    public SingleInputConfig fromView(String fromView) {
+        this.fromView = fromView;
         return this;
     }
     public SingleInputConfig transformerClass(String transformerClass) {

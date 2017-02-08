@@ -2,6 +2,7 @@ package edu.umn.ensembles;
 
 import edu.umn.ensembles.config.EnsemblesPipelineConfiguration;
 import edu.umn.ensembles.config.SingleMergerConfiguration;
+import edu.umn.ensembles.config.SingleSystemConfig;
 import edu.umn.ensembles.uimacomponents.*;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -40,42 +41,42 @@ public class EnsemblesPipeline {
         CollectionReader reader;
         List<AnalysisEngine> engines = new ArrayList<>();
 //        try {
-        reader = CollectionReaderFactory.createReader(CommonFilenameReader.class,
+        reader = CollectionReaderFactory.createReader(CommonFilenameCR.class,
 //                ensemblesTypeSystem,
                 TypeSystemDescriptionFactory.createTypeSystemDescription(),
-                CommonFilenameReader.SYSTEM_DATA_DIRS, pipelineConfig.getInputDirectories());
+                CommonFilenameCR.SYSTEM_DATA_DIRS, pipelineConfig.aggregateInputDirectories());
 
-        for (int i=0; i<pipelineConfig.getInputNames().size(); i++) {
-            engines.add(AnalysisEngineFactory.createEngine(CasAdder.class,
-                    CasAdder.DATA_DIR, pipelineConfig.getInputDirectories().get(i),
-                    CasAdder.SYSTEM_NAME, pipelineConfig.getInputNames().get(i),
-                    CasAdder.VIEW_NAME, pipelineConfig.getInputViews().get(i)
+        for (SingleSystemConfig systemConfig : pipelineConfig.allSystemsUsed) {
+            engines.add(AnalysisEngineFactory.createEngine(CasAdderAE.class,
+                    CasAdderAE.DATA_DIR, systemConfig.dataPath,
+                    CasAdderAE.READ_FROM_VIEW, systemConfig.readFromView,
+                    CasAdderAE.COPY_INTO_VIEW, systemConfig.saveIntoView
                     ));
         }
 
-        for (SingleMergerConfiguration mergerConfig : pipelineConfig.getMergerConfigurations()) {
+        for (SingleMergerConfiguration mergerConfig : pipelineConfig.mergerConfigurations) {
             engines.add(
-                    AnalysisEngineFactory.createEngine(MergerTranslator.class,
-                            MergerTranslator.SYSTEM_NAMES, mergerConfig.aggregateInputSystemNames(),
-                            MergerTranslator.TYPE_CLASSES, mergerConfig.aggregateInputTypes(),
-                            MergerTranslator.FIELD_NAMES, mergerConfig.aggregateInputFields(),
-                            MergerTranslator.TRANSFORMER_CLASSES, mergerConfig.aggregateInputTransformers(),
-                            MergerTranslator.ALIGNER_CLASS, mergerConfig.alignerClass,
-                            MergerTranslator.DISTILLER_CLASSES, mergerConfig.aggregateDistillerClasses(),
-                            MergerTranslator.OUTPUT_ANNOTATION_TYPES, mergerConfig.aggregateOutputAnnotationClasses(),
-                            MergerTranslator.OUTPUT_ANNOTATION_FIELDS, mergerConfig.aggregateOutputAnnotationFields(),
-                            MergerTranslator.CREATOR_CLASSES, mergerConfig.aggregateCreatorClasses(),
-                            MergerTranslator.OUTPUT_VIEW_NAMES, mergerConfig.aggregateOutputViewNames()
+                    AnalysisEngineFactory.createEngine(MergerAE.class,
+                            MergerAE.SYSTEM_NAMES, mergerConfig.aggregateInputSystemNames(),
+                            MergerAE.TYPE_CLASSES, mergerConfig.aggregateInputTypes(),
+                            MergerAE.FIELD_NAMES, mergerConfig.aggregateInputFields(),
+                            MergerAE.TRANSFORMER_CLASSES, mergerConfig.aggregateInputTransformers(),
+                            MergerAE.ALIGNER_CLASS, mergerConfig.alignerClass,
+                            MergerAE.DISTILLER_CLASSES, mergerConfig.aggregateDistillerClasses(),
+                            MergerAE.OUTPUT_ANNOTATION_TYPES, mergerConfig.aggregateOutputAnnotationClasses(),
+                            MergerAE.OUTPUT_ANNOTATION_FIELDS, mergerConfig.aggregateOutputAnnotationFields(),
+                            MergerAE.CREATOR_CLASSES, mergerConfig.aggregateCreatorClasses(),
+                            MergerAE.OUTPUT_VIEW_NAMES, mergerConfig.aggregateOutputViewNames()
             ));
         }
 //        AnalysisEngine engine = AnalysisEngineFactory.createEngine();
 //        engine.typeSystemInit(ensemblesTypeSystem);
 
-        engines.add(AnalysisEngineFactory.createEngine(XmiWriter.class,
-                XmiWriter.CONFIG_OUTPUT_DIR, pipelineConfig.getOutPath()));
+        engines.add(AnalysisEngineFactory.createEngine(XmiWriterAE.class,
+                XmiWriterAE.CONFIG_OUTPUT_DIR, pipelineConfig.xmiOutPath));
 
         if (runEvaluationAE) {
-            engines.add(AnalysisEngineFactory.createEngine(EvalSummarizer.class));
+            engines.add(AnalysisEngineFactory.createEngine(EvalSummarizerAE.class));
         }
 
 //        } catch (ResourceInitializationException e) {
