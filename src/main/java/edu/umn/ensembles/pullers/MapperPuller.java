@@ -20,8 +20,8 @@ public class MapperPuller extends AnnotationPuller {
     }
 
     @Override
-    public PreAnnotation transform(Annotation annotation) {
-        return new PreAnnotation(mapper.map(callAnnotationGetter(annotation)), annotation);
+    public Object transform(Annotation annotation) {
+        return mapper.map(callAnnotationGetter(annotation));
     }
 
 }

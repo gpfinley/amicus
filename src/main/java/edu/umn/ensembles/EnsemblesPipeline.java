@@ -1,8 +1,6 @@
 package edu.umn.ensembles;
 
-import edu.umn.ensembles.config.EnsemblesPipelineConfiguration;
-import edu.umn.ensembles.config.SingleMergerConfiguration;
-import edu.umn.ensembles.config.SingleSystemConfig;
+import edu.umn.ensembles.config.*;
 import edu.umn.ensembles.uimacomponents.*;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -11,7 +9,6 @@ import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -29,24 +26,24 @@ public class EnsemblesPipeline {
 
     public EnsemblesPipeline(String configFilePath, boolean runEvaluationAE) throws IOException, UIMAException {
 
-        EnsemblesPipelineConfiguration pipelineConfig;
+        AmicusPipelineConfiguration pipelineConfig;
 
         Yaml yaml = new Yaml();
-        pipelineConfig = (EnsemblesPipelineConfiguration) yaml.load(new FileInputStream(configFilePath));
+        pipelineConfig = (AmicusPipelineConfiguration) yaml.load(new FileInputStream(configFilePath));
 
-        // needed for collection reader
-        TypeSystemDescription ensemblesTypeSystem =
-                TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(Ensembles.MY_TYPE_SYSTEM.toString());
+        // todo: either delete or modify in case we don't want to use type system autodetection
+//        // needed for collection reader
+//        TypeSystemDescription ensemblesTypeSystem =
+//                TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(Ensembles.MY_TYPE_SYSTEM.toString());
 
         CollectionReader reader;
         List<AnalysisEngine> engines = new ArrayList<>();
-//        try {
         reader = CollectionReaderFactory.createReader(CommonFilenameCR.class,
 //                ensemblesTypeSystem,
                 TypeSystemDescriptionFactory.createTypeSystemDescription(),
                 CommonFilenameCR.SYSTEM_DATA_DIRS, pipelineConfig.aggregateInputDirectories());
 
-        for (SingleSystemConfig systemConfig : pipelineConfig.allSystemsUsed) {
+        for (SourceSystemConfig systemConfig : pipelineConfig.allSystemsUsed) {
             engines.add(AnalysisEngineFactory.createEngine(CasAdderAE.class,
                     CasAdderAE.DATA_DIR, systemConfig.dataPath,
                     CasAdderAE.READ_FROM_VIEW, systemConfig.readFromView,
@@ -54,39 +51,64 @@ public class EnsemblesPipeline {
                     ));
         }
 
-        for (SingleMergerConfiguration mergerConfig : pipelineConfig.mergerConfigurations) {
-            engines.add(
-                    AnalysisEngineFactory.createEngine(MergerAE.class,
-                            MergerAE.READ_VIEWS, mergerConfig.aggregateInputSystemNames(),
-                            MergerAE.TYPE_CLASSES, mergerConfig.aggregateInputTypes(),
-                            MergerAE.FIELD_NAMES, mergerConfig.aggregateInputFields(),
-                            MergerAE.PULLER_CLASSES, mergerConfig.aggregateInputTransformers(),
-                            MergerAE.ALIGNER_CLASS, mergerConfig.alignerClass,
-                            MergerAE.DISTILLER_CLASSES, mergerConfig.aggregateDistillerClasses(),
-                            MergerAE.OUTPUT_ANNOTATION_TYPES, mergerConfig.aggregateOutputAnnotationClasses(),
-                            MergerAE.OUTPUT_ANNOTATION_FIELDS, mergerConfig.aggregateOutputAnnotationFields(),
-                            MergerAE.PUSHER_CLASSES, mergerConfig.aggregateCreatorClasses(),
-                            MergerAE.OUTPUT_VIEW_NAMES, mergerConfig.aggregateOutputViewNames()
-            ));
+        //todo: delete
+//        // keep track of summarizers while building pipeline components.
+//        // Keep their names to retrieve the relevant DataLoaders.
+//        // Traverse in the same order the components were added in.
+//        LinkedHashMap<String, Summarizer> summarizersToRun = new LinkedHashMap<>();
+
+        for (PipelineComponentConfig componentConfig : pipelineConfig.pipelineComponents) {
+            if (componentConfig.getClass().equals(MergerConfig.class)) {
+                MergerConfig mergerConfig = (MergerConfig) componentConfig;
+                engines.add(
+                        AnalysisEngineFactory.createEngine(MergerAE.class,
+                                MergerAE.READ_VIEWS, mergerConfig.aggregateInputSystemNames(),
+                                MergerAE.TYPE_CLASSES, mergerConfig.aggregateInputTypes(),
+                                MergerAE.FIELD_NAMES, mergerConfig.aggregateInputFields(),
+                                MergerAE.PULLER_CLASSES, mergerConfig.aggregateInputPullers(),
+                                MergerAE.ALIGNER_CLASS, mergerConfig.alignerClass,
+                                MergerAE.DISTILLER_CLASSES, mergerConfig.aggregateOutputDistillers(),
+                                MergerAE.OUTPUT_ANNOTATION_TYPES, mergerConfig.aggregateOutputAnnotationClasses(),
+                                MergerAE.OUTPUT_ANNOTATION_FIELDS, mergerConfig.aggregateOutputAnnotationFields(),
+                                MergerAE.PUSHER_CLASSES, mergerConfig.aggregateOutputPushers(),
+                                MergerAE.OUTPUT_VIEW_NAMES, mergerConfig.aggregateOutputViewNames()
+                        ));
+            } else if(componentConfig.getClass().equals(CollectorConfig.class)) {
+                CollectorConfig collectorConfig = (CollectorConfig) componentConfig;
+                engines.add(
+                        AnalysisEngineFactory.createEngine(CollectorAE.class,
+                                CollectorAE.TYPE_CLASS, collectorConfig.input.annotationType,
+                                CollectorAE.FIELD_NAME, collectorConfig.input.annotationField,
+                                CollectorAE.READ_VIEW, collectorConfig.input.fromView,
+                                CollectorAE.PULLER_CLASS, collectorConfig.input.pullerClass,
+                                CollectorAE.LISTENER_NAME, collectorConfig.name
+                        ));
+                // todo: delete
+//                try {
+//                    Constructor<? extends Summarizer> summarizerConstructor = collectorConfig.summarizer.getConstructor();
+//                    summarizersToRun.put(collectorConfig.name, summarizerConstructor.newInstance());
+//                } catch (ReflectiveOperationException e) {
+//                    throw new EnsemblesException(e);
+//                }
+            } else if(componentConfig.getClass().equals(ExporterConfig.class)) {
+                ExporterConfig exporterConfig = (ExporterConfig) componentConfig;
+                // todo: instantiate AE
+            }
         }
-//        AnalysisEngine engine = AnalysisEngineFactory.createEngine();
-//        engine.typeSystemInit(ensemblesTypeSystem);
 
         engines.add(AnalysisEngineFactory.createEngine(XmiWriterAE.class,
                 XmiWriterAE.CONFIG_OUTPUT_DIR, pipelineConfig.xmiOutPath));
 
         if (runEvaluationAE) {
-            engines.add(AnalysisEngineFactory.createEngine(EvalSummarizerAE.class));
+            engines.add(AnalysisEngineFactory.createEngine(CollectorAE.class));
         }
 
-//        } catch (ResourceInitializationException e) {
-//            throw new EnsemblesException(e);
-//        }
-//        try {
-        // have to wrap the analysis engines in an array
         SimplePipeline.runPipeline(reader, engines.toArray(new AnalysisEngine[engines.size()]));
-//        } catch (IOException | UIMAException e) {
-//            throw new EnsemblesException(e);
+
+        // todo: delete (doing it in the collectionProcessComplete method, not here)
+//        // run named summarizers after pipeline completes
+//        for (Map.Entry<String, Summarizer> entry : summarizersToRun.entrySet()) {
+//            entry.getValue().summarize(DataListener.getDataListener(entry.getKey()).regurgitate());
 //        }
 
     }

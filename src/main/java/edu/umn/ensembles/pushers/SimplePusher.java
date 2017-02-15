@@ -25,7 +25,7 @@ public class SimplePusher extends AnnotationPusher<String> {
     }
 
     @Override
-    public void set(JCas jCas, PreAnnotation<String> value) {
+    public void push(JCas jCas, PreAnnotation<String> value) {
         if (value == null) return;
         Annotation annotation;
         try {

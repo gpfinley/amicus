@@ -2,7 +2,7 @@ package edu.umn.ensembles.pushers;
 
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.PreAnnotation;
-import edu.umn.ensembles.Util;
+import edu.umn.ensembles.uimacomponents.Util;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
@@ -27,7 +27,7 @@ public abstract class AnnotationPusher<T> {
         this.fieldName = fieldName;
     }
 
-    public abstract void set(JCas jCas, PreAnnotation<T> value);
+    public abstract void push(JCas jCas, PreAnnotation<T> value);
 
     // utility methods for subclasses to use
 
@@ -50,7 +50,6 @@ public abstract class AnnotationPusher<T> {
     }
 
     protected static Method getSetterForField(Class clazz, String name) {
-//        try {
         String setterName = Util.getSetterFor(name);
             for(Method method : clazz.getMethods()) {
                 if (method.getName().equals(setterName)) {
@@ -58,11 +57,6 @@ public abstract class AnnotationPusher<T> {
                 }
             }
             throw new EnsemblesException(new NoSuchMethodException(setterName));
-//            return clazz.getMethod(Util.getSetterFor(name));
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//            throw new EnsemblesException();
-//        }
     }
 
 }

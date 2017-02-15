@@ -1,6 +1,4 @@
-!!edu.umn.ensembles.config.EnsemblesPipelineConfiguration
-
-_pipelineName: simpletest
+!!edu.umn.ensembles.config.AmicusPipelineConfigurationpipelineName: simpletest
 
 inputNames: [ctakes]
 inputDirectories: [data/ctakes]
@@ -8,14 +6,14 @@ inputViews: [_InitialView]
 
 outPath: data/example_out
 
-mergerConfigurations:
+pipelineComponents:
 - _mergerName: test
 
   alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
 
   inputs:
   - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
-    fromView: ctakes, transformerClass: edu.umn.ensembles.pullersesCuiTransformer}
+    fromView: ctakes, pullerClass: edu.umn.ensembles.pullersesCuiTransformer}
 
   outputs:
   - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation,
@@ -26,7 +24,7 @@ mergerConfigurations:
 
   inputs:
   - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation, fromView: ctakes,
-    transformerClass: edu.umn.ensembles.pullersonceptTransformer}
+    pullerClass: edu.umn.ensembles.pullersonceptTransformer}
 
   outputs:
   - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation}

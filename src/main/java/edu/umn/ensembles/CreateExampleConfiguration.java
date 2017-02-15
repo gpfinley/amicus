@@ -15,65 +15,66 @@ import java.io.IOException;
  */
 public class CreateExampleConfiguration {
 
+    // todo: fix this
 
     public static void main(String[] args) throws IOException {
 
         String outYml = "example_pipeline_config.yml";
 
-        EnsemblesPipelineConfiguration config = new EnsemblesPipelineConfiguration();
+        AmicusPipelineConfiguration config = new AmicusPipelineConfiguration();
 
         config._pipelineName = "Example Ensembles pipeline";
 
-        config.allSystemsUsed = new SingleSystemConfig[] {
-                new SingleSystemConfig().useSystemName("biomedicus")
+        config.allSystemsUsed = new SourceSystemConfig[] {
+                new SourceSystemConfig().useSystemName("biomedicus")
                         .useDataPath("data/biomedicus")
                         .useReadFromView("SystemView")
                         .useSaveIntoView("BiomedicusView"),
-                new SingleSystemConfig().useSystemName("ctakes")
+                new SourceSystemConfig().useSystemName("ctakes")
                         .useDataPath("data/biomedicus")
                         .useReadFromView("_InitialView")
                         .useSaveIntoView("CtakesView"),
-                new SingleSystemConfig().useSystemName("clamp")
+                new SourceSystemConfig().useSystemName("clamp")
                         .useDataPath("data/biomedicus")
                         .useReadFromView("_InitialView")
                         .useSaveIntoView("ClampView")
         };
 
-        SingleMergerConfiguration ctakesPreprocessorBean = new SingleMergerConfiguration();
+        MergerConfig ctakesPreprocessorBean = new MergerConfig();
 
         ctakesPreprocessorBean._mergerName = "cTAKES preprocessor";
-        ctakesPreprocessorBean.inputs = new SingleInputConfig[] {
-                new SingleInputConfig().annotationType("org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation")
+        ctakesPreprocessorBean.inputs = new AnnotationInputConfig[] {
+                new AnnotationInputConfig().annotationType("org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation")
                         .annotationField("ontologyConceptArr")
                         .transformerClass("edu.umn.ensembles.pullers.CtakesCuiPuller")
                         .fromView("ctakes")
         };
 
-        ctakesPreprocessorBean.outputs = new SingleOutputConfig[] {
-                new SingleOutputConfig().annotationType("edu.umn.ensembles.SingleFieldAnnotation")
+        ctakesPreprocessorBean.outputs = new AnnotationOutputConfig[] {
+                new AnnotationOutputConfig().annotationType("edu.umn.ensembles.SingleFieldAnnotation")
                         .annotationField("field")
                         .writeView("CtakesView")
         };
 
-        SingleMergerConfiguration acronymMergerBean = new SingleMergerConfiguration();
+        MergerConfig acronymMergerBean = new MergerConfig();
         acronymMergerBean._mergerName = "Acronym Merger";
         acronymMergerBean.alignerClass = "edu.umn.ensembles.aligners.PerfectOverlapAligner";
-        acronymMergerBean.inputs = new SingleInputConfig[]{
-                new SingleInputConfig().fromView("BiomedicusView")
+        acronymMergerBean.inputs = new AnnotationInputConfig[]{
+                new AnnotationInputConfig().fromView("BiomedicusView")
                                         .annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")
                                         .annotationField("text")
                                         .transformerClass("edu.umn.ensembles.pullers.GetterPuller"),
-                new SingleInputConfig().fromView("CtakesView")
+                new AnnotationInputConfig().fromView("CtakesView")
                         .annotationType("org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation")
                         .annotationField("ontologyConceptArr")
                         .transformerClass("edu.umn.ensembles.pullers.CuiConceptPuller"),
-                new SingleInputConfig().fromView("ClampView")
+                new AnnotationInputConfig().fromView("ClampView")
                         .annotationType("edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA")
                         .annotationField("cui")
                         .transformerClass("edu.umn.ensembles.pullers.CuiConceptPuller"),
         };
-        acronymMergerBean.outputs = new SingleOutputConfig[]{
-                new SingleOutputConfig().annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")
+        acronymMergerBean.outputs = new AnnotationOutputConfig[]{
+                new AnnotationOutputConfig().annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")
                         .annotationField("text")
                         .distillerClass("edu.umn.ensembles.distillers.PriorityDistiller")
                         .creatorClass("edu.umn.ensembles.pushers.SimplePusher")
@@ -81,16 +82,16 @@ public class CreateExampleConfiguration {
         };
 
 
-        SingleMergerConfiguration[] beans = {ctakesPreprocessorBean, acronymMergerBean};
+        PipelineComponentConfig[] beans = {ctakesPreprocessorBean, acronymMergerBean};
 
-        config.mergerConfigurations = beans;
+        config.pipelineComponents = beans;
 
         config.xmiOutPath = "data/xmi_out";
 
         config.verify();
         Yaml yaml = new Yaml();
         yaml.dump(config, new FileWriter(outYml));
-        EnsemblesPipelineConfiguration pipeTest = (EnsemblesPipelineConfiguration) yaml.load(new FileInputStream(outYml));
+        AmicusPipelineConfiguration pipeTest = (AmicusPipelineConfiguration) yaml.load(new FileInputStream(outYml));
 
     }
 }

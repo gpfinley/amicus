@@ -4,17 +4,17 @@ inputDirectories: [data/systemsData/biomedicus, data/systemsData/clamp, data/sys
 inputNames: [biomedicus, clamp, ctakes]
 inputViews: [SystemView, _InitialView, _InitialView]
 outPath: data/example_out
-mergerConfigurations:
+pipelineComponents:
 - _mergerName: Acronym Merger
   alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
   creatorClass: edu.umn.ensembles.pushersSimpleCreator
   distillerClass: edu.umn.ensembles.distillers.PriorityDistiller
   inputs:
-  - {field: text, fromView: biomedicus, transformerClass: edu.umn.ensembles.pullerserTransformer,
+  - {field: text, fromView: biomedicus, pullerClass: edu.umn.ensembles.pullerserTransformer,
     type: edu.umn.biomedicus.uima.type1_6.Acronym}
-  - {field: ontologyConceptArr, fromView: ctakes, transformerClass: edu.umn.ensembles.pullersesConceptTransformer,
+  - {field: ontologyConceptArr, fromView: ctakes, pullerClass: edu.umn.ensembles.pullersesConceptTransformer,
     type: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation}
-  - {field: cui, fromView: clamp, transformerClass: edu.umn.ensembles.pullersonceptTransformer,
+  - {field: cui, fromView: clamp, pullerClass: edu.umn.ensembles.pullersonceptTransformer,
     type: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA}
   outputAnnotationClass: edu.umn.biomedicus.uima.type1_6.Acronym
   outputAnnotationFields: text

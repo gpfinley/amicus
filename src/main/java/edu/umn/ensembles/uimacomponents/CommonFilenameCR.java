@@ -1,6 +1,5 @@
 package edu.umn.ensembles.uimacomponents;
 
-import edu.umn.ensembles.Util;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
@@ -12,7 +11,6 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Reads the names of files common between NLP system output directories.

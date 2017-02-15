@@ -21,8 +21,8 @@ public class CtakesCuiPuller extends AnnotationPuller<String> {
      * @return
      */
     @Override
-    public PreAnnotation<String> transform(Annotation annotation) {
-        return new PreAnnotation(getCui(annotation), annotation);
+    public String transform(Annotation annotation) {
+        return getCui(annotation);
     }
 
     protected String getCui(Annotation annotation) {

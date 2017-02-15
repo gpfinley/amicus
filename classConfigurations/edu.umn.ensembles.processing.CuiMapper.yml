@@ -1,3 +1,4 @@
 !!edu.umn.ensembles.processing.CuiMapper$Config
-mrconsoPath: /Volumes/gregdata/metathesaurus/2015AA/META/MRCONSO.RRF
+#mrconsoPath: /Volumes/gregdata/metathesaurus/2015AA/META/MRCONSO.RRF
+mrconsoPath: MRCONSO.RRF
 language: ENG

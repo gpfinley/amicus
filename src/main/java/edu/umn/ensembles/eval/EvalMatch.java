@@ -5,7 +5,7 @@ import edu.umn.ensembles.EvalAnnotation;
 import org.apache.uima.jcas.JCas;
 
 /**
- * Object to use in a PreAnnotation for evaluation.
+ * Object to use in a PreAnnotation for a precision/recall/F-score type evaluation.
  *
  * Created by gpfinley on 2/3/17.
  */
@@ -41,5 +41,17 @@ public class EvalMatch {
             annotation.setScore(score);
         }
         return annotation;
+    }
+
+    public int getSystemIndex() {
+        return systemIndex;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Double getScore() {
+        return score;
     }
 }

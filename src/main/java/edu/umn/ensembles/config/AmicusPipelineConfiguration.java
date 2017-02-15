@@ -3,11 +3,11 @@ package edu.umn.ensembles.config;
 /**
  * Created by gpfinley on 1/20/17.
  */
-public class EnsemblesPipelineConfiguration {
+public class AmicusPipelineConfiguration {
 
     public String _pipelineName;
-    public SingleSystemConfig[] allSystemsUsed;
-    public SingleMergerConfiguration[] mergerConfigurations;
+    public SourceSystemConfig[] allSystemsUsed;
+    public PipelineComponentConfig[] pipelineComponents;
     public String xmiOutPath;
 
     /**
@@ -18,11 +18,10 @@ public class EnsemblesPipelineConfiguration {
 //                || inputNames.size() != inputDirectories.size() || inputNames.size() != inputViews.size()) {
 //            throw new EnsemblesException("Pipeline configuration incomplete");
 //        }
-        for (SingleMergerConfiguration c : mergerConfigurations) c.verify();
-        for (SingleSystemConfig c : allSystemsUsed) c.verify();
-        // todo: java 8 (delete)
-//        Arrays.stream(mergerConfigurations).forEach(SingleMergerConfiguration::verify);
-//        Arrays.stream(allSystemsUsed).forEach(SingleSystemConfig::verify);
+        for (PipelineComponentConfig c : pipelineComponents) c.verify();
+        for (SourceSystemConfig c : allSystemsUsed) c.verify();
+
+        // todo: confirm that there are no two Collectors with the same name
     }
 
     public String[] aggregateInputDirectories() {

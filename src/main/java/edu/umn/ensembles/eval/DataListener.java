@@ -1,47 +1,51 @@
 package edu.umn.ensembles.eval;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
 /**
+ * For summarizing over multiple concurrent CAS objects. Pass it D objects with listen(D value),
+ * then retrieve them all with regurgitate().
+ *
+ * Multiple listeners can be active and are named with Strings.
+ *
  * Created by gpfinley on 2/8/17.
  */
-public class DataListener<D, S extends Summarizer<D, T>, T> {
-
-    private static DataListener dataListener;
+public class DataListener<D> {
 
     private static ConcurrentMap<String, DataListener> dataListeners = new ConcurrentHashMap<>();
 
-    public static DataListener getDataListener(String name, Summarizer summarizer) {
+    public static DataListener getDataListener(String name) {
         DataListener dl = dataListeners.get(name);
         if (dl == null) {
-            dl = new DataListener(name, summarizer);
+            dl = new DataListener();
             dataListeners.put(name, dl);
-        } else {
-            if (!summarizer.getClass().equals(dl.summarizer.getClass())) {
-                // todo: warn. Using summarizer as previously specified
-            }
         }
         return dl;
     }
 
-    private final String name;
-    private final S summarizer;
+    private List<D> responseList;
+    private ConcurrentLinkedQueue<D> heard = new ConcurrentLinkedQueue<>();
 
-    protected DataListener(String name, S summarizer) {
-        this.name = name;
-        this.summarizer = summarizer;
-    }
-
-    ConcurrentLinkedQueue<D> heard = new ConcurrentLinkedQueue<>();
+    // prevent instantiation except through the getInstance
+    protected DataListener() {}
 
     public void listen(D value) {
+        if (responseList != null) {
+            // todo: log warning: adding to a list that has already been polled!
+            responseList = null;
+        }
         heard.add(value);
     }
 
-    public T respond() {
-        return summarizer.summarize(heard);
+    public List<D> regurgitate() {
+        if (responseList == null) {
+            responseList = new ArrayList<>(heard);
+        }
+        return responseList;
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.List;
  *
  * Created by gpfinley on 10/20/16.
  */
-public class EvalDistiller extends AnnotationDistiller<List<EvalMatch>> {
+public class EvalMatchDistiller extends AnnotationDistiller<List<EvalMatch>> {
 
     /**
      * todo: doc

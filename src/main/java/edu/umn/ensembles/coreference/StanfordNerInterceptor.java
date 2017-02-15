@@ -8,7 +8,7 @@ import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
 import edu.umn.ensembles.EnsemblesException;
-import edu.umn.ensembles.Util;
+import edu.umn.ensembles.uimacomponents.Util;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;

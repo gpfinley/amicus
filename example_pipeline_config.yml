@@ -1,16 +1,15 @@
-!!edu.umn.ensembles.config.EnsemblesPipelineConfiguration
-_pipelineName: Example Ensembles pipeline
+!!edu.umn.ensembles.config.AmicusPipelineConfigurationipelineName: Example Ensembles pipeline
 allSystemsUsed:
 - {_systemName: biomedicus, saveIntoView: BiomedicusView, dataPath: data/biomedicus,
   readFromView: SystemView}
 - {_systemName: ctakes, saveIntoView: CtakesView, dataPath: data/biomedicus, readFromView: _InitialView}
 - {_systemName: clamp, saveIntoView: ClampView, dataPath: data/biomedicus, readFromView: _InitialView}
-mergerConfigurations:
+pipelineComponents:
 - _mergerName: cTAKES preprocessor
   alignerClass: null
   inputs:
   - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
-    fromView: ctakes, transformerClass: edu.umn.ensembles.pullersesCuiTransformer}
+    fromView: ctakes, pullerClass: edu.umn.ensembles.pullersesCuiTransformer}
   outputs:
   - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation,
     creatorClass: edu.umn.ensembles.pushersSimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,
@@ -19,11 +18,11 @@ mergerConfigurations:
   alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
   inputs:
   - {annotationField: text, annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
-    fromView: BiomedicusView, transformerClass: edu.umn.ensembles.pullerserTransformer}
+    fromView: BiomedicusView, pullerClass: edu.umn.ensembles.pullerserTransformer}
   - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
-    fromView: CtakesView, transformerClass: edu.umn.ensembles.pullersonceptTransformer}
+    fromView: CtakesView, pullerClass: edu.umn.ensembles.pullersonceptTransformer}
   - {annotationField: cui, annotationType: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA,
-    fromView: ClampView, transformerClass: edu.umn.ensembles.pullersonceptTransformer}
+    fromView: ClampView, pullerClass: edu.umn.ensembles.pullersonceptTransformer}
   outputs:
   - {annotationField: text, annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
     creatorClass: edu.umn.ensembles.pushersSimpleCreator, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,

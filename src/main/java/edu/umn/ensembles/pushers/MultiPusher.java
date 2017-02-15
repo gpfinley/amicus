@@ -41,7 +41,7 @@ public class MultiPusher extends AnnotationPusher<List> {
     }
 
     @Override
-    public void set(JCas jCas, PreAnnotation<List> value) {
+    public void push(JCas jCas, PreAnnotation<List> value) {
         if (value == null) return;
         Annotation annotation;
         try {

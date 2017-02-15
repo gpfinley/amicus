@@ -1,7 +1,6 @@
 package edu.umn.ensembles.uimacomponents;
 
 import edu.umn.ensembles.EnsemblesException;
-import edu.umn.ensembles.Util;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.impl.XCASDeserializer;
 import org.apache.uima.cas.impl.XmiCasDeserializer;

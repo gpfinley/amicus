@@ -8,11 +8,11 @@ import edu.umn.ensembles.Ensembles;
  *
  * Created by gpfinley on 10/24/16.
  */
-public class SingleOutputConfig {
+public class AnnotationOutputConfig {
     public String annotationType;
     public String annotationField;
     public String distillerClass = Ensembles.DEFAULT_DISTILLER_CLASS.getName();
-    public String creatorClass = Ensembles.DEFAULT_CREATOR_CLASS.getName();
+    public String creatorClass = Ensembles.DEFAULT_PUSHER_CLASS.getName();
     public String writeView = Ensembles.DEFAULT_MERGED_VIEW;
 
     /**
@@ -23,23 +23,23 @@ public class SingleOutputConfig {
 
     // builder-style setters to more easily code up a configuration
 
-    public SingleOutputConfig annotationType(String annotationType) {
+    public AnnotationOutputConfig annotationType(String annotationType) {
         this.annotationType = annotationType;
         return this;
     }
-    public SingleOutputConfig annotationField(String annotationField) {
+    public AnnotationOutputConfig annotationField(String annotationField) {
         this.annotationField = annotationField;
         return this;
     }
-    public SingleOutputConfig distillerClass(String distillerClass) {
+    public AnnotationOutputConfig distillerClass(String distillerClass) {
         this.distillerClass = distillerClass;
         return this;
     }
-    public SingleOutputConfig creatorClass(String creatorClass) {
+    public AnnotationOutputConfig creatorClass(String creatorClass) {
         this.creatorClass = creatorClass;
         return this;
     }
-    public SingleOutputConfig writeView(String writeView) {
+    public AnnotationOutputConfig writeView(String writeView) {
         this.writeView = writeView;
         return this;
     }

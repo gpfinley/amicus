@@ -1,5 +1,8 @@
-package edu.umn.ensembles;
+package edu.umn.ensembles.uimacomponents;
 
+import edu.umn.ensembles.DocumentID;
+import edu.umn.ensembles.Ensembles;
+import edu.umn.ensembles.EnsemblesException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;

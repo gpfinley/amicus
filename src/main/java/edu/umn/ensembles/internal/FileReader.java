@@ -1,6 +1,6 @@
 package edu.umn.ensembles.internal;
 
-import edu.umn.ensembles.Util;
+import edu.umn.ensembles.uimacomponents.Util;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.impl.XmiCasDeserializer;
 import org.apache.uima.collection.CollectionReader_ImplBase;

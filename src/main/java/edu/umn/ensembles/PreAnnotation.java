@@ -3,8 +3,8 @@ package edu.umn.ensembles;
 import org.apache.uima.jcas.tcas.Annotation;
 
 /**
- * "Struct" class for holding an Object to be annotated (probably String) along with its begin and end offsets.
- * Used during intermediate stages (from Transformation to Creation).
+ * "Struct" class for holding an Object from an annotation (probably String) along with its begin and end offsets.
+ * Used during intermediate stages of processing.
  *
  * Created by gpfinley on 1/20/17.
  */

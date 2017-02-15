@@ -1,8 +1,7 @@
 package edu.umn.ensembles.pullers;
 
 import edu.umn.ensembles.EnsemblesException;
-import edu.umn.ensembles.PreAnnotation;
-import edu.umn.ensembles.Util;
+import edu.umn.ensembles.uimacomponents.Util;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.lang.reflect.InvocationTargetException;
@@ -17,11 +16,18 @@ public abstract class AnnotationPuller<T> {
 
     protected final String fieldName;
 
-    protected AnnotationPuller(String fieldName) {
+    public AnnotationPuller(String fieldName) {
         this.fieldName = fieldName;
     }
 
-    abstract public PreAnnotation<T> transform(Annotation annotation);
+    /**
+     * Call this from implementing subclasses that don't make use of the field name.
+     */
+    protected AnnotationPuller() {
+        this.fieldName = null;
+    }
+
+    abstract public T transform(Annotation annotation);
 
     /**
      * Main method to get information out of an annotation.
@@ -30,6 +36,16 @@ public abstract class AnnotationPuller<T> {
      * @return
      */
     protected Object callAnnotationGetter(Annotation annotation) {
+        return callAnnotationGetter(fieldName, annotation);
+    }
+
+    /**
+     * Static version if not using the fieldName class variable.
+     * @param fieldName
+     * @param annotation
+     * @return
+     */
+    protected static Object callAnnotationGetter(String fieldName, Annotation annotation) {
         Class<? extends Annotation> clazz = annotation.getClass();
         try {
             Method toCall = clazz.getMethod(Util.getGetterFor(fieldName));

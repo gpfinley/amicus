@@ -2,7 +2,7 @@ package edu.umn.ensembles.coreference;
 
 import edu.umn.ensembles.EnsemblesException;
 import edu.umn.ensembles.SingleFieldAnnotation;
-import edu.umn.ensembles.Util;
+import edu.umn.ensembles.uimacomponents.Util;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;

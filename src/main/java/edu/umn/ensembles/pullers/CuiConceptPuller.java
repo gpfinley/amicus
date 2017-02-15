@@ -19,8 +19,8 @@ public class CuiConceptPuller extends AnnotationPuller<String> {
     private final Mapper<String, String> mapper = CuiMapper.getInstance();
 
     @Override
-    public PreAnnotation<String> transform(Annotation annotation) {
-        return new PreAnnotation<>(mapper.map((String) callAnnotationGetter(annotation)), annotation);
+    public String transform(Annotation annotation) {
+        return mapper.map((String) callAnnotationGetter(annotation));
     }
 
 }

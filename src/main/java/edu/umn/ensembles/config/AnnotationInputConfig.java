@@ -9,11 +9,11 @@ import edu.umn.ensembles.EnsemblesException;
  *
  * Created by gpfinley on 10/24/16.
  */
-public class SingleInputConfig {
+public class AnnotationInputConfig {
     public String annotationType;
     public String annotationField;
     public String fromView;
-    public String transformerClass = Ensembles.DEFAULT_TRANSFORMER_CLASS.getName();
+    public String pullerClass = Ensembles.DEFAULT_PULLER_CLASS.getName();
 
     /**
      * Verify that these mergers have enough config info
@@ -26,20 +26,20 @@ public class SingleInputConfig {
 
     // builder-style setters to more easily code up a configuration
 
-    public SingleInputConfig annotationType(String annotationType) {
+    public AnnotationInputConfig annotationType(String annotationType) {
         this.annotationType = annotationType;
         return this;
     }
-    public SingleInputConfig annotationField(String annotationField) {
+    public AnnotationInputConfig annotationField(String annotationField) {
         this.annotationField = annotationField;
         return this;
     }
-    public SingleInputConfig fromView(String fromView) {
+    public AnnotationInputConfig fromView(String fromView) {
         this.fromView = fromView;
         return this;
     }
-    public SingleInputConfig transformerClass(String transformerClass) {
-        this.transformerClass = transformerClass;
+    public AnnotationInputConfig transformerClass(String transformerClass) {
+        this.pullerClass = transformerClass;
         return this;
     }
 

@@ -1,100 +1,80 @@
 package edu.umn.ensembles.config;
 
-import edu.umn.ensembles.Ensembles;
-import edu.umn.ensembles.EnsemblesException;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * A serializable bean for a single merge engine.
- * Contains methods for aggregating options across its inputs and outputs, which is needed for uimaFIT configurations.
+ * Basic superclass for pipeline components: Mergers, Collectors, and Exporters.
+ * Any actual processing is class-dependent and will require polling objects' types.
  *
- * Created by gpfinley on 10/24/16.
- */ public class SingleMergerConfiguration {
+ * Created by greg on 2/10/17.
+ */
+public abstract class PipelineComponentConfig {
 
-    public String _mergerName = "untitled merger";
-
-    public SingleInputConfig[] inputs;
-    public SingleOutputConfig[] outputs;
-
-    public String alignerClass = Ensembles.DEFAULT_ALIGNER_CLASS.getName();
-
-    /**
-     * Verify that these mergers have enough config info
-     */
-    public void verify() {
-        if (inputs == null || inputs.length == 0
-                || outputs == null) {
-            throw new EnsemblesException("Translator or merger configuration incomplete");
-        }
-        for(SingleInputConfig c : inputs) c.verify();
-        for(SingleOutputConfig c : outputs) c.verify();
-    }
+    public abstract void verify();
 
     /**
      * Aggregating functions, used to convert Single*putConfigs into the String[]s needed as UIMA config params
      * @return
      */
-    public String[] aggregateInputSystemNames() {
+    public static String[] aggregateInputSystemNames(AnnotationInputConfig inputs[]) {
         List<String> inputSystemNames = new ArrayList<>();
-        for (SingleInputConfig inputConfig : inputs) {
+        for (AnnotationInputConfig inputConfig : inputs) {
             inputSystemNames.add(inputConfig.fromView);
         }
         return inputSystemNames.toArray(new String[inputSystemNames.size()]);
     }
-    public String[] aggregateInputTypes() {
+    public static String[] aggregateInputTypes(AnnotationInputConfig inputs[]) {
         List<String> inputTypes = new ArrayList<>();
-        for (SingleInputConfig inputConfig : inputs) {
+        for (AnnotationInputConfig inputConfig : inputs) {
             inputTypes.add(inputConfig.annotationType);
         }
         return inputTypes.toArray(new String[inputTypes.size()]);
     }
-    public String[] aggregateInputFields() {
+    public static String[] aggregateInputFields(AnnotationInputConfig inputs[]) {
         List<String> inputFields = new ArrayList<>();
-        for (SingleInputConfig inputConfig : inputs) {
+        for (AnnotationInputConfig inputConfig : inputs) {
             inputFields.add(inputConfig.annotationField);
         }
         return inputFields.toArray(new String[inputFields.size()]);
     }
-    public String[] aggregateInputTransformers() {
+    public static String[] aggregateInputPullers(AnnotationInputConfig inputs[]) {
         List<String> inputTransformers = new ArrayList<>();
-        for (SingleInputConfig inputConfig : inputs) {
-            inputTransformers.add(inputConfig.transformerClass);
+        for (AnnotationInputConfig inputConfig : inputs) {
+            inputTransformers.add(inputConfig.pullerClass);
         }
         return inputTransformers.toArray(new String[inputTransformers.size()]);
     }
 
-    public String[] aggregateOutputAnnotationClasses() {
+    public static String[] aggregateOutputAnnotationClasses(AnnotationOutputConfig outputs[]) {
         String[] outputClasses = new String[outputs.length];
         for (int i=0; i<outputs.length; i++) {
             outputClasses[i] = outputs[i].annotationType;
         }
         return outputClasses;
     }
-    public String[] aggregateOutputAnnotationFields() {
+    public static String[] aggregateOutputAnnotationFields(AnnotationOutputConfig outputs[]) {
         String[] outputFields = new String[outputs.length];
         for (int i=0; i<outputs.length; i++) {
             outputFields[i] = outputs[i].annotationField;
         }
         return outputFields;
     }
-    public String[] aggregateOutputViewNames() {
+    public static String[] aggregateOutputViewNames(AnnotationOutputConfig outputs[]) {
         String[] outputViews = new String[outputs.length];
         for (int i=0; i<outputs.length; i++) {
             outputViews[i] = outputs[i].writeView;
         }
         return outputViews;
     }
-    public String[] aggregateCreatorClasses() {
+    public static String[] aggregateOutputPushers(AnnotationOutputConfig outputs[]) {
         String[] creators = new String[outputs.length];
         for (int i=0; i<outputs.length; i++) {
             creators[i] = outputs[i].creatorClass;
         }
         return creators;
     }
-    public String[] aggregateDistillerClasses() {
+    public static String[] aggregateOutputDistillers(AnnotationOutputConfig outputs[]) {
         String[] distillers = new String[outputs.length];
         for (int i=0; i<outputs.length; i++) {
             distillers[i] = outputs[i].distillerClass;

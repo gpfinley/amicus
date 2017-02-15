@@ -4,9 +4,10 @@ import edu.umn.ensembles.EnsemblesException;
 
 /**
  * Stores configuration for a single input system.
+ * Serializable by YAML.
  * Created by greg on 2/7/17.
  */
-public class SingleSystemConfig {
+public class SourceSystemConfig {
     public String _systemName = "untitled system";
     public String dataPath;
     public String readFromView = "_InitialView";
@@ -17,7 +18,7 @@ public class SingleSystemConfig {
      * @param systemName the name to use for this system (unused; for human readability only).
      * @return this configuration
      */
-    public SingleSystemConfig useSystemName(String systemName) {
+    public SourceSystemConfig useSystemName(String systemName) {
         this._systemName = systemName;
         return this;
     }
@@ -27,7 +28,7 @@ public class SingleSystemConfig {
      * @param dataPath the directory path containing xmi/xml files of this system's outputs.
      * @return this configuration
      */
-    public SingleSystemConfig useDataPath(String dataPath) {
+    public SourceSystemConfig useDataPath(String dataPath) {
         this.dataPath = dataPath;
         return this;
     }
@@ -37,7 +38,7 @@ public class SingleSystemConfig {
      * @param readFromView the view that this system uses for its annotations (default "_InitialView").
      * @return this configuration
      */
-    public SingleSystemConfig useReadFromView(String readFromView) {
+    public SourceSystemConfig useReadFromView(String readFromView) {
         this.readFromView = readFromView;
         return this;
     }
@@ -47,7 +48,7 @@ public class SingleSystemConfig {
      * @param saveIntoView the view to copy this system's annotations in for the summary CAS.
      * @return this configuration
      */
-    public SingleSystemConfig useSaveIntoView(String saveIntoView) {
+    public SourceSystemConfig useSaveIntoView(String saveIntoView) {
         this.saveIntoView = saveIntoView;
         return this;
     }

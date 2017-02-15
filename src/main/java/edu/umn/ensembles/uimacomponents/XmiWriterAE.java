@@ -1,7 +1,6 @@
 package edu.umn.ensembles.uimacomponents;
 
 import edu.umn.ensembles.Ensembles;
-import edu.umn.ensembles.Util;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.*;
