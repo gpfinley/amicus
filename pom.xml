@@ -49,7 +49,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>edu.umn.ensembles.EnsemblesPipeline</mainClass>
+                            <mainClass>edu.umn.amicus.AmicusPipeline</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

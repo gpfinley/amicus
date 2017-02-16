@@ -1,4 +1,4 @@
-!!edu.umn.ensembles.config.AmicusPipelineConfigurationpipelineName: simpletest
+!!edu.umn.amicus.config.AmicusPipelineConfigurationpipelineName: simpletest
 
 inputNames: [ctakes]
 inputDirectories: [data/ctakes]
@@ -9,26 +9,26 @@ outPath: data/example_out
 pipelineComponents:
 - _mergerName: test
 
-  alignerClass: edu.umn.ensembles.aligners.PerfectOverlapAligner
+  alignerClass: edu.umn.amicusigners.PerfectOverlapAligner
 
   inputs:
   - {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
-    fromView: ctakes, pullerClass: edu.umn.ensembles.pullersesCuiTransformer}
+    fromView: ctakes, pullerClass: edu.umn.amicusllersesCuiTransformer}
 
   outputs:
-  - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation,
+  - {annotationField: field, annotationType: edu.umn.amicusngleFieldAnnotation,
     writeView: ctakesView}
 
 
 - _mergerName: test2
 
   inputs:
-  - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation, fromView: ctakes,
-    pullerClass: edu.umn.ensembles.pullersonceptTransformer}
+  - {annotationField: field, annotationType: edu.umn.amicusngleFieldAnnotation, fromView: ctakes,
+    pullerClass: edu.umn.amicusllersonceptTransformer}
 
   outputs:
-  - {annotationField: field, annotationType: edu.umn.ensembles.SingleFieldAnnotation}
+  - {annotationField: field, annotationType: edu.umn.amicusngleFieldAnnotation}
 
 # TODO: allow pulling from specific views, not just systems
 
-#    creatorClass: edu.umn.ensembles.pushers.SimplePusher, distillerClass: edu.umn.ensembles.distillers.PriorityDistiller,
+#    creatorClass: edu.umn.amicus.pushers.SimplePusher, distillerClass: edu.umn.amicus.distillers.PriorityDistiller,
