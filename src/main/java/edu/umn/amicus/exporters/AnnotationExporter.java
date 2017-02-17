@@ -1,5 +1,7 @@
 package edu.umn.amicus.exporters;
 
+import edu.umn.amicus.Amicus;
+import edu.umn.amicus.Piece;
 import edu.umn.amicus.PreAnnotation;
 
 import java.util.Iterator;
@@ -8,7 +10,9 @@ import java.util.List;
 /**
  * Created by greg on 2/11/17.
  */
-public abstract class AnnotationExporter {
+public abstract class AnnotationExporter extends Piece {
+
+    public static final String DEFAULT_EXPORTER = EachSoloTsvExporter.class.getName();
 
     protected String[] viewNames;
     protected String[] typeNames;
@@ -43,5 +47,10 @@ public abstract class AnnotationExporter {
     }
 
     public abstract String exportContents(Iterator<List<PreAnnotation>> annotIterator);
+
+    public static AnnotationExporter create(String exporterClassName) {
+        return Amicus.getPieceInstance(AnnotationExporter.class,
+                exporterClassName == null ? DEFAULT_EXPORTER : exporterClassName);
+    }
 
 }

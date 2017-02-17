@@ -19,16 +19,15 @@ import java.util.logging.Logger;
 public class ClassConfigurationLoader {
 
     private static Logger LOGGER = Logger.getLogger(ClassConfigurationLoader.class.getName());
-    private static final Yaml yaml = new Yaml();
 
     public static Object load(Class clazz) throws FileNotFoundException {
         File file = new File(Amicus.CLASS_CONFIG_DIR.resolve(clazz.getName()) + ".yml");
         if (file.exists()) {
-            return yaml.load(new FileInputStream(file));
+            return Amicus.yaml.load(new FileInputStream(file));
         } else {
             file = new File(Amicus.CLASS_CONFIG_DIR.resolve(clazz.getName()) + ".txt");
             if (!file.exists()) {
-                LOGGER.severe("No configuration file with .yml or .txt extension found for class " + clazz.getName());
+                LOGGER.warning("No configuration file with .yml or .txt extension found for class " + clazz.getName());
                 throw new FileNotFoundException();
             }
             return new Scanner(file).useDelimiter("\\Z").next();

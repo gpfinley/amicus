@@ -1,4 +1,4 @@
-package edu.umn.amicus.coreference;
+package edu.umn.amicus.internal.coreference;
 
 import edu.umn.amicus.AmicusException;
 
@@ -33,8 +33,7 @@ public class ExtractedToCorefConcepts {
 
         File originalDataDir = Paths.get(origDataPath).toFile();
         if (!originalDataDir.exists() || !originalDataDir.isDirectory()) {
-            LOGGER.severe("Bad data directory at " + originalDataDir.getAbsolutePath());
-            throw new AmicusException();
+            throw new AmicusException("Bad data directory at %s", originalDataDir.getAbsolutePath());
         }
 
         for (File origFile : Paths.get(origDataPath).toFile().listFiles()) {
@@ -63,8 +62,7 @@ public class ExtractedToCorefConcepts {
             File extractedFile = Paths.get(extractedTextPath).resolve(extractedName).toFile();
             File outDir = Paths.get(outPath).toFile();
             if (!outDir.exists() && !outDir.mkdirs()) {
-                LOGGER.severe("Could not create output directory at " + outPath);
-                throw new AmicusException();
+                throw new AmicusException("Could not create output directory at " + outPath);
             }
             File conFile = outDir.toPath().resolve(origName + ".con").toFile();
             BufferedReader reader = new BufferedReader(new FileReader(extractedFile));

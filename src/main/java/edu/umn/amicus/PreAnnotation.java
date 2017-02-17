@@ -4,7 +4,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 /**
  * "Struct" class for holding an Object from an annotation (probably String) along with its begin and end offsets.
- * Used during intermediate stages of processing.
+ * Used during intermediate stages of mappers.
  *
  * Created by gpfinley on 1/20/17.
  */

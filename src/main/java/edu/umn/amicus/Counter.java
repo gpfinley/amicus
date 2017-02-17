@@ -1,4 +1,4 @@
-package edu.umn.amicus.processing;
+package edu.umn.amicus;
 
 import java.util.*;
 

@@ -1,9 +1,9 @@
 package edu.umn.amicus.uimacomponents;
 
-import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.aligners.AnnotationAligner;
+import edu.umn.amicus.aligners.EachSoloAligner;
 import edu.umn.amicus.exporters.AnnotationExporter;
 import edu.umn.amicus.pullers.AnnotationPuller;
 import org.apache.uima.UimaContext;
@@ -16,8 +16,6 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import java.io.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,20 +32,22 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
 
     private static final Logger LOGGER = Logger.getLogger(ExporterAE.class.getName());
 
+    private static final String EXPORTER_DEFAULT_ALIGNER = EachSoloAligner.class.getName();
+
     public static final String READ_VIEWS = "readViews";
-    public static final String TYPE_CLASSES = "typeClasses";
-    public static final String FIELD_NAMES = "fieldNames";
+    public static final String INPUT_TYPES = "typeClasses";
+    public static final String INPUT_FIELDS = "fieldNames";
     public static final String PULLER_CLASSES = "pullerClasses";
 
     public static final String ALIGNER_CLASS = "alignerClass";
-    public static final String EXPORTER_CLASS = "exporterClass";
+    public static final String EXPORTER_CLASS = "exporterClassName";
     public static final String OUTPUT_DIRECTORY = "outputDirectory";
 
     @ConfigurationParameter(name = READ_VIEWS)
     private String[] readViews;
-    @ConfigurationParameter(name = TYPE_CLASSES)
+    @ConfigurationParameter(name = INPUT_TYPES)
     private String[] typeClassNames;
-    @ConfigurationParameter(name = FIELD_NAMES, mandatory = false)
+    @ConfigurationParameter(name = INPUT_FIELDS, mandatory = false)
     private String[] fieldNames;
     @ConfigurationParameter(name = PULLER_CLASSES, mandatory = false)
     private String[] pullerClassNames;
@@ -55,7 +55,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     @ConfigurationParameter(name = ALIGNER_CLASS, mandatory = false)
     private String alignerClassName;
     @ConfigurationParameter(name = EXPORTER_CLASS, mandatory = false)
-    private String exporterClass;
+    private String exporterClassName;
     @ConfigurationParameter(name = OUTPUT_DIRECTORY)
     private String outputDirectory;
 
@@ -68,7 +68,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     @Override
     public void initialize(UimaContext context) throws ResourceInitializationException {
         super.initialize(context);
-        LOGGER.info("Initializing ExporterAE.");
+        LOGGER.info("Initializing Exporter analysis engine.");
 
         try {
             Files.createDirectories(Paths.get(outputDirectory));
@@ -88,27 +88,6 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
             throw new AmicusException("Configuration parameters for inputs do not line up! Check parameter lists.");
         }
 
-        pullers = new ArrayList<>();
-        try {
-            for (int i=0; i<numInputs; i++) {
-                if (pullerClassNames[i] == null) {
-                    if (fieldNames[i] == null) {
-                        throw new AmicusException("Need to specify field names" +
-                                " unless using a custom AnnotationPuller implementation.");
-                    }
-                    pullers.add(Amicus.DEFAULT_PULLER_CLASS
-                            .getConstructor(String.class).newInstance(fieldNames[i]));
-                } else {
-                    String fieldName = fieldNames[i] != null ? fieldNames[i] : null;
-                    Constructor constructor = Class.forName(pullerClassNames[i]).getConstructor(String.class);
-                    pullers.add((AnnotationPuller) constructor.newInstance(fieldName));
-                }
-            }
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException
-                | InvocationTargetException e) {
-            LOGGER.severe("Could not initialize annotation pullers.");
-            throw new AmicusException(e);
-        }
 
         try {
             typeClasses = new ArrayList<>();
@@ -121,26 +100,12 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
             throw new AmicusException(e);
         }
 
-        try {
-            if (alignerClassName != null) {
-                aligner = (AnnotationAligner) Class.forName(alignerClassName).newInstance();
-            } else {
-                aligner = Amicus.DEFAULT_ALIGNER_CLASS_FOR_EXPORTER.newInstance();
-            }
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            LOGGER.severe("Could not initialize annotation aligner.");
-            throw new AmicusException(e);
+        aligner = AnnotationAligner.create(alignerClassName == null ? EXPORTER_DEFAULT_ALIGNER : alignerClassName);
+        for (int i=0; i<numInputs; i++) {
+            pullers.add(AnnotationPuller.create(pullerClassNames[i], fieldNames[i]));
         }
+        exporter = AnnotationExporter.create(exporterClassName);
 
-        try {
-            if (exporterClass == null) {
-                exporter = Amicus.DEFAULT_EXPORTER_CLASS.newInstance();
-            } else {
-                exporter = ((Class<? extends AnnotationExporter>) Class.forName(exporterClass)).newInstance();
-            }
-        } catch (ReflectiveOperationException e) {
-            throw new ResourceInitializationException(e);
-        }
         exporter.setViewNames(readViews);
     }
 

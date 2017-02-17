@@ -1,4 +1,4 @@
-package edu.umn.amicus.coreference;
+package edu.umn.amicus.internal.coreference;
 
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.SingleFieldAnnotation;

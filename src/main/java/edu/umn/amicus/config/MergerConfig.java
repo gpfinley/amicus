@@ -1,6 +1,5 @@
 package edu.umn.amicus.config;
 
-import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
 
 /**
@@ -16,7 +15,7 @@ public class MergerConfig extends PipelineComponentConfig {
     public AnnotationInputConfig[] inputs;
     public AnnotationOutputConfig[] outputs;
 
-    public String alignerClass = Amicus.DEFAULT_ALIGNER_CLASS.getName();
+    public String alignerClass;
 
     /**
      * Verify that these mergers have enough config info

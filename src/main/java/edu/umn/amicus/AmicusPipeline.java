@@ -57,22 +57,22 @@ public class AmicusPipeline {
                 engines.add(
                         AnalysisEngineFactory.createEngine(MergerAE.class,
                                 MergerAE.READ_VIEWS, PipelineComponentConfig.aggregateInputSystemNames(mergerConfig.inputs),
-                                MergerAE.TYPE_CLASSES, PipelineComponentConfig.aggregateInputTypes(mergerConfig.inputs),
-                                MergerAE.FIELD_NAMES, PipelineComponentConfig.aggregateInputFields(mergerConfig.inputs),
+                                MergerAE.INPUT_TYPES, PipelineComponentConfig.aggregateInputTypes(mergerConfig.inputs),
+                                MergerAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(mergerConfig.inputs),
                                 MergerAE.PULLER_CLASSES, PipelineComponentConfig.aggregateInputPullers(mergerConfig.inputs),
                                 MergerAE.ALIGNER_CLASS, mergerConfig.alignerClass,
                                 MergerAE.DISTILLER_CLASSES, PipelineComponentConfig.aggregateOutputDistillers(mergerConfig.outputs),
-                                MergerAE.OUTPUT_ANNOTATION_TYPES, PipelineComponentConfig.aggregateOutputAnnotationClasses(mergerConfig.outputs),
-                                MergerAE.OUTPUT_ANNOTATION_FIELDS, PipelineComponentConfig.aggregateOutputAnnotationFields(mergerConfig.outputs),
+                                MergerAE.OUTPUT_TYPES, PipelineComponentConfig.aggregateOutputAnnotationClasses(mergerConfig.outputs),
+                                MergerAE.OUTPUT_FIELDS, PipelineComponentConfig.aggregateOutputAnnotationFields(mergerConfig.outputs),
                                 MergerAE.PUSHER_CLASSES, PipelineComponentConfig.aggregateOutputPushers(mergerConfig.outputs),
-                                MergerAE.OUTPUT_VIEW_NAMES, PipelineComponentConfig.aggregateOutputViewNames(mergerConfig.outputs)
+                                MergerAE.WRITE_VIEWS, PipelineComponentConfig.aggregateOutputViewNames(mergerConfig.outputs)
                         ));
             } else if(componentConfig.getClass().equals(CollectorConfig.class)) {
                 CollectorConfig collectorConfig = (CollectorConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(CollectorAE.class,
-                                CollectorAE.TYPE_CLASS, collectorConfig.input.annotationType,
-                                CollectorAE.FIELD_NAME, collectorConfig.input.annotationField,
+                                CollectorAE.INPUT_TYPE, collectorConfig.input.annotationType,
+                                CollectorAE.INPUT_FIELD, collectorConfig.input.annotationField,
                                 CollectorAE.READ_VIEW, collectorConfig.input.fromView,
                                 CollectorAE.PULLER_CLASS, collectorConfig.input.pullerClass,
                                 CollectorAE.SUMMARIZER_CLASS, collectorConfig.summarizerClass,
@@ -84,13 +84,31 @@ public class AmicusPipeline {
                 engines.add(
                         AnalysisEngineFactory.createEngine(ExporterAE.class,
                                 ExporterAE.READ_VIEWS, PipelineComponentConfig.aggregateInputSystemNames(exporterConfig.inputs),
-                                ExporterAE.TYPE_CLASSES, PipelineComponentConfig.aggregateInputTypes(exporterConfig.inputs),
-                                ExporterAE.FIELD_NAMES, PipelineComponentConfig.aggregateInputFields(exporterConfig.inputs),
+                                ExporterAE.INPUT_TYPES, PipelineComponentConfig.aggregateInputTypes(exporterConfig.inputs),
+                                ExporterAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(exporterConfig.inputs),
                                 ExporterAE.PULLER_CLASSES, PipelineComponentConfig.aggregateInputPullers(exporterConfig.inputs),
                                 ExporterAE.ALIGNER_CLASS, exporterConfig.alignerClass,
                                 ExporterAE.EXPORTER_CLASS, exporterConfig.exporterClass,
                                 ExporterAE.OUTPUT_DIRECTORY, exporterConfig.outputDirectory
                         ));
+            } else if(componentConfig.getClass().equals(TranslatorConfig.class)) {
+                TranslatorConfig translatorConfig = (TranslatorConfig) componentConfig;
+                engines.add(
+                        AnalysisEngineFactory.createEngine(TranslatorAE.class,
+                                TranslatorAE.READ_VIEW, translatorConfig.input.fromView,
+                                TranslatorAE.PULLER_CLASS, translatorConfig.input.pullerClass,
+                                TranslatorAE.INPUT_TYPE, translatorConfig.input.annotationType,
+                                TranslatorAE.FILTER_CLASS, translatorConfig.filterClassName,
+                                TranslatorAE.FILTER_PATTERN, translatorConfig.filterPattern,
+                                TranslatorAE.MAPPER_CONFIG_PATH, translatorConfig.mapperConfigPath,
+                                TranslatorAE.DISTILLER_CLASSES, PipelineComponentConfig.aggregateOutputDistillers(translatorConfig.outputs),
+                                TranslatorAE.OUTPUT_TYPES, PipelineComponentConfig.aggregateOutputAnnotationClasses(translatorConfig.outputs),
+                                TranslatorAE.OUTPUT_FIELDS, PipelineComponentConfig.aggregateOutputAnnotationFields(translatorConfig.outputs),
+                                TranslatorAE.PUSHER_CLASSES, PipelineComponentConfig.aggregateOutputPushers(translatorConfig.outputs),
+                                TranslatorAE.WRITE_VIEWS, PipelineComponentConfig.aggregateOutputViewNames(translatorConfig.outputs)
+                        ));
+            } else {
+                throw new AmicusException(componentConfig.getClass().getName() + " hasn't been implemented yet!");
             }
         }
 

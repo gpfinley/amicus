@@ -88,7 +88,7 @@
                             <typeSystemIncludes>
                                 <!-- one or more ant-like file patterns
                                      identifying top level descriptors -->
-                                <typeSystemInclude>typeSystems/*TypeSystem.xml</typeSystemInclude>
+                                <typeSystemInclude>src/main/resources/typeSystems/*</typeSystemInclude>
                             </typeSystemIncludes>
 
                             <!-- OPTIONAL -->

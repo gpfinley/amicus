@@ -15,7 +15,7 @@ public class CtakesCuiPuller extends AnnotationPuller<String> {
     }
 
     /**
-     * Loop through the FSArray in the cTAKES system and return the first result with a CUI.
+     * Loop through an FSArray in the cTAKES system and return the first result with a CUI.
      * @param annotation
      * @return
      */

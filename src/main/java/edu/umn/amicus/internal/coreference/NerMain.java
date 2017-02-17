@@ -1,6 +1,5 @@
-package edu.umn.amicus.coreference;
+package edu.umn.amicus.internal.coreference;
 
-import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.uimacomponents.XmiWriterAE;
 import org.apache.uima.UIMAException;
@@ -8,10 +7,8 @@ import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
-import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,9 +36,9 @@ public class NerMain {
         CollectionReader reader;
         List<AnalysisEngine> engines = new ArrayList<>();
         try {
-            TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(Amicus.MY_TYPE_SYSTEM.toString());
+//            TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(Amicus.MY_TYPE_SYSTEM.toString());
             reader = CollectionReaderFactory.createReader(I2b2MarkablesReader.class,
-                    typeSystem,
+//                    typeSystem,
                     I2b2MarkablesReader.TEXT_DIRECTORY, textDir,
                     I2b2MarkablesReader.MARKABLES_DIRECTORY, markablesDir);
 
@@ -58,7 +55,7 @@ public class NerMain {
 
         } catch (ResourceInitializationException e) {
             e.printStackTrace();
-            throw new AmicusException();
+            throw new AmicusException(e);
         }
         try {
             SimplePipeline.runPipeline(reader,

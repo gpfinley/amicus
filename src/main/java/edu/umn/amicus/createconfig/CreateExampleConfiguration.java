@@ -78,7 +78,7 @@ public class CreateExampleConfiguration {
                 new AnnotationOutputConfig().annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")
                         .annotationField("text")
                         .distillerClass("edu.umn.amicus.distillers.PriorityDistiller")
-                        .pusherClass("edu.umn.amicus.pushers.SimplePusher")
+                        .pusherClass("edu.umn.amicus.pushers.SetterPusher")
                         .writeView(Amicus.DEFAULT_MERGED_VIEW)
         };
 

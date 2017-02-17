@@ -14,10 +14,6 @@ public class AmicusPipelineConfiguration {
      * Throw an exception if not enough information was provided
      */
     public void verify() {
-//        if (inputNames == null || inputDirectories == null || inputViews == null
-//                || inputNames.size() != inputDirectories.size() || inputNames.size() != inputViews.size()) {
-//            throw new AmicusException("Pipeline configuration incomplete");
-//        }
         for (PipelineComponentConfig c : pipelineComponents) c.verify();
         for (SourceSystemConfig c : allSystemsUsed) c.verify();
 
@@ -32,5 +28,5 @@ public class AmicusPipelineConfiguration {
         return inputs;
     }
 
-    //todo: draw pipeline!
+    //todo: draw pipeline!?
 }

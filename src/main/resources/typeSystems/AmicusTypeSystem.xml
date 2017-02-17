@@ -92,5 +92,71 @@
             </allowedValues>
         </typeDescription>
 
+        <typeDescription>
+            <name>org.apache.ctakes.typesystem.type.refsem.UmlsConcept</name>
+            <description>Concepts in the Unified Medical Language System (UMLS) Metathesaurus have a concept unique identifier (CUI) and a type unique identifier (TUI, i.e., semantic type) which are curated, normalized codes. For example, "pain" would have a cui=C0030193 and tui=T184.
+                Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.UmlsConcept</description>
+            <supertypeName>org.apache.ctakes.typesystem.type.refsem.OntologyConcept</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>cui</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>tui</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>preferredText</name>
+                    <description>preferredText is the preferred term. normally his is
+                        the UMLS preferred name.</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+
+        <typeDescription>
+            <name>org.apache.ctakes.typesystem.type.refsem.OntologyConcept</name>
+            <description>Ontologies (e.g., SNOMED-CT) provide an expert semantic representation for concepts. They typically assign a code to a concept and normalize across various textual representations of that concept.
+                IdentifiedAnnotation and Elements may point to these normalized concept representations to indicate clinical concepts.
+                Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.OntologyConcept</description>
+            <supertypeName>uima.cas.TOP</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>codingScheme</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>code</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>oid</name>
+                    <description/>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>oui</name>
+                    <description>holds the rxnorm unique identifier for a given drug mention.
+                        TODO: change this attribute because of name clash (UMLS/SNOMED)</description>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>score</name>
+                    <description>Word Sense disambiguation: if this named entity is assigned multiple ontologyConcepts, the score represents how similar this sense is to surrounding senses (higher scores = more likely to be the correct sense)</description>
+                    <rangeTypeName>uima.cas.Double</rangeTypeName>
+                </featureDescription>
+                <featureDescription>
+                    <name>disambiguated</name>
+                    <description>Word Sense disambiguation: if this named entity is assigned multiple ontologyConcepts, then the OntologyConcept with disambiguated=true is the most likely sense</description>
+                    <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+
     </types>
 </typeSystemDescription>

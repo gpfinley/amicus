@@ -5,14 +5,14 @@ import java.util.List;
 
 /**
  * Basic superclass for pipeline components: Mergers, Collectors, and Exporters.
- * Any actual processing is class-dependent and will require polling objects' types.
+ * Any actual mappers is class-dependent and will require polling objects' types.
  *
  * Created by greg on 2/10/17.
  */
 public abstract class PipelineComponentConfig {
 
     // TODO: should we make these static methods non-static and inherited? Will need to declare inputs and outputs
-    // TODO:    for all implementing classes in that case, even if they don't have them (can through unsupported op exc)
+    // TODO:    for all implementing classes in that case, even if they don't have them (can throw unsupported op exc)
 //    // not all pipeline components will have both inputs and outputs
 //    public AnnotationInputConfig[] inputs;
 //    public AnnotationOutputConfig[] outputs;

@@ -1,6 +1,8 @@
 package edu.umn.amicus.pushers;
 
+import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
+import edu.umn.amicus.Piece;
 import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.uimacomponents.Util;
 import org.apache.uima.jcas.JCas;
@@ -14,13 +16,15 @@ import java.lang.reflect.Method;
  *
  * Created by gpfinley on 1/20/17.
  */
-public abstract class AnnotationPusher<T> {
+public abstract class AnnotationPusher<T> extends Piece {
+
+    public static final String DEFAULT_PUSHER = SetterPusher.class.getName();
+    public static final String DEFAULT_MULTI_PUSHER = MultiSetterPusher.class.getName();
 
     // Multi-field pushers will probably ignore this
     protected String typeName;
     protected String fieldName;
 
-    // todo: figure out how constructors and inheritance should work
     protected AnnotationPusher() {}
 
     protected AnnotationPusher(String typeName, String fieldName) {
@@ -37,7 +41,7 @@ public abstract class AnnotationPusher<T> {
             return (Class<? extends Annotation>) Class.forName(name);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            throw new AmicusException();
+            throw new AmicusException(e);
         }
     }
 
@@ -46,7 +50,7 @@ public abstract class AnnotationPusher<T> {
             return annotationClass.getConstructor(JCas.class, int.class, int.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            throw new AmicusException();
+            throw new AmicusException(e);
         }
     }
 
@@ -58,6 +62,17 @@ public abstract class AnnotationPusher<T> {
                 }
             }
             throw new AmicusException(new NoSuchMethodException(setterName));
+    }
+
+    public static AnnotationPusher create(String pusherClassName, String typeName, String fieldName) {
+        if (pusherClassName == null) {
+            if (typeName == null || fieldName == null) {
+                throw new AmicusException("Need to provide output annnotation fields and types UNLESS using" +
+                        " a custom AnnotationPusher implementation that can ignore them.");
+            }
+            pusherClassName = fieldName.contains(MultiSetterPusher.DELIMITER) ? DEFAULT_MULTI_PUSHER : DEFAULT_PUSHER;
+        }
+        return Amicus.getPieceInstance(AnnotationPusher.class, pusherClassName, typeName, fieldName);
     }
 
 }

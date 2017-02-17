@@ -1,7 +1,5 @@
 package edu.umn.amicus.config;
 
-import edu.umn.amicus.Amicus;
-
 /**
  * All necessary configuration information for a single type to be merged.
  * Saved as part of the yaml serialization of the AppConfiguration class.
@@ -11,9 +9,9 @@ import edu.umn.amicus.Amicus;
 public class AnnotationOutputConfig {
     public String annotationType;
     public String annotationField;
-    public String distillerClass = Amicus.DEFAULT_DISTILLER_CLASS.getName();
-    public String pusherClass = Amicus.DEFAULT_PUSHER_CLASS.getName();
-    public String writeView = Amicus.DEFAULT_MERGED_VIEW;
+    public String distillerClass;
+    public String pusherClass;
+    public String writeView;
 
     /**
      * Verify that these mergers have enough config info

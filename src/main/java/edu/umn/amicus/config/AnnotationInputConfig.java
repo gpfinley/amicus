@@ -1,6 +1,5 @@
 package edu.umn.amicus.config;
 
-import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
 
 /**
@@ -13,7 +12,7 @@ public class AnnotationInputConfig {
     public String annotationType;
     public String annotationField;
     public String fromView;
-    public String pullerClass = Amicus.DEFAULT_PULLER_CLASS.getName();
+    public String pullerClass;
 
     /**
      * Verify that these mergers have enough config info

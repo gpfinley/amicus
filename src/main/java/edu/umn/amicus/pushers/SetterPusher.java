@@ -13,12 +13,12 @@ import java.lang.reflect.Method;
  * todo: doc
  * Created by gpfinley on 1/20/17.
  */
-public class SimplePusher extends AnnotationPusher<String> {
+public class SetterPusher extends AnnotationPusher<String> {
 
     private final Constructor<? extends Annotation> annotationConstructor;
     private final Method setterMethod;
 
-    public SimplePusher(String typeName, String fieldName) {
+    public SetterPusher(String typeName, String fieldName) {
         Class<? extends Annotation> annotationClass = getClassFromName(typeName);
         annotationConstructor = getAnnotationConstructor(annotationClass);
         setterMethod = getSetterForField(annotationClass, fieldName);
@@ -26,7 +26,6 @@ public class SimplePusher extends AnnotationPusher<String> {
 
     @Override
     public void push(JCas jCas, PreAnnotation<String> value) {
-        if (value == null) return;
         Annotation annotation;
         try {
             annotation = annotationConstructor.newInstance(jCas, value.getBegin(), value.getEnd());

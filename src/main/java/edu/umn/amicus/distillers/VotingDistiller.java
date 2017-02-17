@@ -2,8 +2,9 @@ package edu.umn.amicus.distillers;
 
 import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.config.ClassConfigurationLoader;
-import edu.umn.amicus.processing.Counter;
+import edu.umn.amicus.Counter;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +64,7 @@ public class VotingDistiller extends AnnotationDistiller<Object> {
         Config config;
         try {
             config = (Config) ClassConfigurationLoader.load(VotingDistiller.class);
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             config = null;
         }
         minVotesToAnnotate = config == null ? 1 : config.minVotesToAnnotate;

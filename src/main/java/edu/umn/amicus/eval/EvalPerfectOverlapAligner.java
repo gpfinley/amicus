@@ -1,6 +1,7 @@
 package edu.umn.amicus.eval;
 
 import edu.umn.amicus.aligners.AnnotationAligner;
+import edu.umn.amicus.aligners.BeginEnd;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
@@ -35,7 +36,7 @@ public class EvalPerfectOverlapAligner extends AnnotationAligner {
             }
         }
 
-        // build truePositive-cum-falseNegative tuples
+        // build truePositive/falseNegative tuples
         Iterator<Map.Entry<BeginEnd, Annotation>> beginEndIterator = beginEndMaps.get(0).entrySet().iterator();
         while (beginEndIterator.hasNext()) {
             Map.Entry<BeginEnd, Annotation> entry = beginEndIterator.next();
@@ -71,34 +72,34 @@ public class EvalPerfectOverlapAligner extends AnnotationAligner {
         return evalTuples.iterator();
     }
 
-    // todo: break out into Util since another class uses this
-    private static class BeginEnd {
-        int begin;
-        int end;
-
-        BeginEnd(int begin, int end) {
-            this.begin = begin;
-            this.end = end;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            BeginEnd beginEnd = (BeginEnd) o;
-
-            if (begin != beginEnd.begin) return false;
-            return end == beginEnd.end;
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = begin;
-            result = 31 * result + end;
-            return result;
-        }
-    }
+//    // todo: break out into Util since another class uses this
+//    private static class BeginEnd {
+//        int begin;
+//        int end;
+//
+//        BeginEnd(int begin, int end) {
+//            this.begin = begin;
+//            this.end = end;
+//        }
+//
+//        @Override
+//        public boolean equals(Object o) {
+//            if (this == o) return true;
+//            if (o == null || getClass() != o.getClass()) return false;
+//
+//            BeginEnd beginEnd = (BeginEnd) o;
+//
+//            if (begin != beginEnd.begin) return false;
+//            return end == beginEnd.end;
+//
+//        }
+//
+//        @Override
+//        public int hashCode() {
+//            int result = begin;
+//            result = 31 * result + end;
+//            return result;
+//        }
+//    }
 
 }

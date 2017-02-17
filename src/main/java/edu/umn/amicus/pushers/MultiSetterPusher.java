@@ -17,14 +17,14 @@ import java.util.List;
  *
  * Created by gpfinley on 1/20/17.
  */
-public class MultiPusher extends AnnotationPusher<List> {
+public class MultiSetterPusher extends AnnotationPusher<List> {
 
     public static final String DELIMITER = ";";
 
     private final Constructor<? extends Annotation> annotationConstructor;
     private final List<Method> setterMethods;
 
-    public MultiPusher(String typeName, String fieldNamesDelimited) {
+    public MultiSetterPusher(String typeName, String fieldNamesDelimited) {
         Class<? extends Annotation> annotationClass = getClassFromName(typeName);
         annotationConstructor = getAnnotationConstructor(annotationClass);
 
@@ -41,7 +41,6 @@ public class MultiPusher extends AnnotationPusher<List> {
 
     @Override
     public void push(JCas jCas, PreAnnotation<List> value) {
-        if (value == null) return;
         Annotation annotation;
         try {
             annotation = annotationConstructor.newInstance(jCas, value.getBegin(), value.getEnd());

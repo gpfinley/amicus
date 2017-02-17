@@ -1,4 +1,4 @@
-package edu.umn.amicus.coreference;
+package edu.umn.amicus.internal.coreference;
 
 import edu.stanford.nlp.coref.CorefCoreAnnotations;
 import edu.stanford.nlp.coref.data.CorefChain;

@@ -37,7 +37,7 @@ public class Test {
         map.put("key A", "value A");
         map.put("key B", "value B");
         map.put("key C", "value C");
-        yaml.dump(map, new FileWriter("classConfigurations/edu.umn.amicus.processing.Mapper.yml"));
+        yaml.dump(map, new FileWriter("classConfigurations/edu.umn.amicus.mappers.Mapper.yml"));
 
 
 //        String textDir = "/Users/gpfinley/i2b2_past/2011/Beth_Train/docs";

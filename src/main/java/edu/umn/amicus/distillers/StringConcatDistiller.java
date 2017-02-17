@@ -10,16 +10,16 @@ import java.util.List;
  *
  * Created by gpfinley on 12/9/16.
  */
-public class ConcatDistiller extends AnnotationDistiller<String> {
+public class StringConcatDistiller extends AnnotationDistiller<String> {
 
-    private static String separator = "|";
+    public static String separator= "|";
 
     public static String getSeparator() {
         return separator;
     }
 
     public static void setSeparator(String separator) {
-        ConcatDistiller.separator = separator;
+        StringConcatDistiller.separator = separator;
     }
 
     /**
