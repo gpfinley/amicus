@@ -42,7 +42,7 @@ public class CreateExampleExportConfig {
 
         goldExporter._exporterName = "gold exporter";
         goldExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        goldExporter.exporterClass = "edu.umn.amicus.exporters.TsvExporter";
+        goldExporter.exporterClass = "edu.umn.amicus.exporters.EachSoloTsvExporter";
         goldExporter.inputs = new AnnotationInputConfig[] {
                 new AnnotationInputConfig()
                         .annotationType("edu.umn.biomedicus.type.TokenAnnotation")
@@ -54,7 +54,7 @@ public class CreateExampleExportConfig {
 
         biomedicusExporter._exporterName = "biomedicus exporter";
         biomedicusExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        biomedicusExporter.exporterClass = "edu.umn.amicus.exporters.TsvExporter";
+        biomedicusExporter.exporterClass = "edu.umn.amicus.exporters.EachSoloTsvExporter";
         biomedicusExporter.inputs = new AnnotationInputConfig[] {
                 new AnnotationInputConfig()
                         .annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")

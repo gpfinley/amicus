@@ -2,7 +2,7 @@ package edu.umn.amicus;
 
 import edu.umn.amicus.aligners.EachSoloAligner;
 import edu.umn.amicus.aligners.PerfectOverlapAligner;
-import edu.umn.amicus.exporters.TsvExporter;
+import edu.umn.amicus.exporters.EachSoloTsvExporter;
 import edu.umn.amicus.pullers.MultiGetterPuller;
 import edu.umn.amicus.pushers.MultiPusher;
 import edu.umn.amicus.distillers.PriorityDistiller;
@@ -22,11 +22,11 @@ public final class Amicus {
     public final static Path CLASS_CONFIG_DIR = Paths.get("classConfigurations");
 
     // todo: can we do without runtime type systems if they're being handled through autodetection and maven building?
-    public final static Path TYPE_SYSTEMS_DIR = Paths.get("typeSystems");
+    public final static Path TYPE_SYSTEMS_DIR = Paths.get("typesystems");
     public final static Path MY_TYPE_SYSTEM = TYPE_SYSTEMS_DIR.resolve("EnsemblesTypeSystem.xml");
 
     public final static Class<PerfectOverlapAligner> DEFAULT_ALIGNER_CLASS = PerfectOverlapAligner.class;
-    public final static Class<TsvExporter> DEFAULT_EXPORTER_CLASS = TsvExporter.class;
+    public final static Class<EachSoloTsvExporter> DEFAULT_EXPORTER_CLASS = EachSoloTsvExporter.class;
     public final static Class<EachSoloAligner> DEFAULT_ALIGNER_CLASS_FOR_EXPORTER = EachSoloAligner.class;
     public final static Class<PriorityDistiller> DEFAULT_DISTILLER_CLASS = PriorityDistiller.class;
     public final static Class<GetterPuller> DEFAULT_PULLER_CLASS = GetterPuller.class;

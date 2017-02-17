@@ -31,4 +31,6 @@ public class AmicusPipelineConfiguration {
         }
         return inputs;
     }
+
+    //todo: draw pipeline!
 }

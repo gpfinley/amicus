@@ -141,7 +141,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         } catch (ReflectiveOperationException e) {
             throw new ResourceInitializationException(e);
         }
-        exporter.setSystemNames(readViews);
+        exporter.setViewNames(readViews);
     }
 
     @Override

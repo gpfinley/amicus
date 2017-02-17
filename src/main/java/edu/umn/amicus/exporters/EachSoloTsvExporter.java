@@ -11,7 +11,7 @@ import java.util.List;
  * // todo: test! will need to test with multi-field (List) PreAnnotations
  * Created by greg on 2/11/17.
  */
-public class TsvExporter extends AnnotationExporter {
+public class EachSoloTsvExporter extends AnnotationExporter {
 
     protected String delimiter = "\t";
 
@@ -36,7 +36,7 @@ public class TsvExporter extends AnnotationExporter {
                     StringBuilder builder = new StringBuilder();
 
                     // give the name or number of the source system along with the begin and end
-                    builder.append(systemNames != null && systemNames.length > i ? systemNames[i] : ((Integer) i).toString());
+                    builder.append(viewNames != null && viewNames.length > i ? viewNames[i] : ((Integer) i).toString());
                     if (typeNames != null) {
                         builder.append(delimiter);
                         builder.append(i < typeNames.length  && typeNames[i] != null? typeNames[i] : "unknown");

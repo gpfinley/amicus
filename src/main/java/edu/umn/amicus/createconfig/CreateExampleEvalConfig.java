@@ -57,13 +57,13 @@ public class CreateExampleEvalConfig {
 
         goldExporter._exporterName = "gold exporter";
         goldExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        goldExporter.exporterClass = "edu.umn.amicus.exporters.TsvExporter";
+        goldExporter.exporterClass = "edu.umn.amicus.exporters.EachSoloTsvExporter";
         goldExporter.inputs = new AnnotationInputConfig[] {goldInput};
         goldExporter.outputDirectory = "data/out/goldExports";
 
         biomedicusExporter._exporterName = "biomedicus exporter";
         biomedicusExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        biomedicusExporter.exporterClass = "edu.umn.amicus.exporters.TsvExporter";
+        biomedicusExporter.exporterClass = "edu.umn.amicus.exporters.EachSoloTsvExporter";
         biomedicusExporter.inputs = new AnnotationInputConfig[] {biomedicusInput};
         biomedicusExporter.outputDirectory = "data/out/biomedicusExports";
 
@@ -89,7 +89,7 @@ public class CreateExampleEvalConfig {
             };
 
         evalCollector.name = "eval collector";
-        evalCollector.summarizerClass = "edu.umn.amicus.summarizers.MatchSummarizer";
+        evalCollector.summarizerClass = "edu.umn.amicus.eval.EvalPrfSummarizer";
         evalCollector.input = new AnnotationInputConfig()
                 .annotationType("edu.umn.amicus.SingleFieldAnnotation")
                 .annotationField("field")

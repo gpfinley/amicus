@@ -47,7 +47,7 @@ public class Test {
 //        CollectionReader reader;
 //        List<AnalysisEngine> engines = new ArrayList<>();
 //        try {
-//            TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("typeSystems/EnsemblesTypeSystem.xml");
+//            TypeSystemDescription typeSystem = TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath("typesystems/EnsemblesTypeSystem.xml");
 //            reader = CollectionReaderFactory.createReader(I2b2MarkablesReader.class,
 //                    typeSystem,
 //                    I2b2MarkablesReader.TEXT_DIRECTORY, textDir,

@@ -36,12 +36,9 @@ public class VotingDistiller extends AnnotationDistiller<Object> {
         for (PreAnnotation pa : annotations) {
             values.add(pa.getValue());
         }
-        // todo: delete (java 8)
-//        List<Object> values = annotations.stream().map(PreAnnotation::getValue).collect(Collectors.toList());
         Counter<Object> annotationsCounter = new Counter<>(values);
         int maxCount = 0;
         Object highestCount = null;
-        // todo: move into a Counter method? (getMax, e.g.)
         for (Map.Entry<Object, Integer> entry : annotationsCounter.entrySet()) {
             if (entry.getValue() > maxCount) {
                 maxCount = entry.getValue();

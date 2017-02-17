@@ -14,6 +14,7 @@ public class FirstSystemOverlapAligner extends AnnotationAligner {
     /**
      * Each iteration will provide one annotation from the first system,
      * plus all annotations from all systems that overlap.
+     * // todo: make it the annotation with the "best" or most complete overlap
      * Each annotation from the first system will be represented exactly once.
      * Some annotations from systems other than the first may be ignored.
      * @param allAnnotations

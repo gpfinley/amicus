@@ -5,11 +5,11 @@ import java.util.regex.Pattern;
 /**
  * Created by greg on 2/14/17.
  */
-public class CsvExporter extends TsvExporter {
+public class AlignedCsvExporter extends AlignedTsvExporter {
 
     private static final Pattern badChar = Pattern.compile("[\"\n\r,]");
 
-    public CsvExporter() {
+    public AlignedCsvExporter() {
         super();
         delimiter = ",";
     }

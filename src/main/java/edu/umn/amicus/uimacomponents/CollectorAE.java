@@ -2,7 +2,7 @@ package edu.umn.amicus.uimacomponents;
 
 import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.eval.DataListener;
+import edu.umn.amicus.summarizers.DataListener;
 import edu.umn.amicus.summarizers.Summarizer;
 import edu.umn.amicus.pullers.AnnotationPuller;
 import org.apache.uima.UimaContext;

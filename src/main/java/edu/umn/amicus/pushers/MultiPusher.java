@@ -31,12 +31,12 @@ public class MultiPusher extends AnnotationPusher<List> {
         List<String> fieldNames = Arrays.asList(fieldNamesDelimited.split(DELIMITER));
         setterMethods = new ArrayList<>();
         for (String f : fieldNames) {
-            setterMethods.add(getSetterForField(annotationClass, f));
+            if ("".equals(f)) {
+                setterMethods.add(null);
+            } else {
+                setterMethods.add(getSetterForField(annotationClass, f));
+            }
         }
-//        setterMethods = fieldNames
-//                .stream()
-//                .map(m -> getSetterForField(annotationClass, m))
-//                .collect(Collectors.toList());
     }
 
     @Override
@@ -52,7 +52,9 @@ public class MultiPusher extends AnnotationPusher<List> {
                         " list not equivalent. Check configuration and transformer implementation.");
             }
             for (int i=0; i<setterMethods.size(); i++) {
-                setterMethods.get(i).invoke(annotation, value.getValue().get(i));
+                if (setterMethods.get(i) != null) {
+                    setterMethods.get(i).invoke(annotation, value.getValue().get(i));
+                }
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new AmicusException(e);

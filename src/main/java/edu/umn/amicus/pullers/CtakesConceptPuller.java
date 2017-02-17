@@ -14,7 +14,6 @@ import org.apache.uima.jcas.tcas.Annotation;
  *
  * Created by gpfinley on 10/20/16.
  */
-@Deprecated
 public class CtakesConceptPuller extends CtakesCuiPuller {
 
     private Mapper<String, String> mapper;

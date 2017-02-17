@@ -9,7 +9,7 @@ pipelineComponents:
 - !!edu.umn.amicus.config.ExporterConfig
   _exporterName: gold exporter
   alignerClass: edu.umn.amicus.aligners.EachSoloAligner
-  exporterClass: edu.umn.amicus.exporters.TsvExporter
+  exporterClass: edu.umn.amicus.exporters.EachSoloTsvExporterExporter
   inputs:
   - &id001 {annotationField: acronymAbbrevExpansion, annotationType: edu.umn.biomedicus.type.TokenAnnotation,
     fromView: GoldView, pullerClass: edu.umn.amicus.pullers.EquivalentMapperPuller}
@@ -17,7 +17,7 @@ pipelineComponents:
 - !!edu.umn.amicus.config.ExporterConfig
   _exporterName: biomedicus exporter
   alignerClass: edu.umn.amicus.aligners.EachSoloAligner
-  exporterClass: edu.umn.amicus.exporters.TsvExporter
+  exporterClass: edu.umn.amicus.exporters.EachSoloTsvExporterExporter
   inputs:
   - &id002 {annotationField: text, annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
     fromView: BiomedicusView, pullerClass: edu.umn.amicus.pullers.EquivalentMapperPuller}
@@ -47,5 +47,5 @@ pipelineComponents:
     fromView: EvalView, pullerClass: edu.umn.amicus.eval.EvalMatchPuller}
   name: eval collector
   outPath: null
-  summarizerClass: edu.umn.amicus.summarizers.MatchSummarizer
+  summarizerClass: edu.umn.amicus.eval.EvalPrfSummarizerer
 xmiOutPath: /Users/gpfinley/hermes/home/gpfinley/xmi-export-out-temp

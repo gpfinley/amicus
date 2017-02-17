@@ -10,16 +10,16 @@ import java.util.List;
  */
 public abstract class AnnotationExporter {
 
-    protected String[] systemNames;
+    protected String[] viewNames;
     protected String[] typeNames;
     protected String[] fieldNames;
 
-    public String[] getSystemNames() {
-        return systemNames;
+    public String[] getViewNames() {
+        return viewNames;
     }
 
-    public void setSystemNames(String[] systemNames) {
-        this.systemNames = systemNames;
+    public void setViewNames(String[] viewNames) {
+        this.viewNames = viewNames;
     }
 
     public String[] getTypeNames() {
