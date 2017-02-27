@@ -17,7 +17,7 @@ public class AmicusPipelineConfiguration {
         for (PipelineComponentConfig c : pipelineComponents) c.verify();
         for (SourceSystemConfig c : allSystemsUsed) c.verify();
 
-        // todo: confirm that there are no two Collectors with the same name
+        // todo: confirm that there are no two Summarizers with the same name
     }
 
     public String[] aggregateInputDirectories() {

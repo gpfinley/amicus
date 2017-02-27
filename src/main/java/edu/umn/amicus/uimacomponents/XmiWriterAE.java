@@ -18,12 +18,15 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Logger;
 
 /**
  * Created by gpfinley on 10/17/16.
  */
 public class XmiWriterAE extends CasAnnotator_ImplBase {
+
+    private final static Semaphore typeSystemWritten = new Semaphore(1);
 
     private static final Logger LOGGER = Logger.getLogger(XmiWriterAE.class.getName());
 
@@ -34,7 +37,6 @@ public class XmiWriterAE extends CasAnnotator_ImplBase {
     private String outputDirName;
     @ConfigurationParameter(name = TYPE_SYSTEM_VIEW, defaultValue = Amicus.DEFAULT_MERGED_VIEW)
     private static String typeSystemView;
-    // todo: have user specify typeSystemView parameter (optionally)
 
     private Path outputDir;
 
@@ -57,24 +59,24 @@ public class XmiWriterAE extends CasAnnotator_ImplBase {
 
     @Override
     public void process(CAS cas) throws AnalysisEngineProcessException {
-
-        // todo: implement concurrency/semaphores for this (can copy from biomedicus) so that it only writes TS once
-
 //        String typeSystemView = mergedViewName == null ? Amicus.DEFAULT_MERGED_VIEW : mergedViewName;
-        try {
-            // todo: see if this writes the correct TS
-//            CAS mergedView = cas.getView(typeSystemView);
-            CAS mergedView = cas;
-            TypeSystem typeSystem = mergedView.getTypeSystem();
-            TypeSystemDescription typeSystemDescription = TypeSystemUtil.typeSystem2TypeSystemDescription(typeSystem);
+        // todo: test sempahore
+        if (typeSystemWritten.tryAcquire()) {
             try {
-                typeSystemDescription.toXML(Files.newOutputStream(outputDir.resolve("TypeSystem.xml")));
-            } catch (IOException | SAXException e) {
-                throw new AnalysisEngineProcessException(e);
+                // todo: see if this writes the correct TS, or at least one that is comprehensive
+//            CAS mergedView = cas.getView(typeSystemView);
+                CAS mergedView = cas;
+                TypeSystem typeSystem = mergedView.getTypeSystem();
+                TypeSystemDescription typeSystemDescription = TypeSystemUtil.typeSystem2TypeSystemDescription(typeSystem);
+                try {
+                    typeSystemDescription.toXML(Files.newOutputStream(outputDir.resolve("TypeSystem.xml")));
+                } catch (IOException | SAXException e) {
+                    throw new AnalysisEngineProcessException(e);
+                }
+            } catch (CASRuntimeException e) {
+                // todo: change
+                LOGGER.warning(String.format("No view with name %s; not writing type system", typeSystemView));
             }
-        } catch (CASRuntimeException e) {
-            // todo: change
-            LOGGER.warning(String.format("No view with name %s; not writing type system", typeSystemView));
         }
 
         String docID = Util.getDocumentID(cas);

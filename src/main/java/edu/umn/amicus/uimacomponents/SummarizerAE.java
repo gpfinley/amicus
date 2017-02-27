@@ -1,7 +1,7 @@
 package edu.umn.amicus.uimacomponents;
 
-import edu.umn.amicus.summarizers.DataListener;
-import edu.umn.amicus.summarizers.Summarizer;
+import edu.umn.amicus.summary.DataListener;
+import edu.umn.amicus.summary.SummaryWriter;
 import edu.umn.amicus.pullers.AnnotationPuller;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -20,14 +20,14 @@ import java.io.*;
  *
  * Created by gpfinley on 2/3/17.
  */
-public class CollectorAE extends CasAnnotator_ImplBase {
+public class SummarizerAE extends CasAnnotator_ImplBase {
 
     public static final String READ_VIEW = "readView";
     public static final String INPUT_TYPE = "typeClass";
     public static final String INPUT_FIELD = "fieldName";
     public static final String PULLER_CLASS = "pullerClass";
     public static final String LISTENER_NAME = "listenerName";
-    public static final String SUMMARIZER_CLASS = "summarizerClassName";
+    public static final String SUMMARY_WRITER_CLASS = "summaryWriterClassName";
     public static final String OUTPUT_PATH = "outputPath";
 
     @ConfigurationParameter(name = READ_VIEW)
@@ -40,8 +40,8 @@ public class CollectorAE extends CasAnnotator_ImplBase {
     private String pullerClassName;
     @ConfigurationParameter(name = LISTENER_NAME)
     private String listenerName;
-    @ConfigurationParameter(name = SUMMARIZER_CLASS)
-    private String summarizerClassName;
+    @ConfigurationParameter(name = SUMMARY_WRITER_CLASS)
+    private String summaryWriterClassName;
     @ConfigurationParameter(name = OUTPUT_PATH, mandatory = false)
     private String outputPath;
 
@@ -78,7 +78,7 @@ public class CollectorAE extends CasAnnotator_ImplBase {
 
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
-        Summarizer summarizer = Summarizer.create(summarizerClassName);
+        SummaryWriter summarizer = SummaryWriter.create(summaryWriterClassName);
         try {
             OutputStream outputStream;
             if (outputPath == null) {

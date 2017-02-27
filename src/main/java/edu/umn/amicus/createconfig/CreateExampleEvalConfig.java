@@ -37,11 +37,11 @@ public class CreateExampleEvalConfig {
 
         ExporterConfig goldExporter = new ExporterConfig();
         ExporterConfig biomedicusExporter = new ExporterConfig();
-        CollectorConfig goldCollector = new CollectorConfig();
-        CollectorConfig biomedicusCollector = new CollectorConfig();
+        SummarizerConfig goldCollector = new SummarizerConfig();
+        SummarizerConfig biomedicusCollector = new SummarizerConfig();
 
         MergerConfig evalMerger = new MergerConfig();
-        CollectorConfig evalCollector = new CollectorConfig();
+        SummarizerConfig evalCollector = new SummarizerConfig();
 
         AnnotationInputConfig goldInput = new AnnotationInputConfig()
                 .annotationType("edu.umn.biomedicus.type.TokenAnnotation")
@@ -57,23 +57,23 @@ public class CreateExampleEvalConfig {
 
         goldExporter._exporterName = "gold exporter";
         goldExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        goldExporter.exporterClass = "edu.umn.amicus.exporters.EachSoloTsvExporter";
+        goldExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
         goldExporter.inputs = new AnnotationInputConfig[] {goldInput};
         goldExporter.outputDirectory = "data/out/goldExports";
 
         biomedicusExporter._exporterName = "biomedicus exporter";
         biomedicusExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        biomedicusExporter.exporterClass = "edu.umn.amicus.exporters.EachSoloTsvExporter";
+        biomedicusExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
         biomedicusExporter.inputs = new AnnotationInputConfig[] {biomedicusInput};
         biomedicusExporter.outputDirectory = "data/out/biomedicusExports";
 
         goldCollector.name = "gold collector";
         goldCollector.input = goldInput;
-        goldCollector.summarizerClass = "edu.umn.amicus.summarizers.CounterSummarizer";
+        goldCollector.summarizerClass = "edu.umn.amicus.summary.CounterSummaryWriter";
 
         biomedicusCollector.name = "biomedicus collector";
         biomedicusCollector.input = biomedicusInput;
-        biomedicusCollector.summarizerClass = "edu.umn.amicus.summarizers.CounterSummarizer";
+        biomedicusCollector.summarizerClass = "edu.umn.amicus.summary.CounterSummaryWriter";
 
 
         evalMerger._mergerName = "acronym eval merger";
@@ -89,7 +89,7 @@ public class CreateExampleEvalConfig {
             };
 
         evalCollector.name = "eval collector";
-        evalCollector.summarizerClass = "edu.umn.amicus.eval.EvalPrfSummarizer";
+        evalCollector.summarizerClass = "edu.umn.amicus.eval.EvalPrfSummaryWriter";
         evalCollector.input = new AnnotationInputConfig()
                 .annotationType("edu.umn.amicus.SingleFieldAnnotation")
                 .annotationField("field")

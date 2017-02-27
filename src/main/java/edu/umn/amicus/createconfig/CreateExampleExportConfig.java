@@ -37,12 +37,12 @@ public class CreateExampleExportConfig {
 
         ExporterConfig goldExporter = new ExporterConfig();
         ExporterConfig biomedicusExporter = new ExporterConfig();
-        CollectorConfig goldCollector = new CollectorConfig();
-        CollectorConfig biomedicusCollector = new CollectorConfig();
+        SummarizerConfig goldCollector = new SummarizerConfig();
+        SummarizerConfig biomedicusCollector = new SummarizerConfig();
 
         goldExporter._exporterName = "gold exporter";
         goldExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        goldExporter.exporterClass = "edu.umn.amicus.exporters.EachSoloTsvExporter";
+        goldExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
         goldExporter.inputs = new AnnotationInputConfig[] {
                 new AnnotationInputConfig()
                         .annotationType("edu.umn.biomedicus.type.TokenAnnotation")
@@ -54,7 +54,7 @@ public class CreateExampleExportConfig {
 
         biomedicusExporter._exporterName = "biomedicus exporter";
         biomedicusExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        biomedicusExporter.exporterClass = "edu.umn.amicus.exporters.EachSoloTsvExporter";
+        biomedicusExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
         biomedicusExporter.inputs = new AnnotationInputConfig[] {
                 new AnnotationInputConfig()
                         .annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")
@@ -70,7 +70,7 @@ public class CreateExampleExportConfig {
                 .annotationField("acronymAbbrevExpansion")
                 .pullerClass("edu.umn.amicus.pullers.EquivalentMapperPuller")
                 .fromView("GoldView");
-        goldCollector.summarizerClass = "edu.umn.amicus.summarizers.CounterSummarizer";
+        goldCollector.summarizerClass = "edu.umn.amicus.summary.CounterSummaryWriter";
 
         biomedicusCollector.name = "biomedicus collector";
         biomedicusCollector.input = new AnnotationInputConfig()
@@ -78,7 +78,7 @@ public class CreateExampleExportConfig {
                 .annotationField("text")
                 .pullerClass("edu.umn.amicus.pullers.EquivalentMapperPuller")
                 .fromView("BiomedicusView");
-        biomedicusCollector.summarizerClass = "edu.umn.amicus.summarizers.CounterSummarizer";
+        biomedicusCollector.summarizerClass = "edu.umn.amicus.summary.CounterSummaryWriter";
 
         PipelineComponentConfig[] components = {goldExporter, biomedicusExporter, goldCollector, biomedicusCollector};
 

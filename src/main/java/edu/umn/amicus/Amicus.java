@@ -1,17 +1,7 @@
 package edu.umn.amicus;
 
 import edu.umn.amicus.aligners.EachSoloAligner;
-import edu.umn.amicus.aligners.PerfectOverlapAligner;
-import edu.umn.amicus.exporters.EachSoloTsvExporter;
-import edu.umn.amicus.filters.PassthroughFilter;
-import edu.umn.amicus.filters.RegexFilter;
-import edu.umn.amicus.mappers.Mapper;
-import edu.umn.amicus.pullers.MultiGetterPuller;
-import edu.umn.amicus.pushers.AnnotationPusher;
-import edu.umn.amicus.pushers.MultiSetterPusher;
-import edu.umn.amicus.distillers.PriorityDistiller;
-import edu.umn.amicus.pushers.SetterPusher;
-import edu.umn.amicus.pullers.GetterPuller;
+import edu.umn.amicus.export.EachSoloTsvExportWriter;
 import org.yaml.snakeyaml.Yaml;
 
 import java.nio.file.Path;
@@ -30,11 +20,7 @@ public final class Amicus {
 
     public final static Path CLASS_CONFIG_DIR = Paths.get("classConfigurations");
 
-//    // todo: can we do without runtime type systems if they're being handled through autodetection and maven building?
-//    public final static Path TYPE_SYSTEMS_DIR = Paths.get("typesystems");
-//    public final static Path MY_TYPE_SYSTEM = TYPE_SYSTEMS_DIR.resolve("EnsemblesTypeSystem.xml");
-
-    public final static Class<EachSoloTsvExporter> DEFAULT_EXPORTER_CLASS = EachSoloTsvExporter.class;
+    public final static Class<EachSoloTsvExportWriter> DEFAULT_EXPORTER_CLASS = EachSoloTsvExportWriter.class;
     public final static Class<EachSoloAligner> DEFAULT_ALIGNER_CLASS_FOR_EXPORTER = EachSoloAligner.class;
 
     /**

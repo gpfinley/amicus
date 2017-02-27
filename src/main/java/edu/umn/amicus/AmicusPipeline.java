@@ -67,17 +67,17 @@ public class AmicusPipeline {
                                 MergerAE.PUSHER_CLASSES, PipelineComponentConfig.aggregateOutputPushers(mergerConfig.outputs),
                                 MergerAE.WRITE_VIEWS, PipelineComponentConfig.aggregateOutputViewNames(mergerConfig.outputs)
                         ));
-            } else if(componentConfig.getClass().equals(CollectorConfig.class)) {
-                CollectorConfig collectorConfig = (CollectorConfig) componentConfig;
+            } else if(componentConfig.getClass().equals(SummarizerConfig.class)) {
+                SummarizerConfig summarizerConfig = (SummarizerConfig) componentConfig;
                 engines.add(
-                        AnalysisEngineFactory.createEngine(CollectorAE.class,
-                                CollectorAE.INPUT_TYPE, collectorConfig.input.annotationType,
-                                CollectorAE.INPUT_FIELD, collectorConfig.input.annotationField,
-                                CollectorAE.READ_VIEW, collectorConfig.input.fromView,
-                                CollectorAE.PULLER_CLASS, collectorConfig.input.pullerClass,
-                                CollectorAE.SUMMARIZER_CLASS, collectorConfig.summarizerClass,
-                                CollectorAE.LISTENER_NAME, collectorConfig.name,
-                                CollectorAE.OUTPUT_PATH, collectorConfig.outPath
+                        AnalysisEngineFactory.createEngine(SummarizerAE.class,
+                                SummarizerAE.INPUT_TYPE, summarizerConfig.input.annotationType,
+                                SummarizerAE.INPUT_FIELD, summarizerConfig.input.annotationField,
+                                SummarizerAE.READ_VIEW, summarizerConfig.input.fromView,
+                                SummarizerAE.PULLER_CLASS, summarizerConfig.input.pullerClass,
+                                SummarizerAE.SUMMARY_WRITER_CLASS, summarizerConfig.summarizerClass,
+                                SummarizerAE.LISTENER_NAME, summarizerConfig.name,
+                                SummarizerAE.OUTPUT_PATH, summarizerConfig.outPath
                         ));
             } else if(componentConfig.getClass().equals(ExporterConfig.class)) {
                 ExporterConfig exporterConfig = (ExporterConfig) componentConfig;
@@ -88,7 +88,7 @@ public class AmicusPipeline {
                                 ExporterAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(exporterConfig.inputs),
                                 ExporterAE.PULLER_CLASSES, PipelineComponentConfig.aggregateInputPullers(exporterConfig.inputs),
                                 ExporterAE.ALIGNER_CLASS, exporterConfig.alignerClass,
-                                ExporterAE.EXPORTER_CLASS, exporterConfig.exporterClass,
+                                ExporterAE.EXPORT_WRITER_CLASS, exporterConfig.exporterClass,
                                 ExporterAE.OUTPUT_DIRECTORY, exporterConfig.outputDirectory
                         ));
             } else if(componentConfig.getClass().equals(TranslatorConfig.class)) {

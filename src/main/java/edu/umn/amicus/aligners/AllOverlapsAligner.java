@@ -8,6 +8,7 @@ import java.util.*;
  * Finds all unique overlapping tuples of annotations.
  * Single annotations may be represented in several tuples, depending on how misaligned the annotations really are.
  * Created by gpfinley on 12/20/16.
+ * // todo: unit test
  */
 public class AllOverlapsAligner extends AnnotationAligner {
 

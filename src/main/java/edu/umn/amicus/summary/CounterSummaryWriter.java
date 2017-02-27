@@ -1,4 +1,4 @@
-package edu.umn.amicus.summarizers;
+package edu.umn.amicus.summary;
 
 import edu.umn.amicus.Counter;
 
@@ -10,7 +10,7 @@ import java.util.TreeMap;
 /**
  * Created by greg on 2/10/17.
  */
-public class CounterSummarizer extends Summarizer<Object> {
+public class CounterSummaryWriter extends SummaryWriter<Object> {
 
     @Override
     public String summarize(List<Object> list) {

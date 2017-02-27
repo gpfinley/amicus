@@ -1,4 +1,4 @@
-package edu.umn.amicus.exporters;
+package edu.umn.amicus.export;
 
 import edu.umn.amicus.PreAnnotation;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * // todo: test! will need to test with multi-field (List) PreAnnotations
  * Created by greg on 2/11/17.
  */
-public class AlignedTsvExporter extends AnnotationExporter {
+public class AlignedTsvExportWriter extends ExportWriter {
 
     protected String delimiter = "\t";
 

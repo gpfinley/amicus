@@ -1,4 +1,4 @@
-package edu.umn.amicus.summarizers;
+package edu.umn.amicus.summary;
 
 import java.util.ArrayList;
 import java.util.List;

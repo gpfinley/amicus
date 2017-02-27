@@ -3,7 +3,7 @@ package edu.umn.amicus.config;
 /**
  * Created by greg on 2/10/17.
  */
-public class CollectorConfig extends PipelineComponentConfig {
+public class SummarizerConfig extends PipelineComponentConfig {
 
     public String name;
     public AnnotationInputConfig input;

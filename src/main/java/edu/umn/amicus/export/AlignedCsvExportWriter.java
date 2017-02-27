@@ -1,15 +1,15 @@
-package edu.umn.amicus.exporters;
+package edu.umn.amicus.export;
 
 import java.util.regex.Pattern;
 
 /**
  * Created by greg on 2/14/17.
  */
-public class EachSoloCsvExporter extends EachSoloTsvExporter {
+public class AlignedCsvExportWriter extends AlignedTsvExportWriter {
 
     private static final Pattern badChar = Pattern.compile("[\"\n\r,]");
 
-    public EachSoloCsvExporter() {
+    public AlignedCsvExportWriter() {
         super();
         delimiter = ",";
     }

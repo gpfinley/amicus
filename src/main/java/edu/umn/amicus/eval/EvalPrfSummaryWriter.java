@@ -1,7 +1,6 @@
 package edu.umn.amicus.eval;
 
-import edu.umn.amicus.eval.EvalMatch;
-import edu.umn.amicus.summarizers.Summarizer;
+import edu.umn.amicus.summary.SummaryWriter;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,7 @@ import java.util.TreeMap;
  *
  * Created by greg on 2/10/17.
  */
-public class EvalPrfSummarizer extends Summarizer<EvalMatch> {
+public class EvalPrfSummaryWriter extends SummaryWriter<EvalMatch> {
 
     @Override
     public String summarize(List<EvalMatch> matches) {

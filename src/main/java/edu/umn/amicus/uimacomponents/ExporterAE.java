@@ -4,7 +4,7 @@ import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.aligners.AnnotationAligner;
 import edu.umn.amicus.aligners.EachSoloAligner;
-import edu.umn.amicus.exporters.AnnotationExporter;
+import edu.umn.amicus.export.ExportWriter;
 import edu.umn.amicus.pullers.AnnotationPuller;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -40,7 +40,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     public static final String PULLER_CLASSES = "pullerClasses";
 
     public static final String ALIGNER_CLASS = "alignerClass";
-    public static final String EXPORTER_CLASS = "exporterClassName";
+    public static final String EXPORT_WRITER_CLASS = "exportWriterClassName";
     public static final String OUTPUT_DIRECTORY = "outputDirectory";
 
     @ConfigurationParameter(name = READ_VIEWS)
@@ -54,8 +54,8 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
 
     @ConfigurationParameter(name = ALIGNER_CLASS, mandatory = false)
     private String alignerClassName;
-    @ConfigurationParameter(name = EXPORTER_CLASS, mandatory = false)
-    private String exporterClassName;
+    @ConfigurationParameter(name = EXPORT_WRITER_CLASS, mandatory = false)
+    private String exportWriterClassName;
     @ConfigurationParameter(name = OUTPUT_DIRECTORY)
     private String outputDirectory;
 
@@ -63,7 +63,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     private List<Class<? extends Annotation>> typeClasses;
 
     private AnnotationAligner aligner;
-    private AnnotationExporter exporter;
+    private ExportWriter exporter;
 
     @Override
     public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -104,7 +104,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         for (int i=0; i<numInputs; i++) {
             pullers.add(AnnotationPuller.create(pullerClassNames[i], fieldNames[i]));
         }
-        exporter = AnnotationExporter.create(exporterClassName);
+        exporter = ExportWriter.create(exportWriterClassName);
 
         exporter.setViewNames(readViews);
     }
