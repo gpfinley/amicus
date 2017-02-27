@@ -31,16 +31,9 @@ public class AmicusPipeline {
         Yaml yaml = new Yaml();
         pipelineConfig = (AmicusPipelineConfiguration) yaml.load(new FileInputStream(configFilePath));
 
-        // todo: either delete or modify in case we don't want to use type system autodetection
-//        // needed for collection reader
-//        TypeSystemDescription ensemblesTypeSystem =
-//                TypeSystemDescriptionFactory.createTypeSystemDescriptionFromPath(Amicus.MY_TYPE_SYSTEM.toString());
-
         CollectionReader reader;
         List<AnalysisEngine> engines = new ArrayList<>();
         reader = CollectionReaderFactory.createReader(CommonFilenameCR.class,
-//                ensemblesTypeSystem,
-                TypeSystemDescriptionFactory.createTypeSystemDescription(),
                 CommonFilenameCR.SYSTEM_DATA_DIRS, pipelineConfig.aggregateInputDirectories());
 
         for (SourceSystemConfig systemConfig : pipelineConfig.allSystemsUsed) {
@@ -75,7 +68,7 @@ public class AmicusPipeline {
                                 SummarizerAE.INPUT_FIELD, summarizerConfig.input.annotationField,
                                 SummarizerAE.READ_VIEW, summarizerConfig.input.fromView,
                                 SummarizerAE.PULLER_CLASS, summarizerConfig.input.pullerClass,
-                                SummarizerAE.SUMMARY_WRITER_CLASS, summarizerConfig.summarizerClass,
+                                SummarizerAE.SUMMARY_WRITER_CLASS, summarizerConfig.summaryWriter,
                                 SummarizerAE.LISTENER_NAME, summarizerConfig.name,
                                 SummarizerAE.OUTPUT_PATH, summarizerConfig.outPath
                         ));
@@ -98,10 +91,12 @@ public class AmicusPipeline {
                                 TranslatorAE.READ_VIEW, translatorConfig.input.fromView,
                                 TranslatorAE.PULLER_CLASS, translatorConfig.input.pullerClass,
                                 TranslatorAE.INPUT_TYPE, translatorConfig.input.annotationType,
+                                TranslatorAE.INPUT_FIELD, translatorConfig.input.annotationField,
                                 TranslatorAE.FILTER_CLASS, translatorConfig.filterClassName,
                                 TranslatorAE.FILTER_PATTERN, translatorConfig.filterPattern,
-                                TranslatorAE.MAPPER_CONFIG_PATH, translatorConfig.mapperConfigPath,
-                                TranslatorAE.DISTILLER_CLASSES, PipelineComponentConfig.aggregateOutputDistillers(translatorConfig.outputs),
+                                TranslatorAE.MAPPER_CONFIG_PATHS, translatorConfig.mapperConfigPaths,
+                                // todo: warn if any distillers are included?
+//                                TranslatorAE.DISTILLER_CLASSES, PipelineComponentConfig.aggregateOutputDistillers(translatorConfig.outputs),
                                 TranslatorAE.OUTPUT_TYPES, PipelineComponentConfig.aggregateOutputAnnotationClasses(translatorConfig.outputs),
                                 TranslatorAE.OUTPUT_FIELDS, PipelineComponentConfig.aggregateOutputAnnotationFields(translatorConfig.outputs),
                                 TranslatorAE.PUSHER_CLASSES, PipelineComponentConfig.aggregateOutputPushers(translatorConfig.outputs),
@@ -120,8 +115,9 @@ public class AmicusPipeline {
     }
 
     public static void main(String[] args) throws Exception {
+        // todo: remove, and show usage msg if no argument
 //        args = new String[]{"simple_test_config.yml"};
-        args = new String[]{"example_export_pipeline_config.yml"};
+//        args = new String[]{"example_export_pipeline_config.yml"};
         String configFilePath = args[0];
         new AmicusPipeline(configFilePath);
     }

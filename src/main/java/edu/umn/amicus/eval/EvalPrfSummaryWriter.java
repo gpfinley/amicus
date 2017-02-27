@@ -9,6 +9,8 @@ import java.util.TreeMap;
 /**
  * Create summary statistics (precision, recall, F-score) for EvalMatch objects as created by EvalMatchPusher.
  *
+ * todo: summarize errors!
+ *
  * Created by greg on 2/10/17.
  */
 public class EvalPrfSummaryWriter extends SummaryWriter<EvalMatch> {

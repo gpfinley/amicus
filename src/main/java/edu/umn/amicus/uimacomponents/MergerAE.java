@@ -44,7 +44,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
 
     @ConfigurationParameter(name = READ_VIEWS)
     private String[] readViews;
-    @ConfigurationParameter(name = INPUT_TYPES, mandatory = false)
+    @ConfigurationParameter(name = INPUT_TYPES)
     private String[] typeClassNames;
     @ConfigurationParameter(name = INPUT_FIELDS, mandatory = false)
     private String[] inputFields;
@@ -137,6 +137,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         Iterator<List<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
         while (listIter.hasNext()) {
             List<Annotation> annotations = listIter.next();
+            System.out.println(annotations);
             List<PreAnnotation> preannotations = new ArrayList<>();
             for (int i = 0; i < annotations.size(); i++) {
                 preannotations.add(annotations.get(i) == null ? null :

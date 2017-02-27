@@ -35,9 +35,9 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
     public static final String FILTER_PATTERN = "filterPattern";
     public static final String FILTER_CLASS = "filterClass";
 
-    public static final String MAPPER_CONFIG_PATH = "mapperConfigPath";
+    public static final String MAPPER_CONFIG_PATHS = "mapperConfigPaths";
 
-    public static final String DISTILLER_CLASSES = "distillerClasses";
+//    public static final String DISTILLER_CLASSES = "distillerClasses";
     public static final String PUSHER_CLASSES = "pusherClasses";
     public static final String WRITE_VIEWS = "outputViewNames";
     public static final String OUTPUT_TYPES = "outputAnnotationTypes";
@@ -60,11 +60,11 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
     @ConfigurationParameter(name = FILTER_PATTERN, mandatory = false)
     private String filterPattern;
 
-    @ConfigurationParameter(name = MAPPER_CONFIG_PATH, mandatory = false)
-    private String mapperConfigPath;
+    @ConfigurationParameter(name = MAPPER_CONFIG_PATHS, mandatory = false)
+    private String[] mapperConfigPaths;
 
-    @ConfigurationParameter(name = DISTILLER_CLASSES, mandatory = false)
-    private String[] distillerClassNames;
+//    @ConfigurationParameter(name = DISTILLER_CLASSES, mandatory = false)
+//    private String[] distillerClassNames;
     @ConfigurationParameter(name = PUSHER_CLASSES, mandatory = false)
     private String[] pusherClassNames;
     @ConfigurationParameter(name = WRITE_VIEWS)
@@ -78,11 +78,11 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
     private Class typeClass;
     private AnnotationPuller puller;
 
-    private List<AnnotationDistiller> distillers;
+//    private List<AnnotationDistiller> distillers;
     private List<AnnotationPusher> pushers;
 
     private AnnotationFilter filter;
-    private Mapper mapper;
+    private List<Mapper> mappers;
 
     @Override
     public void initialize(UimaContext context) throws ResourceInitializationException {
@@ -94,7 +94,7 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
         // check lengths of output lists to hopefully detect user-caused misalignment in config file
         // These won't be in effect when running AmicusPipeline, but might catch something if just using uimaFIT.
         try {
-            assert distillerClassNames == null || numOutputs == distillerClassNames.length;
+//            assert distillerClassNames == null || numOutputs == distillerClassNames.length;
             assert pusherClassNames == null || numOutputs == pusherClassNames.length;
             assert outputAnnotationTypes == null || numOutputs == outputAnnotationTypes.length;
             assert outputAnnotationFields == null || numOutputs == outputAnnotationFields.length;
@@ -102,16 +102,22 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
             throw new AmicusException("Configuration parameters for outputs do not line up! Check parameter lists.");
         }
 
-        distillers = new ArrayList<>();
+//        distillers = new ArrayList<>();
         pushers = new ArrayList<>();
         for (int i=0; i<numOutputs; i++) {
-            distillers.add(AnnotationDistiller.create(distillerClassNames[i]));
+//            distillers.add(AnnotationDistiller.create(distillerClassNames[i]));
             pushers.add(AnnotationPusher.create(
                     pusherClassNames[i], outputAnnotationTypes[i], outputAnnotationFields[i]));
         }
+//        System.out.println(pullerClassName);
+//        System.out.println(inputField);
         puller = AnnotationPuller.create(pullerClassName, inputField);
         filter = AnnotationFilter.create(filterClassName, filterPattern);
-        mapper = Mapper.create(mapperConfigPath);
+
+        mappers = new ArrayList<>();
+        for (String mapperConfigPath : mapperConfigPaths) {
+            mappers.add(Mapper.create(mapperConfigPath));
+        }
 
         try {
             typeClass = Class.forName(typeClassName);
@@ -138,7 +144,11 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
         for (Annotation annotation : annotations) {
             Object pulled = puller.transform(annotation);
             if (filter.passes(pulled)) {
-                preAnnotations.add(new PreAnnotation<>(mapper.map(pulled), annotation));
+                for (Mapper mapper : mappers) {
+                    pulled = mapper.map(pulled);
+                }
+                System.out.println(pulled);
+                preAnnotations.add(new PreAnnotation<>(pulled, annotation));
             }
         }
 
@@ -149,9 +159,8 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
             } catch (CASException e) {
                 throw new AmicusException(e);
             }
-            PreAnnotation distilled = distillers.get(i).distill(preAnnotations);
-            if (distilled != null) {
-                pushers.get(i).push(outputView, distilled);
+            for (PreAnnotation preAnnotation : preAnnotations) {
+                pushers.get(i).push(outputView, preAnnotation);
             }
         }
     }

@@ -22,7 +22,7 @@ public class EvalMatch {
     public EvalMatch(int systemIndex, String status, Double score) {
         if (!TRUE_POSITIVE.equals(status) && !FALSE_POSITIVE.equals(status) && !FALSE_NEGATIVE.equals(status)) {
             throw new AmicusException("Trying to create an EvalMatch outside of specified types;" +
-                    "check calling class implementation. Best to use static Strings of EvalMatch");
+                    "check calling class implementation. Best to use the static Strings declared in EvalMatch");
         }
         this.systemIndex = systemIndex;
         this.status = status;

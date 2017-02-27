@@ -7,6 +7,12 @@ package edu.umn.amicus.filters;
  */
 public class PassthroughFilter extends AnnotationFilter<Object> {
 
+    public PassthroughFilter() { }
+
+    public PassthroughFilter(String pattern) {
+        this();
+    }
+
     @Override
     public boolean passes(Object value) {
         return true;

@@ -30,7 +30,7 @@ public class EvalMatchDistiller extends AnnotationDistiller<List<EvalMatch>> {
         // if first (gold) is null, we have false positives. Otherwise, a mix of true positives and false negatives
         if (annotations.get(0) == null) {
             for (int i = 1; i < annotations.size(); i++) {
-                if (annotations.get(i) == null) {
+                if (annotations.get(i) != null) {
                     evalMatches.add(new EvalMatch(i, EvalMatch.FALSE_POSITIVE));
                     begin = annotations.get(i).getBegin();
                     end = annotations.get(i).getEnd();

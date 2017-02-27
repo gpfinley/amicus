@@ -70,7 +70,7 @@ public class CreateExampleExportConfig {
                 .annotationField("acronymAbbrevExpansion")
                 .pullerClass("edu.umn.amicus.pullers.EquivalentMapperPuller")
                 .fromView("GoldView");
-        goldCollector.summarizerClass = "edu.umn.amicus.summary.CounterSummaryWriter";
+        goldCollector.summaryWriter = "edu.umn.amicus.summary.CounterSummaryWriter";
 
         biomedicusCollector.name = "biomedicus collector";
         biomedicusCollector.input = new AnnotationInputConfig()
@@ -78,7 +78,7 @@ public class CreateExampleExportConfig {
                 .annotationField("text")
                 .pullerClass("edu.umn.amicus.pullers.EquivalentMapperPuller")
                 .fromView("BiomedicusView");
-        biomedicusCollector.summarizerClass = "edu.umn.amicus.summary.CounterSummaryWriter";
+        biomedicusCollector.summaryWriter = "edu.umn.amicus.summary.CounterSummaryWriter";
 
         PipelineComponentConfig[] components = {goldExporter, biomedicusExporter, goldCollector, biomedicusCollector};
 

@@ -1,7 +1,5 @@
 package edu.umn.amicus.filters;
 
-import jdk.nashorn.internal.runtime.Logging;
-
 import java.util.logging.Logger;
 
 /**
@@ -15,7 +13,7 @@ import java.util.logging.Logger;
  */
 public class NumberFilter extends AnnotationFilter<Object> {
 
-    private static final Logger LOGGER = Logging.getLogger(NumberFilter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(NumberFilter.class.getName());
 
     private final double thresh;
 

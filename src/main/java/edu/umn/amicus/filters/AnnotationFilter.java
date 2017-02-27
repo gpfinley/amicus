@@ -1,7 +1,7 @@
 package edu.umn.amicus.filters;
 
 import edu.umn.amicus.Amicus;
-import edu.umn.amicus.Piece;
+import edu.umn.amicus.AnalysisPiece;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * Created by greg on 2/16/17.
  */
-public abstract class AnnotationFilter<T> extends Piece {
+public abstract class AnnotationFilter<T> extends AnalysisPiece {
 
     public static final String DEFAULT_FILTER = RegexFilter.class.getName();
     public static final String DEFAULT_NULL_FILTER = PassthroughFilter.class.getName();
@@ -29,7 +29,7 @@ public abstract class AnnotationFilter<T> extends Piece {
 
     public static AnnotationFilter create(String filterClassName, String pattern) {
         if (filterClassName == null) {
-            if (pattern == null) {
+            if (pattern != null) {
                 filterClassName = DEFAULT_FILTER;
             } else {
                 pattern = "";

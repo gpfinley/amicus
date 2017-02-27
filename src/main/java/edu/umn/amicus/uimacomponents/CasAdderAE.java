@@ -25,14 +25,10 @@ public class CasAdderAE extends CasMultiplier_ImplBase {
 
     private static final Logger LOGGER = Logger.getLogger(CasAdderAE.class.getName());
 
-//    public static final String SYSTEM_NAME = "systemName";
     public static final String DATA_DIR = "dataDir";
-//    public static final String VIEW_NAME = "viewName";
     public static final String READ_FROM_VIEW = "readFromView";
     public static final String COPY_INTO_VIEW = "saveIntoView";
 
-//    @ConfigurationParameter(name = SYSTEM_NAME)
-//    private String systemName;
     @ConfigurationParameter(name = DATA_DIR)
     private String dataDirname;
     @ConfigurationParameter(name = READ_FROM_VIEW)

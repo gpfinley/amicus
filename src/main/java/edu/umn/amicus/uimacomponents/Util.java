@@ -15,6 +15,7 @@ import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -75,86 +76,33 @@ public final class Util {
         docID.addToIndexes();
     }
 
-//    public static AnnotationPuller instantiatePuller(String pullerClassName, String fieldName)
-//            throws ReflectiveOperationException {
-//        Class<? extends AnnotationPuller> pullerClass;
-//        if (pullerClassName == null) {
-//            if (fieldName == null) {
-//                throw new AmicusException("Need to specify field name unless using " +
-//                        "a custom AnnotationPuller implementation.");
-//            }
-//            if (fieldName.contains(MultiGetterPuller.DELIMITER)) {
-//                pullerClass = Amicus.DEFAULT_MULTI_PULLER_CLASS;
-//            } else {
-//                pullerClass = Amicus.DEFAULT_PULLER_CLASS;
-//            }
-//        } else {
-//            pullerClass = (Class<? extends AnnotationPuller>) Class.forName(pullerClassName);
-//        }
-//        return pullerClass.getConstructor(String.class).newInstance(fieldName);
-//    }
-//
-//    public static AnnotationPusher instantiatePusher(String pusherClassName, String typeName, String fieldName)
-//            throws ReflectiveOperationException {
-//        Class <? extends AnnotationPusher> pusherClass;
-//        if (pusherClassName == null) {
-//            if (typeName == null || fieldName == null) {
-//                throw new AmicusException("Need to provide output annnotation fields and types UNLESS using" +
-//                        " a custom AnnotationPusher implementation that can ignore them.");
-//            }
-//            if (fieldName.contains(MultiSetterPusher.DELIMITER)) {
-//                pusherClass = Amicus.DEFAULT_MULTI_PUSHER_CLASS;
-//            } else {
-//                pusherClass = Amicus.DEFAULT_PUSHER_CLASS;
-//            }
-//        } else {
-//            pusherClass = (Class<? extends AnnotationPusher>) Class.forName(pusherClassName);
-//        }
-//        return pusherClass.getConstructor(String.class, String.class).newInstance(typeName, fieldName);
-//    }
-//
-//    public static AnnotationAligner instantiateAligner(String alignerClassName) throws ReflectiveOperationException {
-//        if (alignerClassName != null) {
-//            return (AnnotationAligner) Class.forName(alignerClassName).newInstance();
-//        }
-//        return Amicus.DEFAULT_ALIGNER_CLASS.newInstance();
-//    }
-//
-//    public static AnnotationDistiller instantiateDistiller(String distillerClassName) throws ReflectiveOperationException {
-//        if (distillerClassName == null) {
-//            return Amicus.DEFAULT_DISTILLER_CLASS.newInstance();
-//        }
-//        return (AnnotationDistiller) Class.forName(distillerClassName).newInstance();
-//    }
-
     public static void createOutputViews(JCas jCas, String sofaData, String... views) throws CASException {
-        Set<String> viewsToAdd = new HashSet<>();
-        for (String outputViewName : views) {
-            if (outputViewName == null) {
-                outputViewName = Amicus.DEFAULT_MERGED_VIEW;
-            }
-            viewsToAdd.add(outputViewName);
-        }
+        Set<String> viewsToAdd = new HashSet<>(Arrays.asList(views));
         Iterator<JCas> viewIter = jCas.getViewIterator();
         while (viewIter.hasNext()) {
             viewsToAdd.remove(viewIter.next().getViewName());
         }
         for (String viewToAdd : viewsToAdd) {
             JCas addedView = jCas.createView(viewToAdd);
+            try {
+                Amicus.verifySofaData(sofaData);
+            } catch (AmicusException e) {
+                throw new AmicusException("Non-matching sofa data in view " + viewToAdd);
+            }
+            // todo: allow non-text data
             addedView.setSofaDataString(sofaData, "text");
         }
     }
 
     public static Object getSofaData(JCas jCas) throws CASException {
         // todo: modify this so that we can get strings or arrays (for audio, etc.)
-        String sofaData = "";
+        String sofaData = null;
         Iterator<JCas> viewIter = jCas.getViewIterator();
-        while (viewIter.hasNext() && "".equals(sofaData)) {
+        while (viewIter.hasNext() && (sofaData == null || "".equals(sofaData))) {
             sofaData = viewIter.next().getSofaDataString();
         }
-        if ("".equals(sofaData)) {
-            // todo: log
-//                LOGGER.warning("No sofaData found in any view!");
+        if (sofaData == null) {
+            throw new AmicusException("Could not find Sofa data in any View!");
         }
         return sofaData;
     }

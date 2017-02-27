@@ -10,6 +10,7 @@ import java.util.List;
  *
  * Created by greg on 2/10/17.
  */
+@Deprecated
 public class MultiGetterPuller extends AnnotationPuller<List> {
 
     public static final String DELIMITER = ";";
@@ -25,7 +26,7 @@ public class MultiGetterPuller extends AnnotationPuller<List> {
     public List transform(Annotation annotation) {
         List<Object> list = new ArrayList<>();
         for(String field : fields) {
-            list.add(AnnotationPuller.callAnnotationGetter(field, annotation));
+            list.add(AnnotationPuller.callThisGetter(field, annotation));
         }
         return list;
     }

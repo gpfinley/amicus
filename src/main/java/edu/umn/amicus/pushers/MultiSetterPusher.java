@@ -17,6 +17,7 @@ import java.util.List;
  *
  * Created by gpfinley on 1/20/17.
  */
+// todo: roll this into SetterPusher. One class for both.
 public class MultiSetterPusher extends AnnotationPusher<List> {
 
     public static final String DELIMITER = ";";
@@ -47,8 +48,8 @@ public class MultiSetterPusher extends AnnotationPusher<List> {
             try {
                 assert setterMethods.size() == value.getValue().size();
             } catch (AssertionError e) {
-                throw new AmicusException("Length of values list from transformer and length of setter methods" +
-                        " list not equivalent. Check configuration and transformer implementation.");
+                throw new AmicusException("Length of values list from puller and length of setter methods list " +
+                        "not equivalent. Check configuration and puller implementation.");
             }
             for (int i=0; i<setterMethods.size(); i++) {
                 if (setterMethods.get(i) != null) {

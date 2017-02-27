@@ -1,7 +1,7 @@
 package edu.umn.amicus.distillers;
 
 import edu.umn.amicus.Amicus;
-import edu.umn.amicus.Piece;
+import edu.umn.amicus.AnalysisPiece;
 import edu.umn.amicus.PreAnnotation;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * Created by gpfinley on 10/20/16.
  */
-public abstract class AnnotationDistiller<T> extends Piece {
+public abstract class AnnotationDistiller<T> extends AnalysisPiece {
 
     public static final String DEFAULT_DISTILLER = PriorityDistiller.class.getName();
 

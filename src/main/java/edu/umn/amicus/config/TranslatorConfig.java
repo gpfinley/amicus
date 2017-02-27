@@ -18,7 +18,8 @@ public class TranslatorConfig extends PipelineComponentConfig {
     public String filterClassName;
     public String filterPattern;
 
-    public String mapperConfigPath;
+    // todo: revert to single mapper??
+    public String[] mapperConfigPaths;
 
     /**
      * Verify that these mergers have enough config info

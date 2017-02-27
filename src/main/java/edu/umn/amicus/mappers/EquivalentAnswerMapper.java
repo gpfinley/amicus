@@ -42,6 +42,8 @@ public class EquivalentAnswerMapper extends Mapper<String, String> {
             buildInternalMap();
             equivalentsList = null;
         }
+        // todo: why would it be null?
+        if (word == null) return internalMap.get(null);
         return internalMap.getOrDefault(word.trim().toLowerCase(), word.trim());
     }
 

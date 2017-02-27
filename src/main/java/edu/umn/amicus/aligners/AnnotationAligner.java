@@ -1,9 +1,7 @@
 package edu.umn.amicus.aligners;
 
 import edu.umn.amicus.Amicus;
-import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.Piece;
-import edu.umn.amicus.pullers.MultiGetterPuller;
+import edu.umn.amicus.AnalysisPiece;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.Iterator;
@@ -12,7 +10,7 @@ import java.util.List;
 /**
  * Created by gpfinley on 10/21/16.
  */
-public abstract class AnnotationAligner extends Piece {
+public abstract class AnnotationAligner extends AnalysisPiece {
 
     public static final String DEFAULT_ALIGNER = PerfectOverlapAligner.class.getName();
 

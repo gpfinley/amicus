@@ -1,5 +1,7 @@
 package edu.umn.amicus.config;
 
+import edu.umn.amicus.AmicusConfigurationException;
+
 /**
  * All necessary configuration information for a single type to be merged.
  * Saved as part of the yaml serialization of the AppConfiguration class.
@@ -15,9 +17,13 @@ public class AnnotationOutputConfig {
 
     /**
      * Verify that these mergers have enough config info
-     * For outputs, there are always defaults available
+     * For outputs, there are always defaults available except for writeView
      */
-    public void verify() { }
+    public void verify() {
+        if (writeView == null) {
+            throw new AmicusConfigurationException("Output configuration incomplete: need view to write to");
+        }
+    }
 
     // builder-style setters to more easily code up a configuration
 

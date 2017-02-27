@@ -1,5 +1,6 @@
 package edu.umn.amicus.config;
 
+import edu.umn.amicus.AmicusConfigurationException;
 import edu.umn.amicus.AmicusException;
 
 /**
@@ -19,7 +20,7 @@ public class AnnotationInputConfig {
      */
     public void verify() {
         if (fromView == null) {
-            throw new AmicusException("Input type configuration incomplete");
+            throw new AmicusConfigurationException("Input type configuration incomplete");
         }
     }
 

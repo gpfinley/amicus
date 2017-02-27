@@ -23,7 +23,7 @@ public class MergerConfig extends PipelineComponentConfig {
     public void verify() {
         if (inputs == null || inputs.length == 0
                 || outputs == null) {
-            throw new AmicusException("Translator or merger configuration incomplete");
+            throw new AmicusException("Merger configuration incomplete");
         }
         for(AnnotationInputConfig c : inputs) c.verify();
         for(AnnotationOutputConfig c : outputs) c.verify();

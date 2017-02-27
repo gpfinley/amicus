@@ -26,7 +26,7 @@ public class CtakesCuiPuller extends AnnotationPuller<String> {
 
     protected String getCui(Annotation annotation) {
         String cui = "";
-        FSArray conceptArray = (FSArray) callAnnotationGetter(annotation);
+        FSArray conceptArray = (FSArray) callAnnotationGetters(annotation);
         if (conceptArray != null) {
             for (int i = 0; i < conceptArray.size(); i++) {
                 if (conceptArray.get(i) instanceof UmlsConcept) {
