@@ -1,10 +1,9 @@
 package edu.umn.amicus.pushers;
 
-import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPiece;
 import edu.umn.amicus.PreAnnotation;
-import edu.umn.amicus.pullers.AnnotationPuller;
+import edu.umn.amicus.pullers.Puller;
 import edu.umn.amicus.uimacomponents.Util;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -17,14 +16,16 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Basic class for creating annotations on JCas objects
+ * Basic class for creating annotations on JCas objects.
+ * Can work with lists of objects or single objects and with single or multiple fields on the annotation.
+ * (But in the case of a lists of objects AND fields, they should be the same length.
+ *      Nulls are allowable in the lists and will be skipped.)
  *
  * Created by gpfinley on 1/20/17.
  */
-public abstract class AnnotationPusher<T> extends AnalysisPiece {
+public class Pusher implements AnalysisPiece {
 
-    public static final String DEFAULT_PUSHER = SetterPusher.class.getName();
-//    public static final String DEFAULT_MULTI_PUSHER = MultiSetterPusher.class.getName();
+    public static final String LIST_STRING_DELIMITER = "|";
 
     protected String typeName;
     protected List<String> fieldNames;
@@ -32,19 +33,14 @@ public abstract class AnnotationPusher<T> extends AnalysisPiece {
     protected Constructor<? extends Annotation> annotationConstructor;
     protected List<Method> setterMethods;
 
-    protected AnnotationPusher() {}
+    protected Pusher() {}
 
-//    protected AnnotationPusher(String typeName, String fieldName) {
-//        this.typeName = typeName;
-//        this.fieldName = fieldName;
-//    }
-
-    public AnnotationPusher(String typeName, String fieldNamesDelimited) {
+    public Pusher(String typeName, String fieldNamesDelimited) {
         this.typeName = typeName;
         setterMethods = new ArrayList<>();
         Class<? extends Annotation> annotationClass = getClassFromName(typeName);
         annotationConstructor = getAnnotationConstructor(annotationClass);
-        fieldNames = Arrays.asList(fieldNamesDelimited.split(AnnotationPuller.FIELD_NAME_DELIMITER));
+        fieldNames = Arrays.asList(fieldNamesDelimited.split(Puller.FIELD_NAME_DELIMITER));
         setterMethods = new ArrayList<>();
         for (String f : fieldNames) {
             if ("".equals(f)) {
@@ -55,43 +51,56 @@ public abstract class AnnotationPusher<T> extends AnalysisPiece {
         }
     }
 
-    public abstract void push(JCas jCas, PreAnnotation<T> value);
-
     /**
      * ...todo: doc
      * Overriding methods might not call this.
      * @param jCas
-     * @param value
+     * @param preAnnotation
      */
-    public void createNewAnnotation(JCas jCas, PreAnnotation<T> value) {
-//        Annotation annotation;
-//        try {
-//            annotation = annotationConstructor.newInstance(jCas, value.getBegin(), value.getEnd());
-//            for (Method setterMethod : setterMethods) {
-//                setterMethod.invoke(annotation, value.getValue());
-//            }
-//        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-//            throw new AmicusException(e);
-//        }
-//        annotation.addToIndexes();
+    public void push(JCas jCas, PreAnnotation<Object> preAnnotation) {
+        if (setterMethods == null) {
+            throw new AmicusException("Need to provide setters for included Pusher implementations; " +
+                    "check configuration.");
+        }
         Annotation annotation;
-        List<Object> valuesToSet;
-        // todo: finish
         try {
-            annotation = annotationConstructor.newInstance(jCas, value.getBegin(), value.getEnd());
+            annotation = annotationConstructor.newInstance(jCas, preAnnotation.getBegin(), preAnnotation.getEnd());
+        } catch (ReflectiveOperationException e) {
+            throw new AmicusException(e);
+        }
+        Object value = preAnnotation.getValue();
+        if (setterMethods.size() > 1) {
+            List toSet;
             try {
-                assert setterMethods.size() == value.getValue().size();
+                if (value instanceof List) {
+                    toSet = (List) value;
+                    assert toSet.size() == setterMethods.size();
+                } else {
+                    toSet = buildListFromString(value.toString());
+                    assert toSet.size() == setterMethods.size();
+                }
             } catch (AssertionError e) {
                 throw new AmicusException("Length of values list from puller and length of setter methods list " +
                         "not equivalent. Check configuration and puller implementation.");
             }
             for (int i=0; i<setterMethods.size(); i++) {
                 if (setterMethods.get(i) != null) {
-                    setterMethods.get(i).invoke(annotation, value.getValue().get(i));
+                    try {
+                        setterMethods.get(i).invoke(annotation, toSet.get(i));
+//                        setValueOnAnnotation(annotation, setterMethods.get(i), toSet.get(i));
+                    } catch (InvocationTargetException | IllegalAccessException e) {
+                        throw new AmicusException(e);
+                    }
                 }
             }
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new AmicusException(e);
+        } else {
+            Object toSet = value instanceof List ? buildStringFromList((List) value) : value;
+            try {
+                setterMethods.get(0).invoke(annotation, toSet);
+//                setValueOnAnnotation(annotation, setterMethods.get(0), toSet);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                throw new AmicusException(e);
+            }
         }
         annotation.addToIndexes();
     }
@@ -127,16 +136,20 @@ public abstract class AnnotationPusher<T> extends AnalysisPiece {
             throw new AmicusException(new NoSuchMethodException(setterName));
     }
 
-    public static AnnotationPusher create(String pusherClassName, String typeName, String fieldName) {
-        if (pusherClassName == null) {
-            if (typeName == null || fieldName == null) {
-                throw new AmicusException("Need to provide output annnotation fields and types UNLESS using" +
-                        " a custom AnnotationPusher implementation that can ignore them.");
-            }
-//            pusherClassName = fieldName.contains(MultiSetterPusher.DELIMITER) ? DEFAULT_MULTI_PUSHER : DEFAULT_PUSHER;
-            pusherClassName = DEFAULT_PUSHER;
+    // static methods
+
+    public static String buildStringFromList(List list) {
+        if (list.size() == 0) return "";
+        StringBuilder builder = new StringBuilder();
+        builder.append(list.get(0));
+        for (int i=1; i<list.size(); i++) {
+            builder.append(LIST_STRING_DELIMITER).append(list.get(i));
         }
-        return Amicus.getPieceInstance(AnnotationPusher.class, pusherClassName, typeName, fieldName);
+        return builder.toString();
+    }
+
+    public static List<String> buildListFromString(String string) {
+        return Arrays.asList(string.split(LIST_STRING_DELIMITER));
     }
 
 }

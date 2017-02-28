@@ -1,11 +1,12 @@
 package edu.umn.amicus.uimacomponents;
 
 import edu.umn.amicus.AmicusException;
+import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.aligners.AnnotationAligner;
-import edu.umn.amicus.pushers.AnnotationPusher;
+import edu.umn.amicus.pushers.Pusher;
 import edu.umn.amicus.distillers.AnnotationDistiller;
-import edu.umn.amicus.pullers.AnnotationPuller;
+import edu.umn.amicus.pullers.Puller;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -68,8 +69,8 @@ public class MergerAE extends JCasAnnotator_ImplBase {
 
     private List<Class> typeClasses;
     private List<AnnotationDistiller> distillers;
-    private List<AnnotationPusher> pushers;
-    private List<AnnotationPuller> pullers;
+    private List<Pusher> pushers;
+    private List<Puller> pullers;
     private AnnotationAligner aligner;
 
     @Override
@@ -101,15 +102,15 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         distillers = new ArrayList<>();
         pushers = new ArrayList<>();
         pullers = new ArrayList<>();
-        aligner = AnnotationAligner.create(alignerClassName);
+        aligner = AnalysisPieceFactory.aligner(alignerClassName);
         for (String distillerClassName : distillerClassNames) {
-            distillers.add(AnnotationDistiller.create(distillerClassName));
+            distillers.add(AnalysisPieceFactory.distiller(distillerClassName));
         }
         for (int i=0; i<numOutputs; i++) {
-            pushers.add(AnnotationPusher.create(pusherClassNames[i], outputAnnotationTypes[i], outputAnnotationFields[i]));
+            pushers.add(AnalysisPieceFactory.pusher(pusherClassNames[i], outputAnnotationTypes[i], outputAnnotationFields[i]));
         }
         for (int i=0; i<numInputs; i++) {
-            pullers.add(AnnotationPuller.create(pullerClassNames[i], inputFields[i]));
+            pullers.add(AnalysisPieceFactory.puller(pullerClassNames[i], inputFields[i]));
         }
 
         typeClasses = new ArrayList<>();
@@ -141,7 +142,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
             List<PreAnnotation> preannotations = new ArrayList<>();
             for (int i = 0; i < annotations.size(); i++) {
                 preannotations.add(annotations.get(i) == null ? null :
-                        new PreAnnotation(pullers.get(i).transform(annotations.get(i)), annotations.get(i)));
+                        new PreAnnotation(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
             }
             for (int i = 0; i < outputViewNames.length; i++) {
                 JCas outputView;

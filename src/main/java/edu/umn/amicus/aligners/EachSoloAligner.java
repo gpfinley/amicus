@@ -12,7 +12,7 @@ import java.util.List;
  * // todo: test (devil in the details on this one; should we just put everything into another list and iterate on that??)
  * Created by greg on 2/11/17.
  */
-public class EachSoloAligner extends AnnotationAligner {
+public class EachSoloAligner implements AnnotationAligner {
 
     public Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> annotations) {
         return new AnnotIter(annotations);

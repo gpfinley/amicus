@@ -1,8 +1,9 @@
 package edu.umn.amicus.uimacomponents;
 
+import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.summary.DataListener;
 import edu.umn.amicus.summary.SummaryWriter;
-import edu.umn.amicus.pullers.AnnotationPuller;
+import edu.umn.amicus.pullers.Puller;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CAS;
@@ -46,7 +47,7 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
     private String outputPath;
 
     private Class<? extends Annotation> typeClass;
-    private AnnotationPuller puller;
+    private Puller puller;
     private DataListener listener;
 
     @Override
@@ -58,7 +59,7 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
             throw new ResourceInitializationException(e);
         }
         listener = DataListener.getDataListener(listenerName);
-        puller = AnnotationPuller.create(pullerClassName, fieldName);
+        puller = AnalysisPieceFactory.puller(pullerClassName, fieldName);
     }
 
     @Override
@@ -72,13 +73,13 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
 
         // Get all annotations of this class and toss them to the DataListener
         for (Annotation a : readView.getAnnotationIndex(typeClass)) {
-            listener.listen(puller.transform(a));
+            listener.listen(puller.pull(a));
         }
     }
 
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
-        SummaryWriter summarizer = SummaryWriter.create(summaryWriterClassName);
+        SummaryWriter summaryWriter = AnalysisPieceFactory.summaryWriter(summaryWriterClassName);
         try {
             OutputStream outputStream;
             if (outputPath == null) {
@@ -88,7 +89,7 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
                 outputStream = new FileOutputStream(outputPath);
             }
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-            writer.write(summarizer.summarize(DataListener.getDataListener(listenerName).regurgitate()).toString());
+            writer.write(summaryWriter.summarize(DataListener.getDataListener(listenerName).regurgitate()).toString());
             writer.flush();
         } catch (IOException e) {
             throw new AnalysisEngineProcessException(e);

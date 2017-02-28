@@ -5,13 +5,7 @@ package edu.umn.amicus.filters;
  *
  * Created by gpfinley on 2/17/17.
  */
-public class PassthroughFilter extends AnnotationFilter<Object> {
-
-    public PassthroughFilter() { }
-
-    public PassthroughFilter(String pattern) {
-        this();
-    }
+public class PassthroughFilter implements AnnotationFilter {
 
     @Override
     public boolean passes(Object value) {

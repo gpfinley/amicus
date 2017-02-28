@@ -10,7 +10,7 @@ import java.util.TreeMap;
 /**
  * Created by greg on 2/10/17.
  */
-public class CounterSummaryWriter extends SummaryWriter<Object> {
+public class CounterSummaryWriter implements SummaryWriter<Object> {
 
     @Override
     public String summarize(List<Object> list) {

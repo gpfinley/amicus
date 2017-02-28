@@ -10,7 +10,7 @@ import java.util.List;
  *
  * Created by gpfinley on 10/20/16.
  */
-public class RequireAnnotationsDistiller extends AnnotationDistiller<Object> {
+public class RequireAnnotationsDistiller implements AnnotationDistiller<Object> {
 
     /**
      *

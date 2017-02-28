@@ -11,7 +11,7 @@ import java.util.*;
  *
  * Created by gpfinley on 10/21/16.
  */
-public class EvalPerfectOverlapAligner extends AnnotationAligner {
+public class EvalPerfectOverlapAligner implements AnnotationAligner {
 
     /**
      * // todo: doc. There are nulls in the output of this one

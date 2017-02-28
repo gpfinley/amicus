@@ -1,11 +1,12 @@
 package edu.umn.amicus.uimacomponents;
 
 import edu.umn.amicus.AmicusException;
+import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.aligners.AnnotationAligner;
 import edu.umn.amicus.aligners.EachSoloAligner;
 import edu.umn.amicus.export.ExportWriter;
-import edu.umn.amicus.pullers.AnnotationPuller;
+import edu.umn.amicus.pullers.Puller;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -59,7 +60,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     @ConfigurationParameter(name = OUTPUT_DIRECTORY)
     private String outputDirectory;
 
-    private List<AnnotationPuller> pullers;
+    private List<Puller> pullers;
     private List<Class<? extends Annotation>> typeClasses;
 
     private AnnotationAligner aligner;
@@ -100,11 +101,11 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
             throw new AmicusException(e);
         }
 
-        aligner = AnnotationAligner.create(alignerClassName == null ? EXPORTER_DEFAULT_ALIGNER : alignerClassName);
+        aligner = AnalysisPieceFactory.aligner(alignerClassName == null ? EXPORTER_DEFAULT_ALIGNER : alignerClassName);
         for (int i=0; i<numInputs; i++) {
-            pullers.add(AnnotationPuller.create(pullerClassNames[i], fieldNames[i]));
+            pullers.add(AnalysisPieceFactory.puller(pullerClassNames[i], fieldNames[i]));
         }
-        exporter = ExportWriter.create(exportWriterClassName);
+        exporter = AnalysisPieceFactory.exportWriter(exportWriterClassName);
 
         exporter.setViewNames(readViews);
     }
@@ -125,9 +126,13 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
                 List<PreAnnotation> preannotations = new ArrayList<>();
                 for (int i = 0; i < annotations.size(); i++) {
                     preannotations.add(
-                            new PreAnnotation<>(pullers.get(i).transform(annotations.get(i)), annotations.get(i)));
+                            new PreAnnotation<>(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
                 }
                 return preannotations;
+            }
+            @Override
+            public void remove() {
+                annotationsIterator.remove();
             }
         });
 

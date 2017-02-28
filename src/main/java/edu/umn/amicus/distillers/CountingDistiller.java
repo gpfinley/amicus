@@ -12,7 +12,7 @@ import java.util.List;
  *
  * Created by gpfinley on 2/17/17.
  */
-public class CountingDistiller extends AnnotationDistiller<Integer> {
+public class CountingDistiller implements AnnotationDistiller<Integer> {
 
     /**
      * Save all annotations into a list. Null values and annotations will be added to the list to maintain length

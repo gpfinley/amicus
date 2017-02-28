@@ -13,7 +13,7 @@ import java.util.*;
  * Created by gpfinley on 12/20/16.
  * // todo: unit test
  */
-public class AllOverlapsAligner extends AnnotationAligner {
+public class AllOverlapsAligner implements AnnotationAligner {
 
     /**
      * @param allAnnotations

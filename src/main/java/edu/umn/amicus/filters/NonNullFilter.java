@@ -5,13 +5,9 @@ package edu.umn.amicus.filters;
  *
  * Created by gpfinley on 2/27/17.
  */
-public class NonNullFilter extends AnnotationFilter<Object> {
+public class NonNullFilter implements AnnotationFilter {
 
-    public NonNullFilter() { }
-
-    public NonNullFilter(String pattern) {
-        this();
-    }
+    public NonNullFilter(String pattern) { }
 
     @Override
     public boolean passes(Object value) {

@@ -18,13 +18,13 @@ import java.util.logging.Logger;
  *
  * Created by gpfinley on 10/13/16.
  */
-public class EquivalentAnswerMapper extends Mapper<String, String> {
+public class EquivalentAnswerMapper extends Mapper {
 
     private static Logger LOGGER = Logger.getLogger(EquivalentAnswerMapper.class.getName());
 
     private List<List<String>> equivalentsList;
 
-    void buildInternalMap() {
+    public void initialize() {
         internalMap = new HashMap<>();
         for (List<String> cluster : equivalentsList) {
             for (int i = 1; i < cluster.size(); i++) {
@@ -37,14 +37,15 @@ public class EquivalentAnswerMapper extends Mapper<String, String> {
     }
 
     @Override
-    public String map(String word) {
+    public Object mappingFunction(Object key) {
+        if (key == null) return null;
         if (internalMap == null) {
-            buildInternalMap();
+            initialize();
             equivalentsList = null;
         }
-        // todo: why would it be null?
-        if (word == null) return internalMap.get(null);
-        return internalMap.getOrDefault(word.trim().toLowerCase(), word.trim());
+        String string = key.toString().trim();
+        Object val = internalMap.get(string.toLowerCase());
+        return val == null ? string : val;
     }
 
     /**

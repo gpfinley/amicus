@@ -13,7 +13,7 @@ import java.util.TreeMap;
  *
  * Created by greg on 2/10/17.
  */
-public class EvalPrfSummaryWriter extends SummaryWriter<EvalMatch> {
+public class EvalPrfSummaryWriter implements SummaryWriter<EvalMatch> {
 
     @Override
     public String summarize(List<EvalMatch> matches) {

@@ -9,14 +9,14 @@ import org.apache.uima.jcas.tcas.Annotation;
  * with a different getter each time.)
  * Created by gpfinley on 12/19/16.
  */
-public class PassthroughPuller extends AnnotationPuller<Annotation> {
+public class PassthroughPuller extends Puller {
 
     public PassthroughPuller(String fieldName) {
         super(fieldName);
     }
 
     @Override
-    public Annotation transform(Annotation annotation) {
+    public Annotation pull(Annotation annotation) {
         return annotation;
     }
 

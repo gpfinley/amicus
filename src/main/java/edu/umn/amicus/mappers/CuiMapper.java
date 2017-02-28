@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  *
  * Created by gpfinley on 10/13/16.
  */
-public class CuiMapper extends Mapper<String, String> {
+public class CuiMapper extends Mapper {
 
     private static Logger LOGGER = Logger.getLogger(CuiMapper.class.getName());
 
@@ -23,18 +23,21 @@ public class CuiMapper extends Mapper<String, String> {
     private Set<String> cuisToUse;
 
     @Override
-    public String map(String cui) {
+    protected Object mappingFunction(Object cuiString) {
+        if (cuiString == null) return null;
         if (internalMap == null) {
-            buildInternalMap();
+            initialize();
         }
-        cui = cui.toUpperCase();
-        return internalMap.getOrDefault(cui, cui);
+        String cui = cuiString.toString().toUpperCase();
+        if (internalMap.containsKey(cui)) return internalMap.get(cui);
+        return cuiString;
     }
 
     /**
      * todo: doc
+     * todo: should this just be put in the constructor? the concurrent map should already ensure only a single instance of this
      */
-    private void buildInternalMap() {
+    public void initialize() {
         if (mrconsoPath == null) {
             throw new AmicusException("Need to provide path to UMLS MRCONSO.RRF file in CuiMapper config.");
         }

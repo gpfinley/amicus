@@ -1,12 +1,12 @@
 package edu.umn.amicus.uimacomponents;
 
 import edu.umn.amicus.AmicusException;
+import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.PreAnnotation;
-import edu.umn.amicus.distillers.AnnotationDistiller;
 import edu.umn.amicus.filters.AnnotationFilter;
 import edu.umn.amicus.mappers.Mapper;
-import edu.umn.amicus.pullers.AnnotationPuller;
-import edu.umn.amicus.pushers.AnnotationPusher;
+import edu.umn.amicus.pullers.Puller;
+import edu.umn.amicus.pushers.Pusher;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -76,10 +76,10 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
     private String[] outputAnnotationFields;
 
     private Class typeClass;
-    private AnnotationPuller puller;
+    private Puller puller;
 
 //    private List<AnnotationDistiller> distillers;
-    private List<AnnotationPusher> pushers;
+    private List<Pusher> pushers;
 
     private AnnotationFilter filter;
     private List<Mapper> mappers;
@@ -94,7 +94,6 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
         // check lengths of output lists to hopefully detect user-caused misalignment in config file
         // These won't be in effect when running AmicusPipeline, but might catch something if just using uimaFIT.
         try {
-//            assert distillerClassNames == null || numOutputs == distillerClassNames.length;
             assert pusherClassNames == null || numOutputs == pusherClassNames.length;
             assert outputAnnotationTypes == null || numOutputs == outputAnnotationTypes.length;
             assert outputAnnotationFields == null || numOutputs == outputAnnotationFields.length;
@@ -102,21 +101,17 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
             throw new AmicusException("Configuration parameters for outputs do not line up! Check parameter lists.");
         }
 
-//        distillers = new ArrayList<>();
         pushers = new ArrayList<>();
         for (int i=0; i<numOutputs; i++) {
-//            distillers.add(AnnotationDistiller.create(distillerClassNames[i]));
-            pushers.add(AnnotationPusher.create(
+            pushers.add(AnalysisPieceFactory.pusher(
                     pusherClassNames[i], outputAnnotationTypes[i], outputAnnotationFields[i]));
         }
-//        System.out.println(pullerClassName);
-//        System.out.println(inputField);
-        puller = AnnotationPuller.create(pullerClassName, inputField);
-        filter = AnnotationFilter.create(filterClassName, filterPattern);
+        puller = AnalysisPieceFactory.puller(pullerClassName, inputField);
+        filter = AnalysisPieceFactory.filter(filterClassName, filterPattern);
 
         mappers = new ArrayList<>();
         for (String mapperConfigPath : mapperConfigPaths) {
-            mappers.add(Mapper.create(mapperConfigPath));
+            mappers.add(AnalysisPieceFactory.mapper(mapperConfigPath));
         }
 
         try {
@@ -142,7 +137,7 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
         List<PreAnnotation<Object>> preAnnotations = new ArrayList<>();
 
         for (Annotation annotation : annotations) {
-            Object pulled = puller.transform(annotation);
+            Object pulled = puller.pull(annotation);
             if (filter.passes(pulled)) {
                 for (Mapper mapper : mappers) {
                     pulled = mapper.map(pulled);

@@ -16,10 +16,11 @@ import java.util.Map;
  * Break ties by priority order.
  * Set threshold on the number of votes needed (to prevent low precision, e.g.) in the class config file.
  * todo: test
+ * todo: can we remove the minimum count configuration parameter from this, and replicate its behavior with a NumberFilter?
  *
  * Created by gpfinley on 12/8/16.
  */
-public class VotingDistiller extends AnnotationDistiller<Object> {
+public class VotingDistiller implements AnnotationDistiller<Object> {
 
     private static final int minVotesToAnnotate;
 

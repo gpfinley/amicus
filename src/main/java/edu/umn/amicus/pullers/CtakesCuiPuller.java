@@ -8,10 +8,17 @@ import org.apache.uima.jcas.tcas.Annotation;
  * Parse the FSArray of UmlsConcepts provided by cTAKES and return the first CUI.
  * Created by gpfinley on 10/20/16.
  */
-public class CtakesCuiPuller extends AnnotationPuller<String> {
+public class CtakesCuiPuller extends Puller {
+
+    private final String fieldName;
+
+    public CtakesCuiPuller() {
+        this(null);
+    }
 
     public CtakesCuiPuller(String fieldName) {
-        super(fieldName);
+        // todo: find out the field name to use by default here
+        this.fieldName = fieldName == null ? "TODO DEFAULT CTAKES FIELDNAME" : fieldName;
     }
 
     /**
@@ -20,13 +27,9 @@ public class CtakesCuiPuller extends AnnotationPuller<String> {
      * @return
      */
     @Override
-    public String transform(Annotation annotation) {
-        return getCui(annotation);
-    }
-
-    protected String getCui(Annotation annotation) {
+    public String pull(Annotation annotation) {
         String cui = "";
-        FSArray conceptArray = (FSArray) callAnnotationGetters(annotation);
+        FSArray conceptArray = (FSArray) callThisGetter(fieldName, annotation);
         if (conceptArray != null) {
             for (int i = 0; i < conceptArray.size(); i++) {
                 if (conceptArray.get(i) instanceof UmlsConcept) {

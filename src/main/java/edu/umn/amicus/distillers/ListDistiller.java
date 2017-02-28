@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by gpfinley on 2/17/17.
  */
-public class ListDistiller extends AnnotationDistiller<List> {
+public class ListDistiller implements AnnotationDistiller<List> {
 
     /**
      * Save all annotations into a list. Null values and annotations will be added to the list to maintain length

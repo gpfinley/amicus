@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  *
  * Created by gpfinley on 2/17/17.
  */
-public class NumberFilter extends AnnotationFilter<Object> {
+public class NumberFilter implements AnnotationFilter {
 
     private static final Logger LOGGER = Logger.getLogger(NumberFilter.class.getName());
 
@@ -24,7 +24,6 @@ public class NumberFilter extends AnnotationFilter<Object> {
     private boolean useGreater;
 
     public NumberFilter(String pattern) {
-        super(pattern);
         String numberPattern = pattern;
         try {
             if (pattern.charAt(0) == '=') {

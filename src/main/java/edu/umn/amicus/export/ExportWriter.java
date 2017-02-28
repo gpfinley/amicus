@@ -10,9 +10,7 @@ import java.util.List;
 /**
  * Created by greg on 2/11/17.
  */
-public abstract class ExportWriter extends AnalysisPiece {
-
-    public static final String DEFAULT_EXPORTER = EachSoloTsvExportWriter.class.getName();
+public abstract class ExportWriter implements AnalysisPiece {
 
     protected String[] viewNames;
     protected String[] typeNames;
@@ -47,10 +45,5 @@ public abstract class ExportWriter extends AnalysisPiece {
     }
 
     public abstract String exportContents(Iterator<List<PreAnnotation>> annotIterator);
-
-    public static ExportWriter create(String exporterClassName) {
-        return Amicus.getPieceInstance(ExportWriter.class,
-                exporterClassName == null ? DEFAULT_EXPORTER : exporterClassName);
-    }
 
 }
