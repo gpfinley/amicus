@@ -3,7 +3,7 @@ package edu.umn.amicus.uimacomponents;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.PreAnnotation;
-import edu.umn.amicus.aligners.AnnotationAligner;
+import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.EachSoloAligner;
 import edu.umn.amicus.export.ExportWriter;
 import edu.umn.amicus.pullers.Puller;
@@ -63,7 +63,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     private List<Puller> pullers;
     private List<Class<? extends Annotation>> typeClasses;
 
-    private AnnotationAligner aligner;
+    private Aligner aligner;
     private ExportWriter exporter;
 
     @Override

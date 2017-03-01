@@ -1,6 +1,6 @@
 package edu.umn.amicus.eval;
 
-import edu.umn.amicus.aligners.AnnotationAligner;
+import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.BeginEnd;
 import org.apache.uima.jcas.tcas.Annotation;
 
@@ -11,7 +11,7 @@ import java.util.*;
  *
  * Created by gpfinley on 10/21/16.
  */
-public class EvalPerfectOverlapAligner implements AnnotationAligner {
+public class EvalPerfectOverlapAligner implements Aligner {
 
     /**
      * // todo: doc. There are nulls in the output of this one

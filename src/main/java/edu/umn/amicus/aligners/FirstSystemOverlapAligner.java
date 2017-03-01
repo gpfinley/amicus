@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by gpfinley on 10/21/16.
  */
-public class FirstSystemOverlapAligner implements AnnotationAligner {
+public class FirstSystemOverlapAligner implements Aligner {
 
     /**
      * Each iteration will provide one annotation from the first system,

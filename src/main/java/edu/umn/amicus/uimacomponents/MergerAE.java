@@ -3,7 +3,7 @@ package edu.umn.amicus.uimacomponents;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.PreAnnotation;
-import edu.umn.amicus.aligners.AnnotationAligner;
+import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.pushers.Pusher;
 import edu.umn.amicus.distillers.AnnotationDistiller;
 import edu.umn.amicus.pullers.Puller;
@@ -71,7 +71,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
     private List<AnnotationDistiller> distillers;
     private List<Pusher> pushers;
     private List<Puller> pullers;
-    private AnnotationAligner aligner;
+    private Aligner aligner;
 
     @Override
     public void initialize(UimaContext context) throws ResourceInitializationException {

@@ -1,6 +1,6 @@
 package edu.umn.amicus;
 
-import edu.umn.amicus.aligners.AnnotationAligner;
+import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.PerfectOverlapAligner;
 import edu.umn.amicus.distillers.AnnotationDistiller;
 import edu.umn.amicus.distillers.PriorityDistiller;
@@ -69,8 +69,8 @@ public final class AnalysisPieceFactory {
         return getPieceInstance(Pusher.class, pusherClassName, typeName, fieldName);
     }
 
-    public static AnnotationAligner aligner(String alignerClassName) {
-        return getPieceInstance(AnnotationAligner.class,
+    public static Aligner aligner(String alignerClassName) {
+        return getPieceInstance(Aligner.class,
                 alignerClassName == null ? DEFAULT_ALIGNER : alignerClassName);
     }
 

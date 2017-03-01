@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by gpfinley on 10/21/16.
  */
-public interface AnnotationAligner extends AnalysisPiece {
+public interface Aligner extends AnalysisPiece {
 
     Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations);
 

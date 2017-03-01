@@ -9,7 +9,7 @@ import java.util.*;
  *
  * Created by gpfinley on 10/21/16.
  */
-public class PerfectOverlapAligner implements AnnotationAligner {
+public class PerfectOverlapAligner implements Aligner {
 
     /**
      * Will always provide zero or one annotations per system.
