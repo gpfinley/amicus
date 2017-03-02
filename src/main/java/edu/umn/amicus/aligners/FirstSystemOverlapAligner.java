@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Created by gpfinley on 10/21/16.
  */
+@Deprecated
 public class FirstSystemOverlapAligner implements Aligner {
 
     /**

@@ -13,6 +13,7 @@ import java.util.*;
  * Created by gpfinley on 12/20/16.
  * // todo: unit test
  */
+@Deprecated
 public class AllOverlapsAligner implements Aligner {
 
     /**

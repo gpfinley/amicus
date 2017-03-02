@@ -42,6 +42,7 @@ public class EachSoloAligner implements Aligner {
             }
         }
 
+        @Override
         public List<Annotation> next() {
             List<Annotation> theseAnnots = Arrays.asList(new Annotation[nSystems]);
             theseAnnots.set(systemCounter, annotations.get(systemCounter).get(withinSystemCounter));
@@ -57,9 +58,13 @@ public class EachSoloAligner implements Aligner {
             return theseAnnots;
         }
 
+        @Override
         public boolean hasNext() {
             return systemCounter < nSystems;
         }
+
+        @Override
+        public void remove() { }
     }
 
 }
