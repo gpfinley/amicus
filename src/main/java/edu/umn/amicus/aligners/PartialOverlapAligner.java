@@ -1,27 +1,33 @@
 package edu.umn.amicus.aligners;
 
+import edu.umn.amicus.Counter;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
 
 /**
+ * Aligner that allows for partial overlaps.
+ * Will optimize the alignments if the situation gets complicated.
+ * Every annotation will be represented once.
+ * Every alignment can only contain annotations if ALL of them line up at at least one index.
+ *
  * Created by gpfinley on 3/1/17.
  */
 public class PartialOverlapAligner implements Aligner {
 
+    // set at the beginning: the input for each annotation
     private Map<Annotation, Integer> sourceInput;
+    // all possible sets that each annotation could be a part of
     private Map<Annotation, Set<Set<Annotation>>> setMemberships;
+
+    // this variable will be changed and acted upon by a recursive method
+    private List<List<Set<Annotation>>> allCombos;
 
     /**
      * Generate alignments of annotations that fully overlap shorter annotations.
+     * Optimize to leave as few character span units unaligned with anything as possible.
      * The algorithm:
-     *      build an inventory of all annotations from all inputs at each character index;
-     *      for every annotation, find all annotations also present at all of its character indices;
-     *      pare these down to just those annotations that are within the bounds of our annotation;
-     *      point each of these annotations to the tuple of all annotations that line up with our annotation;
-     *      if any previously pointed to other tuples, delete those tuples and redirect all annotations in those
-     *           tuples to this new one;
-     *      collapse each of these tuples into a list of maximum one annotation per input (prefer longer annotations).
+     * // todo: describe!!!
      *
      * @param allAnnotations
      * @return
@@ -29,15 +35,14 @@ public class PartialOverlapAligner implements Aligner {
     public Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
         sourceInput = new HashMap<>();
         setMemberships = new HashMap<>();
-//        Map<Annotation, Set<Set<Annotation>>> eachAnnotationsSets = new HashMap<>();
         List<Set<Annotation>> annotationsAtIndex = new ArrayList<>();
         for (int sysIndex = 0; sysIndex < allAnnotations.size(); sysIndex++) {
             for (Annotation annotation : allAnnotations.get(sysIndex)) {
+                // not adding all set memberships yet--just singletons
                 setMemberships.put(annotation, new HashSet<Set<Annotation>>());
                 setMemberships.get(annotation).add(Collections.singleton(annotation));
                 sourceInput.put(annotation, sysIndex);
                 while (annotationsAtIndex.size() < annotation.getEnd()) {
-//                    annotationsAtIndex.add(new ArrayList<Annotation>());
                     annotationsAtIndex.add(new HashSet<Annotation>());
                 }
                 for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
@@ -46,128 +51,93 @@ public class PartialOverlapAligner implements Aligner {
             }
         }
 
+        // determine all possible set memberships for every annotation
         for (Set<Annotation> annotationsThisIndex : annotationsAtIndex) {
-            for (Annotation annotation : annotationsThisIndex) {
-                setMemberships.get(annotation).add(annotationsThisIndex);
-            }
-        }
-
-        // get all combos
-
-
-        System.out.println(annotationsAtIndex);
-        System.out.println(setMemberships);
-//        System.out.println(getAllCombos(new LinkedHashSet<>(setMemberships.keySet()), new ArrayList<Set<Annotation>>()));
-        addAllCombos(new LinkedHashSet<>(setMemberships.keySet()), new ArrayList<Set<Annotation>>());
-        System.out.println(allCombos.size());
-
-
-
-
-//        Set<Set<Annotation>> allSets = new HashSet<>();
-//        for (List<Annotation> annotations : allAnnotations) {
-//            for (Annotation annotation : annotations) {
-//                // skip if we've already put this annotation into a set
-//                if (eachAnnotationsSets.get(annotation).size() != 0) continue;
-//
-////                Set<Set<Annotation>> mySets = eachAnnotationsSets.get(annotation);
-////                if (mySets == null) {
-////                    mySets = new HashSet<>();
-////                    eachAnnotationsSets.put(annotation, mySets);
-////                }
-//
-//                Set<Annotation> overlapping = new HashSet<>();
-//                for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
-//                    overlapping.addAll(annotationsAtIndex.get(i));
-//                }
-//                for (Annotation otherAnnotation : overlapping) {
-//                    if (annotation.getBegin() <= otherAnnotation.getBegin() && annotation.getEnd() >= otherAnnotation.getEnd()) {
-//
-//                        Set<Set<Annotation>> otherAnnotationsSets = eachAnnotationsSets.get(otherAnnotation);
-//                        if (otherAnnotationsSets != null) {
-//                            allSets.remove(otherAnnotationsSets);
-//                        }
-//
-//                    }
-//                }
-//            }
-//        }
-
-
-        return null;
-
-//        Map<Annotation, Set<Annotation>> subsumes = new HashMap<>();
-//        Map<Annotation, Set<Annotation>> subsumedBy = new HashMap<>();
-//
-//        for (List<Annotation> annotations : allAnnotations) {
-//            for (Annotation annotation : annotations) {
-//                Set<Annotation> overlapping = new HashSet<>();
-//                for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
-//                    overlapping.addAll(annotationsAtIndex.get(i));
-//                }
-//                for (Annotation otherAnnotation : overlapping) {
-//                    if (annotation.getBegin() <= otherAnnotation.getBegin() && annotation.getEnd() >= otherAnnotation.getEnd()) {
-//                        Set<Annotation> thisSubsumes = subsumes.get(annotation);
-//                        if (thisSubsumes == null) {
-//                            thisSubsumes = new HashSet<>();
-//                            subsumes.put(annotation, thisSubsumes);
-//                        }
-//                        thisSubsumes.add(otherAnnotation);
-//
-//                        Set<Annotation> thisIsSubsumedBy = subsumedBy.get(otherAnnotation);
-//                        if (thisIsSubsumedBy == null) {
-//                            thisIsSubsumedBy = new HashSet<>();
-//                            subsumedBy.put(otherAnnotation, thisIsSubsumedBy);
-//                        }
-//                        thisIsSubsumedBy.add(annotation);
-//                    }// else if (annotation.getBegin() >= otherAnnotation.getBegin() && annotation.getEnd() <= otherAnnotation.getEnd()) {
-//                }
-//            }
-//        }
-//
-////        System.out.println(subsumes);
-////        System.out.println(subsumedBy);
-//
-//        Set<Set<Annotation>> allSubsumptions = new HashSet<>();
-//        for (Annotation annotation : subsumes.keySet()) {
-//            Set<Annotation> thisSubsumption = new HashSet<>(subsumes.get(annotation));
-//            thisSubsumption.addAll(subsumedBy.get(annotation));
-//            allSubsumptions.add(thisSubsumption);
-//        }
-//
-//        System.out.println(allSubsumptions);
-//
-//        for (Set<Annotation> sub : allSubsumptions) {
-//            System.out.println(getOnePerInputSets(sub));
-//        }
-//
-//        return null;
-    }
-
-    private List<Set<Annotation>> getAllCombos(LinkedHashSet<Annotation> annotationsLeft, List<Set<Annotation>> builtThusFar) {
-        if (annotationsLeft.size() == 0) {
-            return builtThusFar;
-        }
-        List<Set<Annotation>> toYield = new ArrayList<>(builtThusFar);
-        Annotation annotation = annotationsLeft.iterator().next();
-        for (Set<Annotation> trySet : setMemberships.get(annotation)) {
-            for (Annotation otherAnnotation : trySet) {
-                if (!annotationsLeft.contains(otherAnnotation)) {
-                    return toYield;
+            // if a single input has multiple annotations at this index, split into multiple sets to try
+            // todo: test that this function actually works
+            Set<Set<Annotation>> allPossibleSetsThisIndex = getOnePerInputSets(annotationsThisIndex);
+            for (Set<Annotation> thisSet : allPossibleSetsThisIndex) {
+                for (Annotation annotation : thisSet) {
+                    setMemberships.get(annotation).add(thisSet);
                 }
             }
-            List<Set<Annotation>> newBuiltThusFar = new ArrayList<>(builtThusFar);
-            newBuiltThusFar.add(trySet);
-            LinkedHashSet<Annotation> newAnnotationsLeft = new LinkedHashSet<>(annotationsLeft);
-            newAnnotationsLeft.remove(annotation);
-            toYield.addAll(getAllCombos(newAnnotationsLeft, newBuiltThusFar));
         }
-        return toYield;
+
+        // build all the "sprawls," which can be optimized independently
+        // (much faster than optimizing every possible combo)
+        Set<Annotation> annotationsAccountedFor = new HashSet<>(setMemberships.keySet());
+        Set<Set<Annotation>> sprawls = new HashSet<>();
+        while(annotationsAccountedFor.size() > 0) {
+            Annotation annot = annotationsAccountedFor.iterator().next();
+            Set<Annotation> thisSprawl = getSprawlOf(annot, null);
+            annotationsAccountedFor.removeAll(thisSprawl);
+            sprawls.add(thisSprawl);
+        }
+
+        // for each sprawl, find the most optimal combo of alignments for that sprawl and add to the big list
+        List<List<Annotation>> allAlignments = new ArrayList<>();
+        for (Set<Annotation> sprawl : sprawls) {
+            allCombos = new ArrayList<>();
+            addAllCombos(new LinkedHashSet<>(sprawl), null);
+            List<Set<Annotation>> bestCombo = null;
+            int bestScore = Integer.MAX_VALUE;
+            for (List<Set<Annotation>> combo : allCombos) {
+                int score = 0;
+                for (Set<Annotation> annots : combo) {
+                    Counter<Integer> indices = new Counter<>();
+                    for (Annotation annot : annots) {
+                        for (int i = annot.getBegin(); i < annot.getEnd(); i++) {
+                            indices.increment(i);
+                        }
+                    }
+                    for (int count : indices.values()) {
+                        if (count == 1) score++;
+                    }
+                }
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestCombo = combo;
+                }
+            }
+            for (Set<Annotation> set : bestCombo) {
+                List<Annotation> byInputList = new ArrayList<>();
+                for (List l : allAnnotations) {
+                    byInputList.add(null);
+                }
+                for (Annotation annotation : set) {
+                    byInputList.set(sourceInput.get(annotation), annotation);
+                }
+                allAlignments.add(byInputList);
+            }
+        }
+        return allAlignments.iterator();
     }
 
-    List<List<Set<Annotation>>> allCombos = new ArrayList<>();
+    /**
+     * Recursive algorithm to find all annotations that are part of the same sprawl as the one passed.
+     * "Sprawl" = the set of all annotations that overlap any others in the set, either directly or vicariously.
+     * @param annotation the starting point
+     * @param currentSprawl the sprawl currently being built; can be null
+     * @return a set of every annotation in the sprawl
+     */
+    private Set<Annotation> getSprawlOf(Annotation annotation, Set<Annotation> currentSprawl) {
+        if (currentSprawl == null) currentSprawl = new HashSet<>();
+        currentSprawl.add(annotation);
+        for (Set<Annotation> thisSet : setMemberships.get(annotation)) {
+            for (Annotation other : thisSet) {
+                if (!currentSprawl.contains(other)) {
+                    currentSprawl.addAll(getSprawlOf(other, currentSprawl));
+                }
+            }
+        }
+        return currentSprawl;
+    }
 
+    // find all possible combinations of aligned sets given annotationsLeft
     private void addAllCombos(LinkedHashSet<Annotation> annotationsLeft, List<Set<Annotation>> builtThusFar) {
+        if (builtThusFar == null) {
+            builtThusFar = new ArrayList<>();
+        }
         if (annotationsLeft.size() == 0) {
             allCombos.add(builtThusFar);
             return;
@@ -184,17 +154,13 @@ public class PartialOverlapAligner implements Aligner {
                 List<Set<Annotation>> newBuiltThusFar = new ArrayList<>(builtThusFar);
                 newBuiltThusFar.add(trySet);
                 LinkedHashSet<Annotation> newAnnotationsLeft = new LinkedHashSet<>(annotationsLeft);
-                newAnnotationsLeft.remove(annotation);
+                newAnnotationsLeft.removeAll(trySet);
                 addAllCombos(newAnnotationsLeft, newBuiltThusFar);
             }
         }
     }
 
-
-
-
-
-
+    // get all possible sets at this index--with a maximum of one annotation per input (if there are any overlapping)
     private Set<Set<Annotation>> getOnePerInputSets(Set<Annotation> annotations) {
         Set<Set<Annotation>> theseSets = new HashSet<>();
         Set<Integer> inputsUsed = new HashSet<>();
@@ -215,107 +181,5 @@ public class PartialOverlapAligner implements Aligner {
         }
         return theseSets;
     }
-
-
-//
-//
-//
-//        // point every annotation to the tuple that it's a part of
-//        Map<Annotation, Set<AnnotFromInput>> annotationsAndTheirTuples = new HashMap<>();
-//        // loop through every annotation that is not already spoken for as part of a tuple
-//        for (int input = 0; input < allAnnotations.size(); input++) {
-////        for (List<Annotation> annotations : allAnnotations) {
-//            for (Annotation annotation : allAnnotations.get(input)) {
-//                if (annotationsAndTheirTuples.containsKey(annotation)) continue;
-//
-//                Set<AnnotFromInput> overlapping = new HashSet<>();
-//                for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
-//                    overlapping.addAll(annotationsAtIndex.get(i));
-//                }
-//
-//                System.out.println(annotation);
-//                System.out.println(overlapping);
-//                System.out.println(annotationsAndTheirTuples);
-//                try {
-//                    Thread.sleep(1000);
-//                } catch(Exception e) {}
-//
-//                Set<AnnotFromInput> thisTuple = new HashSet<>();
-//                thisTuple.add(new AnnotFromInput(annotation, input));
-//                annotationsAndTheirTuples.put(annotation, thisTuple);
-//
-//                // for every partially overlapping annotation, put it in a tuple with this one
-//                for (AnnotFromInput otherAnnot : overlapping) {
-//                    if (otherAnnot.annotation.getBegin() >= annotation.getBegin()
-//                            && otherAnnot.annotation.getEnd() <= annotation.getEnd()) {
-//                        // if this annotation was already part of a tuple,
-//                        //      move all annots from that tuple into this one and redirect pointers
-//                        Set<AnnotFromInput> subTuple = annotationsAndTheirTuples.get(otherAnnot.annotation);
-//                        if (subTuple != null) {
-//                            subTuple = new HashSet<>(subTuple);
-//                            for (AnnotFromInput annotToRedirect : subTuple) {
-//                                annotationsAndTheirTuples.put(annotToRedirect.annotation, thisTuple);
-//                                thisTuple.add(annotToRedirect);
-//                            }
-//                        } else {
-//                            thisTuple.add(otherAnnot);
-//                            System.out.println("overlaps with " + otherAnnot);
-//                            annotationsAndTheirTuples.put(otherAnnot.annotation, thisTuple);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        Set<List<Annotation>> toIterateOver = new HashSet<>();
-//        for (Set<AnnotFromInput> alignedAnnotations : annotationsAndTheirTuples.values()) {
-//            Annotation[] forEachSystem = new Annotation[allAnnotations.size()];
-//            for (AnnotFromInput annotFromInput : alignedAnnotations) {
-//                Annotation alreadySet = forEachSystem[annotFromInput.input];
-//                // put this annotation into the one-per-input list if nothing else is there yet
-//                //      --or if bigger than what is there already
-//                if (alreadySet == null || annotFromInput.annotation.getEnd() - annotFromInput.annotation.getEnd() >
-//                                                          alreadySet.getEnd() - alreadySet.getBegin()) {
-//                    forEachSystem[annotFromInput.input] = annotFromInput.annotation;
-//                }
-//            }
-//            toIterateOver.add(Arrays.asList(forEachSystem));
-//        }
-//        return toIterateOver.iterator();
-
-//    /**
-//     * Simple struct class, only used here
-//     */
-//    private static class AnnotFromInput {
-//        Annotation annotation;
-//        int input;
-//        AnnotFromInput(Annotation annotation, int input) {
-//            this.annotation = annotation;
-//            this.input = input;
-//        }
-//        @Override
-//        public String toString() {
-//            return String.format("<%s, %d>", annotation, input);
-//        }
-//
-//        @Override
-//        public boolean equals(Object o) {
-//            if (this == o) return true;
-//            if (o == null || getClass() != o.getClass()) return false;
-//
-//            AnnotFromInput that = (AnnotFromInput) o;
-//
-//            if (input != that.input) return false;
-//            return !(annotation != null ? !annotation.equals(that.annotation) : that.annotation != null);
-//
-//        }
-//
-//        @Override
-//        public int hashCode() {
-//            int result = annotation != null ? annotation.hashCode() : 0;
-//            result = 31 * result + input;
-//            return result;
-//        }
-//    }
 
 }

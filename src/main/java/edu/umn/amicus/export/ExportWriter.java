@@ -1,6 +1,5 @@
 package edu.umn.amicus.export;
 
-import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AnalysisPiece;
 import edu.umn.amicus.PreAnnotation;
 
@@ -12,6 +11,7 @@ import java.util.List;
  */
 public abstract class ExportWriter implements AnalysisPiece {
 
+    // todo: is there a more elegant way to deal with these? It doesn't happen for any other kind of piece...
     protected String[] viewNames;
     protected String[] typeNames;
     protected String[] fieldNames;

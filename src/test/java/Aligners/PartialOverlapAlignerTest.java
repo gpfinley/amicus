@@ -14,58 +14,39 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * Simple test for partial overlap aligner
+ *
  * Created by gpfinley on 3/1/17.
  */
-public class FullOverlapAlignerTest {
+public class PartialOverlapAlignerTest {
+
+    private static List<Annotation> annotationListFromString(String str) {
+        List<Annotation> annotations = new ArrayList<>();
+        char[] chars = str.toCharArray();
+        String current = "";
+        int start = 0;
+        for (int i=0; i<=chars.length; i++) {
+            if (i == chars.length || chars[i] == ' ') {
+                if (!"".equals(current)) {
+                    annotations.add(new Annot(current, start, i));
+                }
+                start = i+1;
+                current = "";
+            } else {
+                current += chars[i];
+            }
+        }
+        return annotations;
+    }
 
     public static void main(String[] args) {
-//        Aligner aligner = new FullOverlapAligner();
         Aligner aligner = new PartialOverlapAligner();
 
-        /*
-        three blind mice
-        hickory dickory dock
-        stop in the name of love
-
-
-        xxxxxxxxxx
-        xxxxxx
-            xxxxxx
-
-        predicted:
-        three, hickory, stop
-        0, hickory, in
-        blind, 0, the
-        0, dickory, the
-        mice, 0, name
-        0, dock, of
-        0, 0, love
-         */
-
-        Annotation[] inputs1 = new Annotation[]{
-                new Annot("three", 0, 5),
-                new Annot("blind", 6, 11),
-                new Annot("mice", 12, 16)
-        };
-        Annotation[] inputs2 = new Annotation[]{
-                new Annot("hickory", 0, 7),
-                new Annot("dickory", 8, 15),
-                new Annot("dock", 16, 20)
-        };
-        Annotation[] inputs3 = new Annotation[]{
-                new Annot("stop", 0, 4),
-                new Annot("in", 5, 7),
-                new Annot("the", 8, 11),
-                new Annot("name", 12, 16),
-                new Annot("of", 17, 19),
-                new Annot("love", 20, 24)
-        };
-
-
         List<List<Annotation>> bigList = new ArrayList<>();
-        bigList.add(Arrays.asList(inputs1));
-        bigList.add(Arrays.asList(inputs2));
-        bigList.add(Arrays.asList(inputs3));
+
+        bigList.add(annotationListFromString("         hh     iiii j  k"));
+        bigList.add(annotationListFromString("aaaaaaaaa        bbbb   cccccccccc"));
+        bigList.add(annotationListFromString("dddddddddd      eee ff  gggggggg"));
 
         Iterator<List<Annotation>> iterator = aligner.alignAndIterate(bigList);
         while (iterator.hasNext()) {
@@ -73,7 +54,7 @@ public class FullOverlapAlignerTest {
         }
     }
 
-    private static class Annot extends Annotation {
+    static class Annot extends Annotation {
 
         static JCas jCas;
         static {
