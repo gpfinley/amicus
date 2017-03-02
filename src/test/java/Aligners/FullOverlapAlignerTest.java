@@ -2,6 +2,7 @@ package Aligners;
 
 import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.FullOverlapAligner;
+import edu.umn.amicus.aligners.PartialOverlapAligner;
 import org.apache.uima.UIMAException;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.jcas.JCas;
@@ -18,12 +19,18 @@ import java.util.List;
 public class FullOverlapAlignerTest {
 
     public static void main(String[] args) {
-        Aligner aligner = new FullOverlapAligner();
+//        Aligner aligner = new FullOverlapAligner();
+        Aligner aligner = new PartialOverlapAligner();
 
         /*
         three blind mice
         hickory dickory dock
         stop in the name of love
+
+
+        xxxxxxxxxx
+        xxxxxx
+            xxxxxx
 
         predicted:
         three, hickory, stop

@@ -1,6 +1,5 @@
 package edu.umn.amicus.aligners;
 
-import edu.umn.amicus.Counter;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
@@ -8,9 +7,10 @@ import java.util.*;
 /**
  * Created by gpfinley on 3/1/17.
  */
-public class FullOverlapAligner implements Aligner {
+public class PartialOverlapAligner implements Aligner {
 
-    private static Map<Annotation, Integer> sourceInput;
+    private Map<Annotation, Integer> sourceInput;
+    private Map<Annotation, Set<Set<Annotation>>> setMemberships;
 
     /**
      * Generate alignments of annotations that fully overlap shorter annotations.
@@ -28,15 +28,17 @@ public class FullOverlapAligner implements Aligner {
      */
     public Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
         sourceInput = new HashMap<>();
-        Map<Annotation, Set<Set<Annotation>>> eachAnnotationsSets = new HashMap<>();
-        List<List<Annotation>> annotationsAtIndex = new ArrayList<>();
+        setMemberships = new HashMap<>();
+//        Map<Annotation, Set<Set<Annotation>>> eachAnnotationsSets = new HashMap<>();
+        List<Set<Annotation>> annotationsAtIndex = new ArrayList<>();
         for (int sysIndex = 0; sysIndex < allAnnotations.size(); sysIndex++) {
             for (Annotation annotation : allAnnotations.get(sysIndex)) {
-                // pre-load some hashmaps
+                setMemberships.put(annotation, new HashSet<Set<Annotation>>());
+                setMemberships.get(annotation).add(Collections.singleton(annotation));
                 sourceInput.put(annotation, sysIndex);
-                eachAnnotationsSets.put(annotation, new HashSet<Set<Annotation>>());
                 while (annotationsAtIndex.size() < annotation.getEnd()) {
-                    annotationsAtIndex.add(new ArrayList<Annotation>());
+//                    annotationsAtIndex.add(new ArrayList<Annotation>());
+                    annotationsAtIndex.add(new HashSet<Annotation>());
                 }
                 for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
                     annotationsAtIndex.get(i).add(annotation);
@@ -44,34 +46,52 @@ public class FullOverlapAligner implements Aligner {
             }
         }
 
-        Set<Set<Annotation>> allSets = new HashSet<>();
-        for (List<Annotation> annotations : allAnnotations) {
-            for (Annotation annotation : annotations) {
-                // skip if we've already put this annotation into a set
-                if (eachAnnotationsSets.get(annotation).size() != 0) continue;
-
-//                Set<Set<Annotation>> mySets = eachAnnotationsSets.get(annotation);
-//                if (mySets == null) {
-//                    mySets = new HashSet<>();
-//                    eachAnnotationsSets.put(annotation, mySets);
-//                }
-
-                Set<Annotation> overlapping = new HashSet<>();
-                for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
-                    overlapping.addAll(annotationsAtIndex.get(i));
-                }
-                for (Annotation otherAnnotation : overlapping) {
-                    if (annotation.getBegin() <= otherAnnotation.getBegin() && annotation.getEnd() >= otherAnnotation.getEnd()) {
-
-                        Set<Set<Annotation>> otherAnnotationsSets = eachAnnotationsSets.get(otherAnnotation);
-                        if (otherAnnotationsSets != null) {
-                            allSets.remove(otherAnnotationsSets);
-                        }
-
-                    }
-                }
+        for (Set<Annotation> annotationsThisIndex : annotationsAtIndex) {
+            for (Annotation annotation : annotationsThisIndex) {
+                setMemberships.get(annotation).add(annotationsThisIndex);
             }
         }
+
+        // get all combos
+
+
+        System.out.println(annotationsAtIndex);
+        System.out.println(setMemberships);
+//        System.out.println(getAllCombos(new LinkedHashSet<>(setMemberships.keySet()), new ArrayList<Set<Annotation>>()));
+        addAllCombos(new LinkedHashSet<>(setMemberships.keySet()), new ArrayList<Set<Annotation>>());
+        System.out.println(allCombos.size());
+
+
+
+
+//        Set<Set<Annotation>> allSets = new HashSet<>();
+//        for (List<Annotation> annotations : allAnnotations) {
+//            for (Annotation annotation : annotations) {
+//                // skip if we've already put this annotation into a set
+//                if (eachAnnotationsSets.get(annotation).size() != 0) continue;
+//
+////                Set<Set<Annotation>> mySets = eachAnnotationsSets.get(annotation);
+////                if (mySets == null) {
+////                    mySets = new HashSet<>();
+////                    eachAnnotationsSets.put(annotation, mySets);
+////                }
+//
+//                Set<Annotation> overlapping = new HashSet<>();
+//                for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
+//                    overlapping.addAll(annotationsAtIndex.get(i));
+//                }
+//                for (Annotation otherAnnotation : overlapping) {
+//                    if (annotation.getBegin() <= otherAnnotation.getBegin() && annotation.getEnd() >= otherAnnotation.getEnd()) {
+//
+//                        Set<Set<Annotation>> otherAnnotationsSets = eachAnnotationsSets.get(otherAnnotation);
+//                        if (otherAnnotationsSets != null) {
+//                            allSets.remove(otherAnnotationsSets);
+//                        }
+//
+//                    }
+//                }
+//            }
+//        }
 
 
         return null;
@@ -123,6 +143,57 @@ public class FullOverlapAligner implements Aligner {
 //
 //        return null;
     }
+
+    private List<Set<Annotation>> getAllCombos(LinkedHashSet<Annotation> annotationsLeft, List<Set<Annotation>> builtThusFar) {
+        if (annotationsLeft.size() == 0) {
+            return builtThusFar;
+        }
+        List<Set<Annotation>> toYield = new ArrayList<>(builtThusFar);
+        Annotation annotation = annotationsLeft.iterator().next();
+        for (Set<Annotation> trySet : setMemberships.get(annotation)) {
+            for (Annotation otherAnnotation : trySet) {
+                if (!annotationsLeft.contains(otherAnnotation)) {
+                    return toYield;
+                }
+            }
+            List<Set<Annotation>> newBuiltThusFar = new ArrayList<>(builtThusFar);
+            newBuiltThusFar.add(trySet);
+            LinkedHashSet<Annotation> newAnnotationsLeft = new LinkedHashSet<>(annotationsLeft);
+            newAnnotationsLeft.remove(annotation);
+            toYield.addAll(getAllCombos(newAnnotationsLeft, newBuiltThusFar));
+        }
+        return toYield;
+    }
+
+    List<List<Set<Annotation>>> allCombos = new ArrayList<>();
+
+    private void addAllCombos(LinkedHashSet<Annotation> annotationsLeft, List<Set<Annotation>> builtThusFar) {
+        if (annotationsLeft.size() == 0) {
+            allCombos.add(builtThusFar);
+            return;
+        }
+        Annotation annotation = annotationsLeft.iterator().next();
+        for (Set<Annotation> trySet : setMemberships.get(annotation)) {
+            tryThisSet:
+            {
+                for (Annotation otherAnnotation : trySet) {
+                    if (!annotationsLeft.contains(otherAnnotation)) {
+                        break tryThisSet;
+                    }
+                }
+                List<Set<Annotation>> newBuiltThusFar = new ArrayList<>(builtThusFar);
+                newBuiltThusFar.add(trySet);
+                LinkedHashSet<Annotation> newAnnotationsLeft = new LinkedHashSet<>(annotationsLeft);
+                newAnnotationsLeft.remove(annotation);
+                addAllCombos(newAnnotationsLeft, newBuiltThusFar);
+            }
+        }
+    }
+
+
+
+
+
 
     private Set<Set<Annotation>> getOnePerInputSets(Set<Annotation> annotations) {
         Set<Set<Annotation>> theseSets = new HashSet<>();
