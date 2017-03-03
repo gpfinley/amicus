@@ -2,6 +2,8 @@ package edu.umn.amicus.uimacomponents;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
+import org.apache.uima.collection.CollectionException;
 import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -77,8 +79,12 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
      * @param cas
      */
     @Override
-    public void getNext(CAS cas) {
-        Util.setDocumentID(cas, fileIDs.get(index));
+    public void getNext(CAS cas) throws CollectionException {
+        try {
+            Util.setDocumentID(cas, fileIDs.get(index));
+        } catch(CASException e) {
+            throw new CollectionException(e);
+        }
         index++;
     }
 

@@ -58,7 +58,7 @@ public final class AnalysisPieceFactory {
         return getPieceInstance(Puller.class, pullerClassName, fieldName);
     }
 
-    public static Pusher pusher(String pusherClassName, String typeName, String fieldName) {
+    public static Pusher pusher(String pusherClassName, String typeName, String fieldName) throws AmicusException {
         if (pusherClassName == null) {
             if (typeName == null || fieldName == null) {
                 throw new AmicusException("Need to provide output annnotation fields and types UNLESS using" +
@@ -69,17 +69,17 @@ public final class AnalysisPieceFactory {
         return getPieceInstance(Pusher.class, pusherClassName, typeName, fieldName);
     }
 
-    public static Aligner aligner(String alignerClassName) {
+    public static Aligner aligner(String alignerClassName) throws AmicusException {
         return getPieceInstance(Aligner.class,
                 alignerClassName == null ? DEFAULT_ALIGNER : alignerClassName);
     }
 
-    public static AnnotationDistiller distiller(String distillerClassName) {
+    public static AnnotationDistiller distiller(String distillerClassName) throws AmicusException {
         return getPieceInstance(AnnotationDistiller.class,
                 distillerClassName == null ? DEFAULT_DISTILLER : distillerClassName);
     }
 
-    public static AnnotationFilter filter(String filterClassName, String pattern) {
+    public static AnnotationFilter filter(String filterClassName, String pattern) throws AmicusException {
         if (filterClassName == null) {
             if (pattern != null) {
                 filterClassName = DEFAULT_FILTER;
@@ -91,12 +91,12 @@ public final class AnalysisPieceFactory {
         return getPieceInstance(AnnotationFilter.class, filterClassName, pattern);
     }
 
-    public static ExportWriter exportWriter(String exporterClassName) {
+    public static ExportWriter exportWriter(String exporterClassName) throws AmicusException {
         return getPieceInstance(ExportWriter.class,
                 exporterClassName == null ? DEFAULT_EXPORT_WRITER : exporterClassName);
     }
 
-    public static SummaryWriter summaryWriter(String distillerClassName) {
+    public static SummaryWriter summaryWriter(String distillerClassName) throws AmicusException {
         return getPieceInstance(SummaryWriter.class,
                 distillerClassName == null ? DEFAULT_SUMMARY_WRITER : distillerClassName);
     }
@@ -108,7 +108,7 @@ public final class AnalysisPieceFactory {
      * @param configPath
      * @return
      */
-    public static Mapper mapper(String configPath) {
+    public static Mapper mapper(String configPath) throws AmicusException {
         String keyPath = "Mapper_" + configPath;
         if (allPieces.containsKey(keyPath)) {
             return (Mapper) allPieces.get(keyPath);
@@ -144,7 +144,7 @@ public final class AnalysisPieceFactory {
      * @param <T> an AnalysisPiece implementation
      * @return a new instance or the previously created instance of implementationName
      */
-    private static <T extends AnalysisPiece> T getPieceInstance(Class<T> superclass, String implementationName, Object... args) {
+    private static <T extends AnalysisPiece> T getPieceInstance(Class<T> superclass, String implementationName, Object... args) throws AmicusException {
         StringBuilder idBuilder = new StringBuilder();
         idBuilder.append(implementationName);
         for (Object arg : args) {
@@ -183,27 +183,30 @@ public final class AnalysisPieceFactory {
      */
     private static Object instantiateClassFromArgs(String className, Object... args) throws ReflectiveOperationException {
         Class<?> clazz = Class.forName(className);
-        Class[] classes = new Class[args.length];
+        Class[] parameterClasses = new Class[args.length];
         boolean argsHaveNullClasses = false;
         for (int i=0; i<args.length; i++) {
             if (args[i] == null) {
                 argsHaveNullClasses = true;
             } else {
-                classes[i] = args[i].getClass();
+                parameterClasses[i] = args[i].getClass();
             }
         }
-        // todo: should it fall back on a default (empty) constructor if this doesn't exist? Or should implementations be forced to carry it?
         if (!argsHaveNullClasses) {
-            return clazz.getConstructor(classes).newInstance(args);
+            try {
+                return clazz.getConstructor(parameterClasses).newInstance(args);
+            } catch (NoSuchMethodException e) {
+                return clazz.getConstructor().newInstance();
+            }
         }
         // loop through constructors to see if we can find one that has the right number of arguments
         Constructor[] constructors = clazz.getConstructors();
         for (Constructor constructor : constructors) {
-            if (classes.length == constructor.getParameterTypes().length) {
+            if (parameterClasses.length == constructor.getParameterTypes().length) {
                 useSameLengthConstructor: {
-                    for (int i = 0; i < classes.length; i++) {
+                    for (int i = 0; i < parameterClasses.length; i++) {
                         // don't use this one if the known (non-null argument) classes don't match
-                        if (classes[i] != null && !classes[i].equals(constructor.getParameterTypes()[i])) {
+                        if (parameterClasses[i] != null && !parameterClasses[i].equals(constructor.getParameterTypes()[i])) {
                             break useSameLengthConstructor;
                         }
                     }

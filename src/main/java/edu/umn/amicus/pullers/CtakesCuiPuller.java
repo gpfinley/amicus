@@ -1,5 +1,7 @@
 package edu.umn.amicus.pullers;
 
+import edu.umn.amicus.Amicus;
+import edu.umn.amicus.AmicusException;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -27,9 +29,14 @@ public class CtakesCuiPuller extends Puller {
      * @return
      */
     @Override
-    public String pull(Annotation annotation) {
+    public String pull(Annotation annotation) throws AmicusException {
         String cui = "";
-        FSArray conceptArray = (FSArray) callThisGetter(fieldName, annotation);
+        FSArray conceptArray;
+        try {
+            conceptArray = (FSArray) callThisGetter(fieldName, annotation);
+        } catch (ReflectiveOperationException e) {
+            throw new AmicusException(e);
+        }
         if (conceptArray != null) {
             for (int i = 0; i < conceptArray.size(); i++) {
                 if (conceptArray.get(i) instanceof UmlsConcept) {

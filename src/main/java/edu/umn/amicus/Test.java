@@ -4,16 +4,15 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by gpfinley on 1/20/17.
  */
 public class Test {
     public static void main(String[] args) throws IOException {
+
+        System.out.println(Arrays.toString("field;".split(";", -1)));
 
         List<Map> mapList = new ArrayList<>();
         mapList.add(new HashMap<Integer, Integer>());

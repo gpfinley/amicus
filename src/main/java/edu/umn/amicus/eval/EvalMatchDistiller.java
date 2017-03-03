@@ -23,7 +23,7 @@ public class EvalMatchDistiller implements AnnotationDistiller<List<EvalMatch>> 
      * @param annotations
      */
     @Override
-    public PreAnnotation<List<EvalMatch>> distill(List<PreAnnotation> annotations) {
+    public PreAnnotation<List<EvalMatch>> distill(List<PreAnnotation> annotations) throws AmicusException {
         List<EvalMatch> evalMatches = new ArrayList<>();
         int begin = 0;
         int end = 0;

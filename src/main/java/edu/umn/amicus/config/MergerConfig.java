@@ -1,6 +1,6 @@
 package edu.umn.amicus.config;
 
-import edu.umn.amicus.AmicusException;
+import edu.umn.amicus.AmicusConfigurationException;
 
 /**
  * A serializable bean for a single merge engine.
@@ -23,7 +23,7 @@ public class MergerConfig extends PipelineComponentConfig {
     public void verify() {
         if (inputs == null || inputs.length == 0
                 || outputs == null) {
-            throw new AmicusException("Merger configuration incomplete");
+            throw new AmicusConfigurationException("Merger configuration incomplete");
         }
         for(AnnotationInputConfig c : inputs) c.verify();
         for(AnnotationOutputConfig c : outputs) c.verify();

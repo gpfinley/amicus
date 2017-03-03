@@ -1,5 +1,7 @@
 package edu.umn.amicus.config;
 
+import edu.umn.amicus.AmicusConfigurationException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public abstract class PipelineComponentConfig {
 //    public AnnotationInputConfig[] inputs;
 //    public AnnotationOutputConfig[] outputs;
 
-    public abstract void verify();
+    public abstract void verify() throws AmicusConfigurationException;
 
     /**
      * Aggregating functions, used to convert Single*putConfigs into the String[]s needed as UIMA config params

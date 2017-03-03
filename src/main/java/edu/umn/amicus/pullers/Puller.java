@@ -22,7 +22,7 @@ public class Puller implements AnalysisPiece {
     protected final String[] fieldNames;
 
     public Puller(String delimitedFieldnames) {
-        fieldNames = delimitedFieldnames == null ? null : delimitedFieldnames.split(FIELD_NAME_DELIMITER);
+        fieldNames = delimitedFieldnames == null ? null : delimitedFieldnames.split(FIELD_NAME_DELIMITER, -1);
     }
 
     /**
@@ -39,15 +39,19 @@ public class Puller implements AnalysisPiece {
      * @param annotation
      * @return
      */
-    public Object pull(Annotation annotation) {
-        if (fieldNames.length > 1) {
-            List<Object> objectList = new ArrayList<>();
-            for (String fieldName : fieldNames) {
-                objectList.add(callThisGetter(fieldName, annotation));
+    public Object pull(Annotation annotation) throws AmicusException {
+        try {
+            if (fieldNames.length > 1) {
+                List<Object> objectList = new ArrayList<>();
+                for (String fieldName : fieldNames) {
+                    objectList.add(callThisGetter(fieldName, annotation));
+                }
+                return objectList;
             }
-            return objectList;
+            return callThisGetter(fieldNames[0], annotation);
+        } catch (ReflectiveOperationException e) {
+            throw new AmicusException(e);
         }
-        return callThisGetter(fieldNames[0], annotation);
     }
 
     /**
@@ -56,15 +60,11 @@ public class Puller implements AnalysisPiece {
      * @param annotation
      * @return
      */
-    protected static Object callThisGetter(String fieldName, Annotation annotation) {
+    protected static Object callThisGetter(String fieldName, Annotation annotation) throws ReflectiveOperationException {
         if (annotation == null) return null;
         Class<? extends Annotation> clazz = annotation.getClass();
-        try {
-            Method toCall = clazz.getMethod(Util.getGetterFor(fieldName));
-            return toCall.invoke(annotation);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new AmicusException(e);
-        }
+        Method toCall = clazz.getMethod(Util.getGetterFor(fieldName));
+        return toCall.invoke(annotation);
     }
 
 }

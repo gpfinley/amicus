@@ -1,5 +1,6 @@
 package edu.umn.amicus.uimacomponents;
 
+import edu.umn.amicus.AmicusConfigurationException;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.PreAnnotation;
@@ -27,6 +28,8 @@ public class MergerAE extends JCasAnnotator_ImplBase {
 
     private static final Logger LOGGER = Logger.getLogger(MergerAE.class.getName());
 
+    public static final String MY_NAME = "name";
+
     public static final String READ_VIEWS = "readViews";
     public static final String INPUT_TYPES = "typeClasses";
     public static final String INPUT_FIELDS = "inputFields";
@@ -42,6 +45,9 @@ public class MergerAE extends JCasAnnotator_ImplBase {
 
     // Some things are not mandatory because there are defaults available (anything with CLASS).
     // Others are not mandatory because specialized pullers/pushers might not use them (but the defaults do!).
+
+    @ConfigurationParameter(name = MY_NAME, defaultValue = "Unnamed Merger")
+    private String myName;
 
     @ConfigurationParameter(name = READ_VIEWS)
     private String[] readViews;
@@ -88,7 +94,8 @@ public class MergerAE extends JCasAnnotator_ImplBase {
             assert pullerClassNames == null || numInputs == pullerClassNames.length;
             assert inputFields == null || numInputs == inputFields.length;
         } catch (AssertionError e) {
-            throw new AmicusException("Configuration parameters for inputs do not line up! Check parameter lists.");
+            LOGGER.severe(String.format("Configuration parameters for inputs do not line up! Check parameter lists for Merger \"%s\"", myName));
+            throw new AmicusConfigurationException(e);
         }
         try {
             assert distillerClassNames == null || numOutputs == distillerClassNames.length;
@@ -96,21 +103,28 @@ public class MergerAE extends JCasAnnotator_ImplBase {
             assert outputAnnotationTypes == null || numOutputs == outputAnnotationTypes.length;
             assert outputAnnotationFields == null || numOutputs == outputAnnotationFields.length;
         } catch (AssertionError e) {
-            throw new AmicusException("Configuration parameters for outputs do not line up! Check parameter lists.");
+            LOGGER.severe(String.format("Configuration parameters for outputs do not line up! Check parameter lists for Merger \"%s\"", myName));
+            throw new AmicusConfigurationException(e);
         }
 
         distillers = new ArrayList<>();
         pushers = new ArrayList<>();
         pullers = new ArrayList<>();
-        aligner = AnalysisPieceFactory.aligner(alignerClassName);
-        for (String distillerClassName : distillerClassNames) {
-            distillers.add(AnalysisPieceFactory.distiller(distillerClassName));
-        }
-        for (int i=0; i<numOutputs; i++) {
-            pushers.add(AnalysisPieceFactory.pusher(pusherClassNames[i], outputAnnotationTypes[i], outputAnnotationFields[i]));
-        }
-        for (int i=0; i<numInputs; i++) {
-            pullers.add(AnalysisPieceFactory.puller(pullerClassNames[i], inputFields[i]));
+        try {
+            aligner = AnalysisPieceFactory.aligner(alignerClassName);
+            for (String distillerClassName : distillerClassNames) {
+                distillers.add(AnalysisPieceFactory.distiller(distillerClassName));
+            }
+            for (int i = 0; i < numOutputs; i++) {
+                pushers.add(AnalysisPieceFactory.pusher(pusherClassNames[i], outputAnnotationTypes[i], outputAnnotationFields[i]));
+            }
+            for (int i = 0; i < numInputs; i++) {
+                pullers.add(AnalysisPieceFactory.puller(pullerClassNames[i], inputFields[i]));
+            }
+        } catch (AmicusException e) {
+            LOGGER.severe(String.format("Couldn't load analysis pieces for Merger \"%s\"", myName));
+            throw new ResourceInitializationException(e);
+
         }
 
         typeClasses = new ArrayList<>();
@@ -119,8 +133,9 @@ public class MergerAE extends JCasAnnotator_ImplBase {
                 typeClasses.add(Class.forName(typeClassNames[i]));
             }
         } catch (ClassNotFoundException e) {
-            LOGGER.severe("Could not add input types. Confirm that full type paths are correct and that classes" +
-                    " have been generated from a UIMA type system (easiest way is to build via maven).");
+            LOGGER.severe(String.format("Could not find input types for Merger \"%s\". Confirm that types are" +
+                    "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
+                    "via maven).", myName));
             throw new ResourceInitializationException(e);
         }
     }
@@ -131,45 +146,51 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         try {
             String sofaData = (String) Util.getSofaData(jCas);
             Util.createOutputViews(jCas, sofaData, outputViewNames);
-        } catch (CASException e) {
+        } catch (CASException | AmicusException e) {
+            LOGGER.severe(String.format("Could not create output views for Merger \"%s\"", myName));
             throw new AnalysisEngineProcessException(e);
         }
 
-        Iterator<List<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
-        while (listIter.hasNext()) {
-            List<Annotation> annotations = listIter.next();
-            System.out.println(annotations);
-            List<PreAnnotation> preannotations = new ArrayList<>();
-            for (int i = 0; i < annotations.size(); i++) {
-                preannotations.add(annotations.get(i) == null ? null :
-                        new PreAnnotation(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
-            }
-            for (int i = 0; i < outputViewNames.length; i++) {
-                JCas outputView;
-                try {
-                    outputView = jCas.getView(outputViewNames[i]);
-                } catch (CASException e) {
-                    throw new AmicusException(e);
+        try {
+            Iterator<List<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
+            while (listIter.hasNext()) {
+                List<Annotation> annotations = listIter.next();
+                System.out.println(annotations);
+                List<PreAnnotation> preannotations = new ArrayList<>();
+                for (int i = 0; i < annotations.size(); i++) {
+                    preannotations.add(annotations.get(i) == null ? null :
+                            new PreAnnotation(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
                 }
-                PreAnnotation distilled = distillers.get(i).distill(preannotations);
-                if (distilled != null) {
-                    pushers.get(i).push(outputView, distilled);
+                for (int i = 0; i < outputViewNames.length; i++) {
+                    JCas outputView;
+                    try {
+                        outputView = jCas.getView(outputViewNames[i]);
+                    } catch (CASException e) {
+                        throw new AnalysisEngineProcessException(e);
+                    }
+                    PreAnnotation distilled = distillers.get(i).distill(preannotations);
+                    if (distilled != null) {
+                        pushers.get(i).push(outputView, distilled);
+                    }
                 }
             }
+        } catch (AmicusException e) {
+            LOGGER.severe(String.format("Processing problem for Merger \"%s\"", myName));
+            throw new AnalysisEngineProcessException(e);
         }
     }
 
 
 
-    private List<List<Annotation>> getAnnotations(JCas jCas) {
+    private List<List<Annotation>> getAnnotations(JCas jCas) throws AnalysisEngineProcessException {
         List<List<Annotation>> allAnnotations = new ArrayList<>();
         for (int i=0; i< readViews.length; i++) {
             JCas readView;
             try {
                 readView = jCas.getView(readViews[i]);
             } catch (CASException e) {
-                e.printStackTrace();
-                throw new AmicusException("Couldn't find view %s", readViews[i]);
+                LOGGER.severe(String.format("Couldn't access view \"%s\" in Exporter \"%s\"", readViews[i], myName));
+                throw new AnalysisEngineProcessException(e);
             }
             List<Annotation> theseAnnotations = new ArrayList<>();
             allAnnotations.add(theseAnnotations);

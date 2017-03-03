@@ -35,19 +35,24 @@ public class Pusher implements AnalysisPiece {
 
     protected Pusher() {}
 
-    public Pusher(String typeName, String fieldNamesDelimited) {
+    public Pusher(String typeName, String fieldNamesDelimited) throws AmicusException {
         this.typeName = typeName;
         setterMethods = new ArrayList<>();
-        Class<? extends Annotation> annotationClass = getClassFromName(typeName);
-        annotationConstructor = getAnnotationConstructor(annotationClass);
-        fieldNames = Arrays.asList(fieldNamesDelimited.split(Puller.FIELD_NAME_DELIMITER));
-        setterMethods = new ArrayList<>();
-        for (String f : fieldNames) {
-            if ("".equals(f)) {
-                setterMethods.add(null);
-            } else {
-                setterMethods.add(getSetterForField(annotationClass, f));
+        try {
+            Class<? extends Annotation> annotationClass = getClassFromName(typeName);
+            annotationConstructor = getAnnotationConstructor(annotationClass);
+            fieldNames = fieldNamesDelimited == null ? new ArrayList<String>() :
+                    Arrays.asList(fieldNamesDelimited.split(Puller.FIELD_NAME_DELIMITER, -1));
+            setterMethods = new ArrayList<>();
+            for (String f : fieldNames) {
+                if ("".equals(f)) {
+                    setterMethods.add(null);
+                } else {
+                    setterMethods.add(getSetterForField(annotationClass, f));
+                }
             }
+        } catch (ReflectiveOperationException e) {
+            throw new AmicusException(e);
         }
     }
 
@@ -57,7 +62,7 @@ public class Pusher implements AnalysisPiece {
      * @param jCas
      * @param preAnnotation
      */
-    public void push(JCas jCas, PreAnnotation<Object> preAnnotation) {
+    public void push(JCas jCas, PreAnnotation<Object> preAnnotation) throws AmicusException {
         if (setterMethods == null) {
             throw new AmicusException("Need to provide setters for included Pusher implementations; " +
                     "check configuration.");
@@ -69,6 +74,7 @@ public class Pusher implements AnalysisPiece {
             throw new AmicusException(e);
         }
         Object value = preAnnotation.getValue();
+        System.out.println(value);
         if (setterMethods.size() > 1) {
             List toSet;
             try {
@@ -108,32 +114,22 @@ public class Pusher implements AnalysisPiece {
 
     // utility methods for subclasses to use
 
-    protected static Class<? extends Annotation> getClassFromName(String name) {
-        try {
-            return (Class<? extends Annotation>) Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new AmicusException(e);
-        }
+    protected static Class<? extends Annotation> getClassFromName(String name) throws ClassNotFoundException {
+        return (Class<? extends Annotation>) Class.forName(name);
     }
 
-    protected static Constructor<? extends Annotation> getAnnotationConstructor(Class<? extends Annotation> annotationClass) {
-        try {
-            return annotationClass.getConstructor(JCas.class, int.class, int.class);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            throw new AmicusException(e);
-        }
+    protected static Constructor<? extends Annotation> getAnnotationConstructor(Class<? extends Annotation> annotationClass) throws NoSuchMethodException {
+        return annotationClass.getConstructor(JCas.class, int.class, int.class);
     }
 
-    protected static Method getSetterForField(Class clazz, String name) {
+    protected static Method getSetterForField(Class clazz, String name) throws NoSuchMethodException {
         String setterName = Util.getSetterFor(name);
-            for(Method method : clazz.getMethods()) {
-                if (method.getName().equals(setterName)) {
-                    return method;
-                }
+        for (Method method : clazz.getMethods()) {
+            if (method.getName().equals(setterName)) {
+                return method;
             }
-            throw new AmicusException(new NoSuchMethodException(setterName));
+        }
+        throw new NoSuchMethodException(setterName);
     }
 
     // static methods
@@ -149,7 +145,7 @@ public class Pusher implements AnalysisPiece {
     }
 
     public static List<String> buildListFromString(String string) {
-        return Arrays.asList(string.split(LIST_STRING_DELIMITER));
+        return Arrays.asList(string.split(LIST_STRING_DELIMITER, -1));
     }
 
 }

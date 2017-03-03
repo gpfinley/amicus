@@ -33,7 +33,7 @@ public class ExtractedToCorefConcepts {
 
         File originalDataDir = Paths.get(origDataPath).toFile();
         if (!originalDataDir.exists() || !originalDataDir.isDirectory()) {
-            throw new AmicusException("Bad data directory at %s", originalDataDir.getAbsolutePath());
+            throw new IOException(String.format("Bad data directory at %s", originalDataDir.getAbsolutePath()));
         }
 
         for (File origFile : Paths.get(origDataPath).toFile().listFiles()) {
@@ -62,7 +62,7 @@ public class ExtractedToCorefConcepts {
             File extractedFile = Paths.get(extractedTextPath).resolve(extractedName).toFile();
             File outDir = Paths.get(outPath).toFile();
             if (!outDir.exists() && !outDir.mkdirs()) {
-                throw new AmicusException("Could not create output directory at " + outPath);
+                throw new IOException("Could not create output directory at " + outPath);
             }
             File conFile = outDir.toPath().resolve(origName + ".con").toFile();
             BufferedReader reader = new BufferedReader(new FileReader(extractedFile));

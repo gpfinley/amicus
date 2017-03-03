@@ -15,4 +15,8 @@ public class AmicusConfigurationException extends RuntimeException {
         super(String.format(message, vars));
     }
 
+    public AmicusConfigurationException(Throwable e) {
+        super(e);
+    }
+
 }
