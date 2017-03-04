@@ -1,5 +1,6 @@
 package edu.umn.amicus.aligners;
 
+import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPiece;
 import org.apache.uima.jcas.tcas.Annotation;
 
@@ -11,6 +12,6 @@ import java.util.List;
  */
 public interface Aligner extends AnalysisPiece {
 
-    Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations);
+    Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) throws AmicusException;
 
 }

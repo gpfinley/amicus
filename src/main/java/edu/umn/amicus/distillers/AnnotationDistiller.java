@@ -1,5 +1,6 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPiece;
 import edu.umn.amicus.PreAnnotation;
 
@@ -12,6 +13,6 @@ import java.util.List;
  */
 public interface AnnotationDistiller<T> extends AnalysisPiece {
 
-    PreAnnotation<T> distill(List<PreAnnotation> annotations);
+    PreAnnotation<T> distill(List<PreAnnotation> annotations) throws AmicusException;
 
 }

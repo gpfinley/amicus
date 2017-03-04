@@ -1,0 +1,3 @@
+!!edu.umn.amicus.mappers.RegexMapper
+findPattern: \\W
+replacePattern: _

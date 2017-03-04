@@ -1,6 +1,5 @@
 package edu.umn.amicus.eval;
 
-import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.EvalAnnotation;
 import org.apache.uima.jcas.JCas;
 
@@ -21,7 +20,7 @@ public class EvalMatch {
 
     public EvalMatch(int systemIndex, String status, Double score) {
         if (!TRUE_POSITIVE.equals(status) && !FALSE_POSITIVE.equals(status) && !FALSE_NEGATIVE.equals(status)) {
-            throw new AmicusException("Trying to create an EvalMatch outside of specified types;" +
+            throw new RuntimeException("Trying to create an EvalMatch outside of specified types;" +
                     "check calling class implementation. Best to use the static Strings declared in EvalMatch");
         }
         this.systemIndex = systemIndex;

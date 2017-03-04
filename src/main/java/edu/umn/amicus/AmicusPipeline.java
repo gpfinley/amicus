@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class AmicusPipeline {
 
-    public AmicusPipeline(String configFilePath) throws IOException, UIMAException {
+    public AmicusPipeline(String configFilePath) throws IOException, UIMAException, AmicusException {
 
         AmicusPipelineConfiguration pipelineConfig;
 
@@ -49,6 +49,7 @@ public class AmicusPipeline {
                 MergerConfig mergerConfig = (MergerConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(MergerAE.class,
+                                MergerAE.MY_NAME, mergerConfig._mergerName,
                                 MergerAE.READ_VIEWS, PipelineComponentConfig.aggregateInputSystemNames(mergerConfig.inputs),
                                 MergerAE.INPUT_TYPES, PipelineComponentConfig.aggregateInputTypes(mergerConfig.inputs),
                                 MergerAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(mergerConfig.inputs),
@@ -64,6 +65,7 @@ public class AmicusPipeline {
                 SummarizerConfig summarizerConfig = (SummarizerConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(SummarizerAE.class,
+                                SummarizerAE.MY_NAME, summarizerConfig.name,
                                 SummarizerAE.INPUT_TYPE, summarizerConfig.input.annotationType,
                                 SummarizerAE.INPUT_FIELD, summarizerConfig.input.annotationField,
                                 SummarizerAE.READ_VIEW, summarizerConfig.input.fromView,
@@ -76,6 +78,7 @@ public class AmicusPipeline {
                 ExporterConfig exporterConfig = (ExporterConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(ExporterAE.class,
+                                ExporterAE.MY_NAME, exporterConfig._exporterName,
                                 ExporterAE.READ_VIEWS, PipelineComponentConfig.aggregateInputSystemNames(exporterConfig.inputs),
                                 ExporterAE.INPUT_TYPES, PipelineComponentConfig.aggregateInputTypes(exporterConfig.inputs),
                                 ExporterAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(exporterConfig.inputs),
@@ -88,6 +91,7 @@ public class AmicusPipeline {
                 TranslatorConfig translatorConfig = (TranslatorConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(TranslatorAE.class,
+                                TranslatorAE.MY_NAME, translatorConfig._translatorName,
                                 TranslatorAE.READ_VIEW, translatorConfig.input.fromView,
                                 TranslatorAE.PULLER_CLASS, translatorConfig.input.pullerClass,
                                 TranslatorAE.INPUT_TYPE, translatorConfig.input.annotationType,

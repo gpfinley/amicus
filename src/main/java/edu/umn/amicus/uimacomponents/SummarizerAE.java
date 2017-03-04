@@ -1,5 +1,6 @@
 package edu.umn.amicus.uimacomponents;
 
+import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.summary.DataListener;
 import edu.umn.amicus.summary.SummaryWriter;
@@ -15,6 +16,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import java.io.*;
+import java.util.logging.Logger;
 
 /**
  * Simple CAS consumer to print basic statistics for evaluation.
@@ -23,6 +25,9 @@ import java.io.*;
  */
 public class SummarizerAE extends CasAnnotator_ImplBase {
 
+    private static final Logger LOGGER = Logger.getLogger(SummarizerAE.class.getName());
+
+    public static final String MY_NAME = "name";
     public static final String READ_VIEW = "readView";
     public static final String INPUT_TYPE = "typeClass";
     public static final String INPUT_FIELD = "fieldName";
@@ -30,6 +35,9 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
     public static final String LISTENER_NAME = "listenerName";
     public static final String SUMMARY_WRITER_CLASS = "summaryWriterClassName";
     public static final String OUTPUT_PATH = "outputPath";
+
+    @ConfigurationParameter(name = MY_NAME, defaultValue = "Unnamed Summarizer")
+    private String myName;
 
     @ConfigurationParameter(name = READ_VIEW)
     private String readViewName;
@@ -56,10 +64,16 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
         try {
             typeClass = (Class<? extends Annotation>) Class.forName(typeClassName);
         } catch (ClassNotFoundException | ClassCastException e) {
+            LOGGER.severe(String.format("Could not find type %s for Summarizer \"%s\"", typeClassName, myName));
             throw new ResourceInitializationException(e);
         }
         listener = DataListener.getDataListener(listenerName);
-        puller = AnalysisPieceFactory.puller(pullerClassName, fieldName);
+        try {
+            puller = AnalysisPieceFactory.puller(pullerClassName, fieldName);
+        } catch(AmicusException e) {
+            LOGGER.severe(String.format("Could not instantiate puller %s for Summarizer \"%s\"", pullerClassName, myName));
+            throw new ResourceInitializationException(e);
+        }
     }
 
     @Override
@@ -73,13 +87,25 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
 
         // Get all annotations of this class and toss them to the DataListener
         for (Annotation a : readView.getAnnotationIndex(typeClass)) {
-            listener.listen(puller.pull(a));
+            try {
+                listener.listen(puller.pull(a));
+            } catch (AmicusException e) {
+                LOGGER.severe(String.format("Problem pulling annotation in Summarizer \"%s\"", myName));
+                throw new AnalysisEngineProcessException(e);
+            }
         }
     }
 
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
-        SummaryWriter summaryWriter = AnalysisPieceFactory.summaryWriter(summaryWriterClassName);
+        SummaryWriter summaryWriter;
+        try {
+            summaryWriter = AnalysisPieceFactory.summaryWriter(summaryWriterClassName);
+        } catch (AmicusException e) {
+            LOGGER.severe(String.format("Problem instantiating SummaryWriter \"%s\" in Summarizer \"%s\"",
+                    summaryWriterClassName, myName));
+            throw new AnalysisEngineProcessException(e);
+        }
         try {
             OutputStream outputStream;
             if (outputPath == null) {

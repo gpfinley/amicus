@@ -23,7 +23,7 @@ public class CuiMapper extends Mapper {
     private Set<String> cuisToUse;
 
     @Override
-    protected Object mappingFunction(Object cuiString) {
+    protected Object mappingFunction(Object cuiString) throws AmicusException{
         if (cuiString == null) return null;
         if (internalMap == null) {
             initialize();
@@ -37,7 +37,7 @@ public class CuiMapper extends Mapper {
      * todo: doc
      * todo: should this just be put in the constructor? the concurrent map should already ensure only a single instance of this
      */
-    public void initialize() {
+    public void initialize() throws AmicusException {
         if (mrconsoPath == null) {
             throw new AmicusException("Need to provide path to UMLS MRCONSO.RRF file in CuiMapper config.");
         }

@@ -1,5 +1,6 @@
 package edu.umn.amicus.config;
 
+import edu.umn.amicus.AmicusConfigurationException;
 import edu.umn.amicus.AmicusException;
 
 /**
@@ -58,7 +59,7 @@ public class SourceSystemConfig {
      */
     public void verify() {
         if (dataPath == null) {
-            throw new AmicusException("Need to specify a path to serialized CAS data for all systems.");
+            throw new AmicusConfigurationException("Need to specify a path to serialized CAS data for all systems.");
         }
     }
 

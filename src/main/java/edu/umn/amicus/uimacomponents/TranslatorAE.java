@@ -1,5 +1,6 @@
 package edu.umn.amicus.uimacomponents;
 
+import edu.umn.amicus.AmicusConfigurationException;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.PreAnnotation;
@@ -27,6 +28,8 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
 
     private static final Logger LOGGER = Logger.getLogger(TranslatorAE.class.getName());
 
+    public static final String MY_NAME = "name";
+
     public static final String READ_VIEW = "readView";
     public static final String INPUT_TYPE = "typeClass";
     public static final String INPUT_FIELD = "inputField";
@@ -37,7 +40,6 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
 
     public static final String MAPPER_CONFIG_PATHS = "mapperConfigPaths";
 
-//    public static final String DISTILLER_CLASSES = "distillerClasses";
     public static final String PUSHER_CLASSES = "pusherClasses";
     public static final String WRITE_VIEWS = "outputViewNames";
     public static final String OUTPUT_TYPES = "outputAnnotationTypes";
@@ -45,6 +47,9 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
 
     // Some things are not mandatory because there are defaults available (anything with CLASS).
     // Others are not mandatory because specialized pullers/pushers might not use them (but the defaults do!).
+
+    @ConfigurationParameter(name = MY_NAME, defaultValue = "Unnamed Translator")
+    private String myName;
 
     @ConfigurationParameter(name = READ_VIEW)
     private String readView;
@@ -63,8 +68,6 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
     @ConfigurationParameter(name = MAPPER_CONFIG_PATHS, mandatory = false)
     private String[] mapperConfigPaths;
 
-//    @ConfigurationParameter(name = DISTILLER_CLASSES, mandatory = false)
-//    private String[] distillerClassNames;
     @ConfigurationParameter(name = PUSHER_CLASSES, mandatory = false)
     private String[] pusherClassNames;
     @ConfigurationParameter(name = WRITE_VIEWS)
@@ -78,7 +81,6 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
     private Class typeClass;
     private Puller puller;
 
-//    private List<AnnotationDistiller> distillers;
     private List<Pusher> pushers;
 
     private AnnotationFilter filter;
@@ -98,27 +100,34 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
             assert outputAnnotationTypes == null || numOutputs == outputAnnotationTypes.length;
             assert outputAnnotationFields == null || numOutputs == outputAnnotationFields.length;
         } catch (AssertionError e) {
-            throw new AmicusException("Configuration parameters for outputs do not line up! Check parameter lists.");
+            LOGGER.severe(String.format("Configuration problem for Translator \"%s\"", myName));
+            throw new AmicusConfigurationException("Configuration parameters for outputs do not line up! Check parameter lists.");
         }
 
-        pushers = new ArrayList<>();
-        for (int i=0; i<numOutputs; i++) {
-            pushers.add(AnalysisPieceFactory.pusher(
-                    pusherClassNames[i], outputAnnotationTypes[i], outputAnnotationFields[i]));
-        }
-        puller = AnalysisPieceFactory.puller(pullerClassName, inputField);
-        filter = AnalysisPieceFactory.filter(filterClassName, filterPattern);
+        try {
+            pushers = new ArrayList<>();
+            for (int i = 0; i < numOutputs; i++) {
+                pushers.add(AnalysisPieceFactory.pusher(
+                        pusherClassNames[i], outputAnnotationTypes[i], outputAnnotationFields[i]));
+            }
+            puller = AnalysisPieceFactory.puller(pullerClassName, inputField);
+            filter = AnalysisPieceFactory.filter(filterClassName, filterPattern);
 
-        mappers = new ArrayList<>();
-        for (String mapperConfigPath : mapperConfigPaths) {
-            mappers.add(AnalysisPieceFactory.mapper(mapperConfigPath));
+            mappers = new ArrayList<>();
+            for (String mapperConfigPath : mapperConfigPaths) {
+                mappers.add(AnalysisPieceFactory.mapper(mapperConfigPath));
+            }
+        } catch (AmicusException e) {
+            LOGGER.severe(String.format("Couldn't load analysis pieces for Translator \"%s\"", myName));
+            throw new ResourceInitializationException(e);
         }
 
         try {
             typeClass = Class.forName(typeClassName);
         } catch (ClassNotFoundException e) {
-            LOGGER.severe("Could not add input types. Confirm that full type paths are correct and that classes" +
-                    " have been generated from a UIMA type system (easiest way is to build via maven).");
+            LOGGER.severe(String.format("Could not find input type \"%s\" for Merger \"%s\". Confirm that types are" +
+                    "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
+                    "via maven).", typeClassName, myName));
             throw new ResourceInitializationException(e);
         }
     }
@@ -129,44 +138,51 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
         try {
             String sofaData = (String) Util.getSofaData(jCas);
             Util.createOutputViews(jCas, sofaData, outputViewNames);
-        } catch (CASException e) {
+        } catch (CASException | AmicusException e) {
+            LOGGER.severe(String.format("Could not create output views for Translator \"%s\"", myName));
             throw new AnalysisEngineProcessException(e);
         }
 
         List<Annotation> annotations = getAnnotations(jCas);
         List<PreAnnotation<Object>> preAnnotations = new ArrayList<>();
 
-        for (Annotation annotation : annotations) {
-            Object pulled = puller.pull(annotation);
-            if (filter.passes(pulled)) {
-                for (Mapper mapper : mappers) {
-                    pulled = mapper.map(pulled);
-                }
-                System.out.println(pulled);
-                preAnnotations.add(new PreAnnotation<>(pulled, annotation));
-            }
-        }
+        try {
 
-        for (int i = 0; i < outputViewNames.length; i++) {
-            JCas outputView;
-            try {
-                outputView = jCas.getView(outputViewNames[i]);
-            } catch (CASException e) {
-                throw new AmicusException(e);
+            for (Annotation annotation : annotations) {
+                Object pulled = puller.pull(annotation);
+                if (filter.passes(pulled)) {
+                    for (Mapper mapper : mappers) {
+                        pulled = mapper.map(pulled);
+                    }
+                    System.out.println(pulled);
+                    preAnnotations.add(new PreAnnotation<>(pulled, annotation));
+                }
             }
-            for (PreAnnotation preAnnotation : preAnnotations) {
-                pushers.get(i).push(outputView, preAnnotation);
+
+            for (int i = 0; i < outputViewNames.length; i++) {
+                JCas outputView;
+                try {
+                    outputView = jCas.getView(outputViewNames[i]);
+                } catch (CASException e) {
+                    throw new AnalysisEngineProcessException(e);
+                }
+                for (PreAnnotation preAnnotation : preAnnotations) {
+                    pushers.get(i).push(outputView, preAnnotation);
+                }
             }
+        } catch (AmicusException e) {
+            LOGGER.severe(String.format("Processing exception for Translator \"%s\"", myName));
+            throw new AnalysisEngineProcessException(e);
         }
     }
 
-    private List<Annotation> getAnnotations(JCas jCas) {
+    private List<Annotation> getAnnotations(JCas jCas) throws AnalysisEngineProcessException {
         JCas viewToRead;
         try {
             viewToRead = jCas.getView(readView);
         } catch (CASException e) {
-            e.printStackTrace();
-            throw new AmicusException("Couldn't find view %s", readView);
+            LOGGER.severe(String.format("Couldn't find view \"%s\" for Translator \"%s\"", readView, myName));
+            throw new AnalysisEngineProcessException(e);
         }
         List<Annotation> theseAnnotations = new ArrayList<>();
         // Get all annotations of this class and add them to the index

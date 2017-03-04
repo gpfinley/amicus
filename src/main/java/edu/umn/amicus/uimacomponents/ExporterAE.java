@@ -1,8 +1,6 @@
 package edu.umn.amicus.uimacomponents;
 
-import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.AnalysisPieceFactory;
-import edu.umn.amicus.PreAnnotation;
+import edu.umn.amicus.*;
 import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.EachSoloAligner;
 import edu.umn.amicus.export.ExportWriter;
@@ -35,6 +33,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
 
     private static final String EXPORTER_DEFAULT_ALIGNER = EachSoloAligner.class.getName();
 
+    public static final String MY_NAME = "name";
     public static final String READ_VIEWS = "readViews";
     public static final String INPUT_TYPES = "typeClasses";
     public static final String INPUT_FIELDS = "fieldNames";
@@ -43,6 +42,9 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     public static final String ALIGNER_CLASS = "alignerClass";
     public static final String EXPORT_WRITER_CLASS = "exportWriterClassName";
     public static final String OUTPUT_DIRECTORY = "outputDirectory";
+
+    @ConfigurationParameter(name = MY_NAME, defaultValue = "Unnamed Exporter")
+    private String myName;
 
     @ConfigurationParameter(name = READ_VIEWS)
     private String[] readViews;
@@ -86,7 +88,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
             assert pullerClassNames == null || numInputs == pullerClassNames.length;
             assert fieldNames == null || numInputs == fieldNames.length;
         } catch (AssertionError e) {
-            throw new AmicusException("Configuration parameters for inputs do not line up! Check parameter lists.");
+            throw new AmicusConfigurationException("Configuration parameters for inputs do not line up! Check parameter lists.");
         }
 
 
@@ -96,45 +98,61 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
                 typeClasses.add((Class<? extends Annotation>) Class.forName(typeClassNames[i]));
             }
         } catch (ClassNotFoundException e) {
-            LOGGER.severe("Could not add input types. Confirm that types are correct and that classes have been " +
-                    "generated from a UIMA type system (easiest way is to build via maven).");
-            throw new AmicusException(e);
+            LOGGER.severe(String.format("Could not find input types for Exporter \"%s\". Confirm that types are" +
+                    "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
+                    "via maven).", myName));
+            throw new ResourceInitializationException(e);
         }
 
-        aligner = AnalysisPieceFactory.aligner(alignerClassName == null ? EXPORTER_DEFAULT_ALIGNER : alignerClassName);
-        for (int i=0; i<numInputs; i++) {
-            pullers.add(AnalysisPieceFactory.puller(pullerClassNames[i], fieldNames[i]));
+        try {
+            aligner = AnalysisPieceFactory.aligner(alignerClassName == null ? EXPORTER_DEFAULT_ALIGNER : alignerClassName);
+            for (int i = 0; i < numInputs; i++) {
+                pullers.add(AnalysisPieceFactory.puller(pullerClassNames[i], fieldNames[i]));
+            }
+            exporter = AnalysisPieceFactory.exportWriter(exportWriterClassName);
+        } catch (AmicusException e) {
+            LOGGER.severe(String.format("Could not initialize all analysis pieces for Exporter \"%s\"", myName));
         }
-        exporter = AnalysisPieceFactory.exportWriter(exportWriterClassName);
-
         exporter.setViewNames(readViews);
     }
 
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
 
-        // Set up a shell iterator that will call Pullers and pass along transformed values to the exporter
-        final Iterator<List<Annotation>> annotationsIterator = aligner.alignAndIterate(getAnnotations(jCas));
-        String text = exporter.exportContents(new Iterator<List<PreAnnotation>>() {
-            @Override
-            public boolean hasNext() {
-                return annotationsIterator.hasNext();
-            }
-            @Override
-            public List<PreAnnotation> next() {
-                List<Annotation> annotations = annotationsIterator.next();
-                List<PreAnnotation> preannotations = new ArrayList<>();
-                for (int i = 0; i < annotations.size(); i++) {
-                    preannotations.add(
-                            new PreAnnotation<>(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
+        String text;
+        try {
+            // Set up a shell iterator that will call Pullers and pass along transformed values to the exporter
+            final Iterator<List<Annotation>> annotationsIterator = aligner.alignAndIterate(getAnnotations(jCas));
+            text = exporter.exportContents(new Iterator<List<PreAnnotation>>() {
+                @Override
+                public boolean hasNext() {
+                    return annotationsIterator.hasNext();
                 }
-                return preannotations;
-            }
-            @Override
-            public void remove() {
-                annotationsIterator.remove();
-            }
-        });
+
+                @Override
+                public List<PreAnnotation> next() {
+                    List<Annotation> annotations = annotationsIterator.next();
+                    List<PreAnnotation> preannotations = new ArrayList<>();
+                    for (int i = 0; i < annotations.size(); i++) {
+                        try {
+                            preannotations.add(
+                                    new PreAnnotation<>(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
+                        } catch (AmicusException e) {
+                            LOGGER.warning(String.format("Could not pull annotation! Exporter \"%s\"", myName));
+                        }
+                    }
+                    return preannotations;
+                }
+
+                @Override
+                public void remove() {
+                    annotationsIterator.remove();
+                }
+            });
+        } catch (AmicusException e) {
+            LOGGER.severe(String.format("Processing exception for Exporter \"%s\"", myName));
+            throw new AnalysisEngineProcessException(e);
+        }
 
         String docId = Util.getDocumentID(jCas.getCas());
         Path filepath = Paths.get(outputDirectory).resolve(docId + "." + exporter.getFileExtension());
@@ -148,15 +166,15 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         }
     }
 
-    private List<List<Annotation>> getAnnotations(JCas jCas) {
+    private List<List<Annotation>> getAnnotations(JCas jCas) throws AnalysisEngineProcessException {
         List<List<Annotation>> allAnnotations = new ArrayList<>();
         for (int i=0; i< readViews.length; i++) {
             JCas readView;
             try {
                 readView = jCas.getView(readViews[i]);
             } catch (CASException e) {
-                e.printStackTrace();
-                throw new AmicusException("Couldn't view %s", readViews[i]);
+                LOGGER.severe(String.format("Couldn't access view \"%s\" in Exporter \"%s\"", readViews[i], myName));
+                throw new AnalysisEngineProcessException(e);
             }
             List<Annotation> theseAnnotations = new ArrayList<>();
             allAnnotations.add(theseAnnotations);

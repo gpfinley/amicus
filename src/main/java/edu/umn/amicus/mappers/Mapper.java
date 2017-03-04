@@ -1,5 +1,6 @@
 package edu.umn.amicus.mappers;
 
+import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPiece;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class Mapper implements AnalysisPiece {
     /**
      * Specialized mappers may need to build their map from data, not have it assigned in the constructor.
      */
-    public void initialize() { }
+    public void initialize() throws AmicusException { }
 
     /**
      * Return the value(s) associated with this key.
@@ -36,7 +37,7 @@ public class Mapper implements AnalysisPiece {
      * @param key
      * @return
      */
-    public Object map(Object key) {
+    public Object map(Object key) throws AmicusException {
         if (key instanceof Collection) {
             List<Object> toReturn = new ArrayList<>();
             for (Object obj : (Collection) key) {
@@ -52,7 +53,7 @@ public class Mapper implements AnalysisPiece {
      * @param k the map key
      * @return the mapped value
      */
-    protected Object mappingFunction(Object k) {
+    protected Object mappingFunction(Object k) throws AmicusException {
         return internalMap.get(k);
     }
 

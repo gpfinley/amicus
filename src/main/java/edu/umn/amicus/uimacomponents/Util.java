@@ -57,20 +57,14 @@ public final class Util {
         return outPathIter.next().getDocumentID();
     }
 
-    public static void setDocumentID(CAS cas, String id) {
-        JCas docIdView;
-        try {
-            docIdView = cas.getJCas().getView(Amicus.DOCID_VIEW);
-        } catch (CASException e) {
-            e.printStackTrace();
-            throw new AmicusException(e);
-        }
+    public static void setDocumentID(CAS cas, String id) throws CASException {
+        JCas docIdView = cas.getJCas().getView(Amicus.DOCID_VIEW);
         DocumentID docID = new DocumentID(docIdView);
         docID.setDocumentID(id);
         docID.addToIndexes();
     }
 
-    public static void createOutputViews(JCas jCas, String sofaData, String... views) throws CASException {
+    public static void createOutputViews(JCas jCas, String sofaData, String... views) throws CASException, AmicusException {
         Set<String> viewsToAdd = new HashSet<>(Arrays.asList(views));
         Iterator<JCas> viewIter = jCas.getViewIterator();
         while (viewIter.hasNext()) {
@@ -88,7 +82,7 @@ public final class Util {
         }
     }
 
-    public static Object getSofaData(JCas jCas) throws CASException {
+    public static Object getSofaData(JCas jCas) throws CASException, AmicusException {
         // todo: modify this so that we can get strings or arrays (for audio, etc.)
         String sofaData = null;
         Iterator<JCas> viewIter = jCas.getViewIterator();

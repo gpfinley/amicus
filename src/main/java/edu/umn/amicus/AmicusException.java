@@ -7,7 +7,7 @@ package edu.umn.amicus;
  *
  * Created by gpfinley on 12/14/16.
  */
-public class AmicusException extends RuntimeException {
+public class AmicusException extends Exception {
 
     public AmicusException(String message) {
         super(message);

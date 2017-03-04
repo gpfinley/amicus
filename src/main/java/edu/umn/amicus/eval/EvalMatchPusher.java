@@ -1,5 +1,6 @@
 package edu.umn.amicus.eval;
 
+import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.pushers.Pusher;
 import org.apache.uima.jcas.JCas;
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public class EvalMatchPusher extends Pusher {
 
-    public EvalMatchPusher(String typeName, String fieldName) {
+    public EvalMatchPusher(String typeName, String fieldName) throws AmicusException {
         super(typeName, fieldName);
     }
 

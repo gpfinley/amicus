@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class NerMain {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // todo: parse args
 //        String textDir = "/Users/gpfinley/i2b2_past/2011/Beth_Train/docs";
 //        String markablesDir = "/Users/gpfinley/i2b2_past/2011/Beth_Train/concepts";

@@ -41,7 +41,7 @@ public final class Amicus {
     // set this once. If a sofa is based on a different string, we have a problem
     private static String sofaData;
 
-    public static void verifySofaData(String sofaData) {
+    public static void verifySofaData(String sofaData) throws AmicusException {
         if (Amicus.sofaData == null) {
             Amicus.sofaData = sofaData;
         } else {

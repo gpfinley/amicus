@@ -39,7 +39,7 @@ public class PartialOverlapAlignerTest {
         return annotations;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Aligner aligner = new PartialOverlapAligner();
 
         List<List<Annotation>> bigList = new ArrayList<>();

@@ -1,6 +1,7 @@
 package edu.umn.amicus.uimacomponents;
 
 import edu.umn.amicus.AmicusException;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.impl.XCASDeserializer;
 import org.apache.uima.cas.impl.XmiCasDeserializer;
@@ -43,7 +44,7 @@ public class CasAdderAE extends CasMultiplier_ImplBase {
     }
 
     @Override
-    public void process(CAS cas) {
+    public void process(CAS cas) throws AnalysisEngineProcessException {
         Path dataDir = Paths.get(dataDirname);
 
         CAS tempCas = getEmptyCAS();
@@ -63,7 +64,7 @@ public class CasAdderAE extends CasMultiplier_ImplBase {
             }
         } catch (SAXException | IOException e) {
             LOGGER.severe("Couldn't parse xmi or xml file");
-            throw new AmicusException(e);
+            throw new AnalysisEngineProcessException(e);
         }
         CAS newSysView = cas.createView(toView);
         CasCopier casCopier = new CasCopier(tempCas, cas);

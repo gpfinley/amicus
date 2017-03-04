@@ -10,6 +10,7 @@ import edu.stanford.nlp.util.CoreMap;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.uimacomponents.Util;
 import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -90,7 +91,7 @@ public class StanfordNerInterceptor extends JCasAnnotator_ImplBase {
     }
 
     @Override
-    public void process(JCas jCas) {
+    public void process(JCas jCas) throws AnalysisEngineProcessException {
         JCas relevantView;
         try {
             relevantView = jCas.getView(viewName);
@@ -199,7 +200,7 @@ public class StanfordNerInterceptor extends JCasAnnotator_ImplBase {
             try {
                 Files.createDirectories(Paths.get(outPath));
             } catch (IOException e) {
-                throw new AmicusException(e);
+                throw new AnalysisEngineProcessException(e);
             }
             StringBuilder toWrite = new StringBuilder();
             for (CorefChain chain : graph.values()) {
@@ -250,7 +251,7 @@ public class StanfordNerInterceptor extends JCasAnnotator_ImplBase {
                 Path outFilePath = Paths.get(outPath).resolve(docId);
                 Files.write(outFilePath, toWrite.toString().getBytes());
             } catch (IOException e) {
-                throw new AmicusException(e);
+                throw new AnalysisEngineProcessException(e);
             }
 
         } else {
