@@ -13,14 +13,13 @@ import java.util.logging.Logger;
 
 /**
  * Maps strings to other strings that are considered equivalent for evaluation purposes.
+ * Total case insensitivity.
  * Equivalencies are stored in the class-specific config file:
  *      one term per line, with blank lines between clusters of equivalent terms.
  *
  * Created by gpfinley on 10/13/16.
  */
 public class EquivalentAnswerMapper extends Mapper {
-
-    private static Logger LOGGER = Logger.getLogger(EquivalentAnswerMapper.class.getName());
 
     private List<List<String>> equivalentsList;
 
@@ -34,6 +33,7 @@ public class EquivalentAnswerMapper extends Mapper {
                 internalMap.put(cluster.get(i).toLowerCase(), cluster.get(0));
             }
         }
+        equivalentsList = null;
     }
 
     @Override
@@ -41,10 +41,9 @@ public class EquivalentAnswerMapper extends Mapper {
         if (key == null) return null;
         if (internalMap == null) {
             initialize();
-            equivalentsList = null;
         }
-        String string = key.toString().trim();
-        Object val = internalMap.get(string.toLowerCase());
+        String string = key.toString().trim().toLowerCase();
+        Object val = internalMap.get(string);
         return val == null ? string : val;
     }
 

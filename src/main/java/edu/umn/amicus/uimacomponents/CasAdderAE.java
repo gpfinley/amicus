@@ -1,6 +1,7 @@
 package edu.umn.amicus.uimacomponents;
 
-import edu.umn.amicus.AmicusException;
+import edu.umn.amicus.Amicus;
+import edu.umn.amicus.MismatchedSofaDataException;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.impl.XCASDeserializer;
@@ -31,12 +32,11 @@ public class CasAdderAE extends CasMultiplier_ImplBase {
     public static final String COPY_INTO_VIEW = "saveIntoView";
 
     @ConfigurationParameter(name = DATA_DIR)
-    private String dataDirname;
+    private String dataDirName;
     @ConfigurationParameter(name = READ_FROM_VIEW)
     private String fromView;
     @ConfigurationParameter(name = COPY_INTO_VIEW)
     private String toView;
-
 
     @Override
     public int getCasInstancesRequired() {
@@ -45,10 +45,15 @@ public class CasAdderAE extends CasMultiplier_ImplBase {
 
     @Override
     public void process(CAS cas) throws AnalysisEngineProcessException {
-        Path dataDir = Paths.get(dataDirname);
+        Path dataDir = Paths.get(dataDirName);
 
         CAS tempCas = getEmptyCAS();
-        String docID = Util.getDocumentID(cas);
+        String docID;
+        try {
+            docID = Util.getDocumentID(cas.getJCas());
+        } catch (CASException e) {
+            throw new AnalysisEngineProcessException(e);
+        }
         File xmiFile = dataDir.resolve(docID + ".xmi").toFile();
         try {
             if (xmiFile.exists()) {
@@ -76,7 +81,18 @@ public class CasAdderAE extends CasMultiplier_ImplBase {
             throw new RuntimeException();
         }
         casCopier.copyCasView(relevantView, newSysView, false);
-        newSysView.setSofaDataString(tempCas.getView(fromView).getSofaDataString(), tempCas.getView(fromView).getSofaMimeType());
+        // todo: data other than strings?
+        String sofaString = tempCas.getView(fromView).getSofaDataString();
+        try {
+            Amicus.verifySofaData(docID, sofaString);
+        } catch (MismatchedSofaDataException e) {
+            // todo: warn or error?
+            LOGGER.severe(String.format("View %s contained sofa data that did not match previously loaded data; " +
+                    "check file at %s", fromView, xmiFile.getAbsolutePath()));
+//            throw new AnalysisEngineProcessException(e);
+        }
+        newSysView.setSofaDataString(sofaString, tempCas.getView(fromView).getSofaMimeType());
+//        newSysView.setSofaDataString(tempCas.getView(fromView).getSofaDataString(), tempCas.getView(fromView).getSofaMimeType());
         tempCas.release();
     }
 

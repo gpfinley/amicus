@@ -3,16 +3,14 @@ package edu.umn.amicus.uimacomponents;
 import edu.umn.amicus.Amicus;
 import edu.umn.amicus.DocumentID;
 import edu.umn.amicus.AmicusException;
+import edu.umn.amicus.MismatchedSofaDataException;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Basic utility functions for use by UIMA components
@@ -42,16 +40,8 @@ public final class Util {
         return "set" + field.substring(0, 1).toUpperCase() + field.substring(1, field.length());
     }
 
-    public static String getDocumentID(CAS cas) {
-        JCas jCas;
-        JCas filenameView;
-        try {
-            jCas = cas.getJCas();
-            filenameView = jCas.getView(Amicus.DOCID_VIEW);
-        } catch (CASException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
+    public static String getDocumentID(JCas jCas) throws CASException {
+        JCas filenameView = jCas.getView(Amicus.DOCID_VIEW);
         JFSIndexRepository jfsIndexRepository = filenameView.getJFSIndexRepository();
         FSIterator<DocumentID> outPathIter = jfsIndexRepository.getAllIndexedFS(DocumentID.type);
         return outPathIter.next().getDocumentID();
@@ -64,7 +54,7 @@ public final class Util {
         docID.addToIndexes();
     }
 
-    public static void createOutputViews(JCas jCas, String sofaData, String... views) throws CASException, AmicusException {
+    public static void createOutputViews(JCas jCas, String... views) throws CASException {
         Set<String> viewsToAdd = new HashSet<>(Arrays.asList(views));
         Iterator<JCas> viewIter = jCas.getViewIterator();
         while (viewIter.hasNext()) {
@@ -72,27 +62,36 @@ public final class Util {
         }
         for (String viewToAdd : viewsToAdd) {
             JCas addedView = jCas.createView(viewToAdd);
-            try {
-                Amicus.verifySofaData(sofaData);
-            } catch (AmicusException e) {
-                throw new AmicusException("Non-matching sofa data in view " + viewToAdd);
-            }
             // todo: allow non-text data
-            addedView.setSofaDataString(sofaData, "text");
+            addedView.setSofaDataString(Amicus.getSofaData(getDocumentID(jCas)).toString(), "text");
         }
     }
 
-    public static Object getSofaData(JCas jCas) throws CASException, AmicusException {
-        // todo: modify this so that we can get strings or arrays (for audio, etc.)
-        String sofaData = null;
-        Iterator<JCas> viewIter = jCas.getViewIterator();
-        while (viewIter.hasNext() && (sofaData == null || "".equals(sofaData))) {
-            sofaData = viewIter.next().getSofaDataString();
-        }
-        if (sofaData == null) {
-            throw new AmicusException("Could not find Sofa data in any View!");
-        }
-        return sofaData;
-    }
+//    public static void createOutputViews(JCas jCas, String sofaData, String... views) throws CASException, MismatchedSofaDataException {
+//        Set<String> viewsToAdd = new HashSet<>(Arrays.asList(views));
+//        Iterator<JCas> viewIter = jCas.getViewIterator();
+//        while (viewIter.hasNext()) {
+//            viewsToAdd.remove(viewIter.next().getViewName());
+//        }
+//        for (String viewToAdd : viewsToAdd) {
+//            // todo: allow non-text data
+//            JCas addedView = jCas.createView(viewToAdd);
+//            addedView.setSofaDataString(sofaData, "text");
+//        }
+//        Amicus.verifySofaData(sofaData);
+//    }
+//
+//    public static Object getSofaData(JCas jCas) throws CASException, AmicusException {
+//        // todo: modify this so that we can get strings or arrays (for audio, etc.)
+//        Iterator<JCas> viewIter = jCas.getViewIterator();
+//        while (true) {
+//            try {
+//                String sofaData = viewIter.next().getSofaDataString();
+//                if (sofaData != null && !"".equals(sofaData)) return sofaData;
+//            } catch (NoSuchElementException e) {
+//                throw new AmicusException("Could not find Sofa data in any View!");
+//            }
+//        }
+//    }
 
 }

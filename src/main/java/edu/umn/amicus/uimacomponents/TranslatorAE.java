@@ -1,9 +1,6 @@
 package edu.umn.amicus.uimacomponents;
 
-import edu.umn.amicus.AmicusConfigurationException;
-import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.AnalysisPieceFactory;
-import edu.umn.amicus.PreAnnotation;
+import edu.umn.amicus.*;
 import edu.umn.amicus.filters.AnnotationFilter;
 import edu.umn.amicus.mappers.Mapper;
 import edu.umn.amicus.pullers.Puller;
@@ -11,6 +8,7 @@ import edu.umn.amicus.pushers.Pusher;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.cas.FSIndex;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
@@ -114,8 +112,10 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
             filter = AnalysisPieceFactory.filter(filterClassName, filterPattern);
 
             mappers = new ArrayList<>();
-            for (String mapperConfigPath : mapperConfigPaths) {
-                mappers.add(AnalysisPieceFactory.mapper(mapperConfigPath));
+            if (mapperConfigPaths != null) {
+                for (String mapperConfigPath : mapperConfigPaths) {
+                    mappers.add(AnalysisPieceFactory.mapper(mapperConfigPath));
+                }
             }
         } catch (AmicusException e) {
             LOGGER.severe(String.format("Couldn't load analysis pieces for Translator \"%s\"", myName));
@@ -135,12 +135,26 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
 
+        //        String sofaData;
+//        try {
+//            sofaData = (String) Util.getSofaData(jCas);
+//        } catch (CASException e) {
+//            LOGGER.severe(String.format("Could not load sofa data for Translator \"%s\"", myName));
+//            throw new AnalysisEngineProcessException(e);
+//        } catch (AmicusException e) {
+//            LOGGER.severe(String.format("No sofa data found anywhere for document %s for Translator \"%s\"",
+//                    Util.getDocumentID(jCas.getCas()), myName));
+//            throw new AnalysisEngineProcessException(e);
+//        }
         try {
-            String sofaData = (String) Util.getSofaData(jCas);
-            Util.createOutputViews(jCas, sofaData, outputViewNames);
-        } catch (CASException | AmicusException e) {
+//            Util.createOutputViews(jCas, sofaData, outputViewNames);
+            Util.createOutputViews(jCas, outputViewNames);
+        } catch (CASException e) {
             LOGGER.severe(String.format("Could not create output views for Translator \"%s\"", myName));
             throw new AnalysisEngineProcessException(e);
+//        } catch (MismatchedSofaDataException e) {
+//            LOGGER.warning(String.format("Inconsistent sofa data found in view %s for document %s",
+//                    jCas.getViewName(), Util.getDocumentID(jCas.getCas())));
         }
 
         List<Annotation> annotations = getAnnotations(jCas);
@@ -154,7 +168,6 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
                     for (Mapper mapper : mappers) {
                         pulled = mapper.map(pulled);
                     }
-                    System.out.println(pulled);
                     preAnnotations.add(new PreAnnotation<>(pulled, annotation));
                 }
             }
@@ -163,7 +176,9 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
                 JCas outputView;
                 try {
                     outputView = jCas.getView(outputViewNames[i]);
-                } catch (CASException e) {
+                } catch (CASException | CASRuntimeException e) {
+                    LOGGER.severe(String.format("Couldn't find output view %s for Translator \"%s\"",
+                            outputViewNames[i], myName));
                     throw new AnalysisEngineProcessException(e);
                 }
                 for (PreAnnotation preAnnotation : preAnnotations) {

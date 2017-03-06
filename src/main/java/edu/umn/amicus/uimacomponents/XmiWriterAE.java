@@ -89,7 +89,12 @@ public class XmiWriterAE extends CasAnnotator_ImplBase {
 //            }
         }
 
-        String docID = Util.getDocumentID(cas);
+        String docID;
+        try {
+            docID = Util.getDocumentID(cas.getJCas());
+        } catch (CASException e) {
+            throw new AnalysisEngineProcessException(e);
+        }
         Path xmiOutPath = outputDir.resolve(docID + ".xmi");
         try (OutputStream out = new FileOutputStream(xmiOutPath.toFile())) {
             XmiCasSerializer.serialize(cas, out);

@@ -1,5 +1,6 @@
 package edu.umn.amicus.pullers;
 
+import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPiece;
 import edu.umn.amicus.uimacomponents.Util;
@@ -17,12 +18,11 @@ import java.util.List;
  */
 public class Puller implements AnalysisPiece {
 
-    public static final String FIELD_NAME_DELIMITER = ";";
-
     protected final String[] fieldNames;
 
     public Puller(String delimitedFieldnames) {
-        fieldNames = delimitedFieldnames == null ? null : delimitedFieldnames.split(FIELD_NAME_DELIMITER, -1);
+        fieldNames = delimitedFieldnames == null ? null :
+                delimitedFieldnames.split(Amicus.ANNOTATION_FIELD_DELIMITER, -1);
     }
 
     /**

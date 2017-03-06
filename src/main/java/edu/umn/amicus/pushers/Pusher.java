@@ -1,9 +1,9 @@
 package edu.umn.amicus.pushers;
 
+import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPiece;
 import edu.umn.amicus.PreAnnotation;
-import edu.umn.amicus.pullers.Puller;
 import edu.umn.amicus.uimacomponents.Util;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Basic class for creating annotations on JCas objects.
@@ -24,8 +25,6 @@ import java.util.List;
  * Created by gpfinley on 1/20/17.
  */
 public class Pusher implements AnalysisPiece {
-
-    public static final String LIST_STRING_DELIMITER = "|";
 
     protected String typeName;
     protected List<String> fieldNames;
@@ -42,7 +41,7 @@ public class Pusher implements AnalysisPiece {
             Class<? extends Annotation> annotationClass = getClassFromName(typeName);
             annotationConstructor = getAnnotationConstructor(annotationClass);
             fieldNames = fieldNamesDelimited == null ? new ArrayList<String>() :
-                    Arrays.asList(fieldNamesDelimited.split(Puller.FIELD_NAME_DELIMITER, -1));
+                    Arrays.asList(fieldNamesDelimited.split(Amicus.ANNOTATION_FIELD_DELIMITER, -1));
             setterMethods = new ArrayList<>();
             for (String f : fieldNames) {
                 if ("".equals(f)) {
@@ -74,26 +73,16 @@ public class Pusher implements AnalysisPiece {
             throw new AmicusException(e);
         }
         Object value = preAnnotation.getValue();
-        System.out.println(value);
         if (setterMethods.size() > 1) {
-            List toSet;
-            try {
-                if (value instanceof List) {
-                    toSet = (List) value;
-                    assert toSet.size() == setterMethods.size();
-                } else {
-                    toSet = buildListFromString(value.toString());
-                    assert toSet.size() == setterMethods.size();
-                }
-            } catch (AssertionError e) {
-                throw new AmicusException("Length of values list from puller and length of setter methods list " +
-                        "not equivalent. Check configuration and puller implementation.");
+            List toSet = value instanceof List ? (List) value : buildListFromString(value.toString());
+            if (toSet.size() != setterMethods.size()) {
+                throw new AmicusException("Different number of values and setters for \"%s\". Check configuration.",
+                        typeName);
             }
             for (int i=0; i<setterMethods.size(); i++) {
                 if (setterMethods.get(i) != null) {
                     try {
                         setterMethods.get(i).invoke(annotation, toSet.get(i));
-//                        setValueOnAnnotation(annotation, setterMethods.get(i), toSet.get(i));
                     } catch (InvocationTargetException | IllegalAccessException e) {
                         throw new AmicusException(e);
                     }
@@ -103,7 +92,6 @@ public class Pusher implements AnalysisPiece {
             Object toSet = value instanceof List ? buildStringFromList((List) value) : value;
             try {
                 setterMethods.get(0).invoke(annotation, toSet);
-//                setValueOnAnnotation(annotation, setterMethods.get(0), toSet);
             } catch (InvocationTargetException | IllegalAccessException e) {
                 throw new AmicusException(e);
             }
@@ -139,13 +127,13 @@ public class Pusher implements AnalysisPiece {
         StringBuilder builder = new StringBuilder();
         builder.append(list.get(0));
         for (int i=1; i<list.size(); i++) {
-            builder.append(LIST_STRING_DELIMITER).append(list.get(i));
+            builder.append(Amicus.LIST_AS_STRING_DELIMITER).append(list.get(i));
         }
         return builder.toString();
     }
 
     public static List<String> buildListFromString(String string) {
-        return Arrays.asList(string.split(LIST_STRING_DELIMITER, -1));
+        return Arrays.asList(string.split(Pattern.quote(Amicus.LIST_AS_STRING_DELIMITER), -1));
     }
 
 }

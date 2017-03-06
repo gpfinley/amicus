@@ -154,7 +154,12 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
             throw new AnalysisEngineProcessException(e);
         }
 
-        String docId = Util.getDocumentID(jCas.getCas());
+        String docId;
+        try {
+            docId = Util.getDocumentID(jCas);
+        } catch (CASException e) {
+            throw new AnalysisEngineProcessException(e);
+        }
         Path filepath = Paths.get(outputDirectory).resolve(docId + "." + exporter.getFileExtension());
         Writer writer;
         try {

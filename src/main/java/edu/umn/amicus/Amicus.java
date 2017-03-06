@@ -8,7 +8,9 @@ import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -24,7 +26,8 @@ public final class Amicus {
     public final static Class<EachSoloTsvExportWriter> DEFAULT_EXPORTER_CLASS = EachSoloTsvExportWriter.class;
     public final static Class<EachSoloAligner> DEFAULT_ALIGNER_CLASS_FOR_EXPORTER = EachSoloAligner.class;
 
-    public final static String CONCATENATED_STRING_DELIMITER = "|";
+    public final static String ANNOTATION_FIELD_DELIMITER = ";";
+    public final static String LIST_AS_STRING_DELIMITER = "|";
 
     /**
      * View names used by UIMA modules
@@ -39,16 +42,21 @@ public final class Amicus {
     public final static Yaml yaml = new Yaml();
 
     // set this once. If a sofa is based on a different string, we have a problem
-    private static String sofaData;
+    private final static Map<String, Object> sofaData = new HashMap<>();
 
-    public static void verifySofaData(String sofaData) throws AmicusException {
-        if (Amicus.sofaData == null) {
-            Amicus.sofaData = sofaData;
-        } else {
-            if (!Amicus.sofaData.equals(sofaData)) {
-                throw new AmicusException("Data does not match across sofas!");
-            }
+    public static void verifySofaData(String docId, Object sofaData) throws MismatchedSofaDataException {
+        Object oldSofaData = Amicus.sofaData.get(docId);
+        if (oldSofaData == null) {
+            Amicus.sofaData.put(docId, sofaData);
+            return;
         }
+        if (!oldSofaData.equals(sofaData)) {
+            throw new MismatchedSofaDataException();
+        }
+    }
+
+    public static Object getSofaData(String docId) {
+        return sofaData.get(docId);
     }
 
 }

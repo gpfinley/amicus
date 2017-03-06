@@ -51,6 +51,20 @@
         </typeDescription>
 
         <typeDescription>
+            <name>edu.umn.amicus.MultiFieldAnnotation</name>
+            <description>
+                Generic annotation with a StringList field.
+            </description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+                <featureDescription>
+                    <name>field</name>
+                    <rangeTypeName>uima.cas.StringList</rangeTypeName>
+                </featureDescription>
+            </features>
+        </typeDescription>
+
+        <typeDescription>
             <name>edu.umn.amicus.EvalAnnotation</name>
             <description>
                 Type for storing results of hit-miss evaluations, with optional score (Double)

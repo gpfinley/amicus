@@ -25,16 +25,17 @@ public class EvalMatchDistiller implements AnnotationDistiller<List<EvalMatch>> 
     @Override
     public PreAnnotation<List<EvalMatch>> distill(List<PreAnnotation> annotations) throws AmicusException {
         List<EvalMatch> evalMatches = new ArrayList<>();
-        int begin = 0;
-        int end = 0;
+        Integer begin = null;
+        Integer end = null;
         // if first (gold) is null, we have false positives. Otherwise, a mix of true positives and false negatives
         if (annotations.get(0) == null) {
             for (int i = 1; i < annotations.size(); i++) {
                 if (annotations.get(i) != null) {
                     evalMatches.add(new EvalMatch(i, EvalMatch.FALSE_POSITIVE));
-                    begin = annotations.get(i).getBegin();
-                    end = annotations.get(i).getEnd();
-                    break;
+                    if (begin == null) {
+                        begin = annotations.get(i).getBegin();
+                        end = annotations.get(i).getEnd();
+                    }
                 }
                 if (i == annotations.size()) {
                     throw new AmicusException("No annotations found; check this eval aligner implementation");
@@ -53,6 +54,7 @@ public class EvalMatchDistiller implements AnnotationDistiller<List<EvalMatch>> 
             }
         }
 
+        // will throw a NPE if the list of annotations is all nulls
         return new PreAnnotation<>(evalMatches, begin, end);
     }
 

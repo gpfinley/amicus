@@ -39,14 +39,21 @@ pipelineComponents:
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     distillerClass: null, pusherClass: null, writeView: BiomedicusMappedView}
 - !!edu.umn.amicus.config.TranslatorConfig
-  _translatorName: Gold answer mapper
+  _translatorName: Gold acronyms filter
   filterClassName: null
   filterPattern: .*true$
   input: {annotationField: acronymAbbrevExpansion;isAcronymAbbrev, annotationType: edu.umn.biomedicus.type.TokenAnnotation,
     fromView: GoldView, pullerClass: null}
-  mapperConfigPaths: [mapperConfigurations/equivalentAnswerMapperConfig.yml]
   outputs:
   - {annotationField: field;, annotationType: edu.umn.amicus.SingleFieldAnnotation,
+    distillerClass: null, pusherClass: null, writeView: GoldAcronymsOnlyView}
+- !!edu.umn.amicus.config.TranslatorConfig
+  _translatorName: Gold answer mapper
+  input: {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
+    fromView: GoldAcronymsOnlyView, pullerClass: null}
+  mapperConfigPaths: [mapperConfigurations/equivalentAnswerMapperConfig.yml]
+  outputs:
+  - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     distillerClass: null, pusherClass: null, writeView: GoldMappedView}
 - !!edu.umn.amicus.config.MergerConfig
   _mergerName: Acronym answer merger
@@ -64,7 +71,7 @@ pipelineComponents:
     writeView: MergedView}
 - !!edu.umn.amicus.config.MergerConfig
   _mergerName: Eval merger
-  alignerClass: null
+  alignerClass: edu.umn.amicus.aligners.PartialOverlapAligner
   inputs:
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     fromView: GoldMappedView, pullerClass: null}

@@ -1,9 +1,6 @@
 package edu.umn.amicus.uimacomponents;
 
-import edu.umn.amicus.AmicusConfigurationException;
-import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.AnalysisPieceFactory;
-import edu.umn.amicus.PreAnnotation;
+import edu.umn.amicus.*;
 import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.pushers.Pusher;
 import edu.umn.amicus.distillers.AnnotationDistiller;
@@ -143,19 +140,32 @@ public class MergerAE extends JCasAnnotator_ImplBase {
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
 
+//        String sofaData;
+//        try {
+//            sofaData = (String) Util.getSofaData(jCas);
+//        } catch (CASException e) {
+//            LOGGER.severe(String.format("Could not load sofa data for Translator \"%s\"", myName));
+//            throw new AnalysisEngineProcessException(e);
+//        } catch (AmicusException e) {
+//            LOGGER.severe(String.format("No sofa data found anywhere for document %s for Translator \"%s\"",
+//                    Util.getDocumentID(jCas.getCas()), myName));
+//            throw new AnalysisEngineProcessException(e);
+//        }
         try {
-            String sofaData = (String) Util.getSofaData(jCas);
-            Util.createOutputViews(jCas, sofaData, outputViewNames);
-        } catch (CASException | AmicusException e) {
-            LOGGER.severe(String.format("Could not create output views for Merger \"%s\"", myName));
+//            Util.createOutputViews(jCas, sofaData, outputViewNames);
+            Util.createOutputViews(jCas, outputViewNames);
+        } catch (CASException e) {
+            LOGGER.severe(String.format("Could not create output views for Translator \"%s\"", myName));
             throw new AnalysisEngineProcessException(e);
+//        } catch (MismatchedSofaDataException e) {
+//            LOGGER.warning(String.format("Inconsistent sofa data found in view %s for document %s",
+//                    jCas.getViewName(), Util.getDocumentID(jCas.getCas())));
         }
 
         try {
             Iterator<List<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
             while (listIter.hasNext()) {
                 List<Annotation> annotations = listIter.next();
-                System.out.println(annotations);
                 List<PreAnnotation> preannotations = new ArrayList<>();
                 for (int i = 0; i < annotations.size(); i++) {
                     preannotations.add(annotations.get(i) == null ? null :
