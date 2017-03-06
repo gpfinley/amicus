@@ -14,7 +14,7 @@ pipelineComponents:
   filterPattern: null
   input: {annotationField: cui, annotationType: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA,
     fromView: ClampView, pullerClass: null}
-  mapperConfigPaths: [mapperConfigurations/CuiMapper.yml, mapperConfigurations/equivalentAnswerMapperConfig.yml]
+  mapperConfigPaths: [mapperConfigurations/CuiMapper.yml, mapperConfigurations/equivalentAnswerMapperConfig.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
   outputs:
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     distillerClass: null, pusherClass: null, writeView: ClampMappedView}
@@ -24,17 +24,15 @@ pipelineComponents:
   filterPattern: null
   input: {annotationField: ontologyConceptArr, annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
     fromView: CtakesView, pullerClass: edu.umn.amicus.pullers.CtakesCuiPuller}
-  mapperConfigPaths: [mapperConfigurations/CuiMapper.yml, mapperConfigurations/equivalentAnswerMapperConfig.yml]
+  mapperConfigPaths: [mapperConfigurations/CuiMapper.yml, mapperConfigurations/equivalentAnswerMapperConfig.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
   outputs:
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     distillerClass: null, pusherClass: null, writeView: CtakesMappedView}
 - !!edu.umn.amicus.config.TranslatorConfig
   _translatorName: BioMedICUS answer mapper
-  filterClassName: null
-  filterPattern: null
   input: {annotationField: text, annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
     fromView: BiomedicusView, pullerClass: null}
-  mapperConfigPaths: [mapperConfigurations/equivalentAnswerMapperConfig.yml]
+  mapperConfigPaths: [mapperConfigurations/equivalentAnswerMapperConfig.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
   outputs:
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     distillerClass: null, pusherClass: null, writeView: BiomedicusMappedView}
@@ -51,27 +49,29 @@ pipelineComponents:
   _translatorName: Gold answer mapper
   input: {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     fromView: GoldAcronymsOnlyView, pullerClass: null}
-  mapperConfigPaths: [mapperConfigurations/equivalentAnswerMapperConfig.yml]
+  filterClassName: edu.umn.amicus.filters.RegexFilter
+  filterPattern: ^((?!ign).)*$
+  mapperConfigPaths: [mapperConfigurations/equivalentAnswerMapperConfig.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
   outputs:
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     distillerClass: null, pusherClass: null, writeView: GoldMappedView}
 - !!edu.umn.amicus.config.MergerConfig
   _mergerName: Acronym answer merger
-  alignerClass: null
+#  alignerClass: edu.umn.amicus.aligners.PartialOverlapAligner
   inputs:
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     fromView: BiomedicusMappedView, pullerClass: null}
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
-    fromView: ClampMappedView, pullerClass: null}
-  - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     fromView: CtakesMappedView, pullerClass: null}
+  - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
+    fromView: ClampMappedView, pullerClass: null}
   outputs:
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     distillerClass: edu.umn.amicus.distillers.PriorityDistiller, pusherClass: null,
     writeView: MergedView}
 - !!edu.umn.amicus.config.MergerConfig
   _mergerName: Eval merger
-  alignerClass: edu.umn.amicus.aligners.PartialOverlapAligner
+  alignerClass: edu.umn.amicus.eval.EvalPartialOverlapAligner
   inputs:
   - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation,
     fromView: GoldMappedView, pullerClass: null}

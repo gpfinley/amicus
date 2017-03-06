@@ -115,7 +115,12 @@ public final class AnalysisPieceFactory {
         }
         File configFile = new File(configPath);
         if (!configFile.exists()) {
-            throw new AmicusException("No file found at %s.", configPath);
+            try {
+                Class<? extends Mapper> mapperClass = (Class<? extends Mapper>) Class.forName(configPath);
+                return mapperClass.getConstructor().newInstance();
+            } catch (ReflectiveOperationException | ClassCastException e) {
+                throw new AmicusException("No file found at %s.", configPath);
+            }
         }
         try {
             Object mapperObject = Amicus.yaml.load(new FileInputStream(configFile));

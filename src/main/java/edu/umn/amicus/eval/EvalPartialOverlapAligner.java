@@ -1,5 +1,7 @@
-package edu.umn.amicus.aligners;
+package edu.umn.amicus.eval;
 
+import edu.umn.amicus.aligners.Aligner;
+import edu.umn.amicus.aligners.PartialOverlapAligner;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
@@ -17,7 +19,7 @@ public class EvalPartialOverlapAligner implements Aligner {
     public Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
 
         // true positives and false negatives list. These will be returned.
-        Map<Annotation, List<Annotation>> truePositiveLists = new TreeMap<>();
+        Map<Annotation, List<Annotation>> truePositiveLists = new TreeMap<>(new AnnotationBeginComparator());
         List<List<Annotation>> falsePositiveLists = new ArrayList<>();
 
         int n = allAnnotations.size();
@@ -58,6 +60,13 @@ public class EvalPartialOverlapAligner implements Aligner {
         finalList.addAll(truePositiveLists.values());
         finalList.addAll(falsePositiveLists);
         return finalList.iterator();
+    }
+
+    private static class AnnotationBeginComparator implements Comparator<Annotation> {
+        @Override
+        public int compare(Annotation a1, Annotation a2) {
+            return ((Integer) a1.getBegin()).compareTo(a2.getBegin());
+        }
     }
 
 }

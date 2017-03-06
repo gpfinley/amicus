@@ -11,6 +11,7 @@ import java.util.*;
  *
  * Created by gpfinley on 10/21/16.
  */
+@Deprecated
 public class EvalPerfectOverlapAligner implements Aligner {
 
     /**

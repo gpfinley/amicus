@@ -1,5 +1,6 @@
 package edu.umn.amicus.eval;
 
+import edu.umn.amicus.Counter;
 import edu.umn.amicus.summary.SummaryWriter;
 
 import java.util.List;
@@ -28,6 +29,9 @@ public class EvalPrfSummaryWriter implements SummaryWriter<EvalMatch> {
                 results.put(system, stats);
             }
             stats.add(em);
+
+            Counter<String> correct = new Counter<>();
+            Counter<String> errors = new Counter<>();
         }
 
         StringBuilder builder = new StringBuilder();
@@ -45,6 +49,9 @@ public class EvalPrfSummaryWriter implements SummaryWriter<EvalMatch> {
         int falsePos;
         double totalHitScore;
 
+        Counter<String> correct = new Counter<>();
+        Counter<String> incorrect = new Counter<>();
+
         public void add(EvalMatch em) {
             switch (em.getStatus()) {
                 case EvalMatch.FALSE_NEGATIVE:
@@ -56,6 +63,13 @@ public class EvalPrfSummaryWriter implements SummaryWriter<EvalMatch> {
                 case EvalMatch.TRUE_POSITIVE:
                     truePos++;
                     totalHitScore += em.getScore();
+                    if (em.getValue() != null) {
+                        if (em.getScore() == 1) {
+                            correct.increment(em.getValue());
+                        } else if (em.getScore() == 0) {
+                            incorrect.increment(em.getValue());
+                        }
+                    }
                     break;
             }
         }
@@ -81,6 +95,22 @@ public class EvalPrfSummaryWriter implements SummaryWriter<EvalMatch> {
             builder.append("\nMean score of true positives: ");
             builder.append(totalHitScore / truePos);
             builder.append("\n");
+
+            builder.append("\n\nCORRECT LABELS:\n\n");
+            for (Map.Entry<String, Integer> entry : correct.createSortedMap().entrySet()) {
+                builder.append(entry.getValue())
+                        .append("\t")
+                        .append(entry.getKey())
+                        .append("\n");
+            }
+            builder.append("\n\nINCORRECT LABELS:\n\n");
+            for (Map.Entry<String, Integer> entry : incorrect.createSortedMap().entrySet()) {
+                builder.append(entry.getValue())
+                        .append("\t")
+                        .append(entry.getKey())
+                        .append("\n");
+            }
+
             return builder.toString();
         }
     }

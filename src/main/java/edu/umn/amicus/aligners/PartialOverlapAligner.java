@@ -1,6 +1,7 @@
 package edu.umn.amicus.aligners;
 
 import edu.umn.amicus.Counter;
+import org.apache.commons.lang.math.IntRange;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
@@ -64,7 +65,7 @@ public class PartialOverlapAligner implements Aligner {
         }
 
         // build all the "sprawls," which can be optimized independently
-        // (much faster than optimizing every possible combo)
+        // (much faster than optimizing every possible combo, assuming non-pathologically overlapping annotations)
         Set<Annotation> annotationsAccountedFor = new HashSet<>(setMemberships.keySet());
         Set<Set<Annotation>> sprawls = new HashSet<>();
         while(annotationsAccountedFor.size() > 0) {
@@ -79,24 +80,18 @@ public class PartialOverlapAligner implements Aligner {
         for (Set<Annotation> sprawl : sprawls) {
             allCombos = new ArrayList<>();
             addAllCombos(new LinkedHashSet<>(sprawl), null);
-            List<Set<Annotation>> bestCombo = null;
-            int bestScore = Integer.MAX_VALUE;
-            for (List<Set<Annotation>> combo : allCombos) {
-                int score = 0;
-                for (Set<Annotation> annots : combo) {
-                    Counter<Integer> indices = new Counter<>();
-                    for (Annotation annot : annots) {
-                        for (int i = annot.getBegin(); i < annot.getEnd(); i++) {
-                            indices.increment(i);
-                        }
+            List<Set<Annotation>> bestCombo = allCombos.get(0);
+            if (allCombos.size() > 1) {
+                double bestScore = -Double.MAX_VALUE;
+                for (List<Set<Annotation>> combo : allCombos) {
+                    double score = 0;
+                    for (Set<Annotation> annots : combo) {
+                        score += calculateScore(annots);
                     }
-                    for (int count : indices.values()) {
-                        if (count == 1) score++;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestCombo = combo;
                     }
-                }
-                if (score < bestScore) {
-                    bestScore = score;
-                    bestCombo = combo;
                 }
             }
             for (Set<Annotation> set : bestCombo) {
@@ -111,6 +106,39 @@ public class PartialOverlapAligner implements Aligner {
             }
         }
         return allAlignments.iterator();
+    }
+
+    private static double calculateScore(Collection<Annotation> annotations) {
+        double score = 0;
+        Counter<Integer> indexCounter = new Counter<>();
+        for (Annotation annot : annotations) {
+            for (int i = annot.getBegin(); i < annot.getEnd(); i++) {
+                indexCounter.increment(i);
+            }
+        }
+        for (Annotation annot : annotations) {
+            double thisScore = 0;
+            for (int i = annot.getBegin(); i < annot.getEnd(); i++) {
+                thisScore += (indexCounter.get(i) - 1);
+            }
+            score += thisScore / (annot.getEnd() - annot.getBegin());
+        }
+        return score;
+    }
+
+    @Deprecated
+    private static double calculateDumbScore(Collection<Annotation> annotations) {
+        double score = 0;
+        Counter<Integer> indices = new Counter<>();
+        for (Annotation annot : annotations) {
+            for (int i = annot.getBegin(); i < annot.getEnd(); i++) {
+                indices.increment(i);
+            }
+        }
+        for (int count : indices.values()) {
+            if (count == 1) score += 1;
+        }
+        return -score;
     }
 
     /**

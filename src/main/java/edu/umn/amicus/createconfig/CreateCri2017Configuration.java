@@ -19,6 +19,7 @@
 ///**
 // * Created by gpfinley on 2/27/17.
 // */
+//@Deprecated
 //public class CreateCri2017Configuration {
 //
 //

@@ -17,8 +17,9 @@ public class EvalMatch {
     private final int systemIndex;
     private final String status;
     private final Double score;
+    private final String value;
 
-    public EvalMatch(int systemIndex, String status, Double score) {
+    public EvalMatch(int systemIndex, String status, Double score, String value) {
         if (!TRUE_POSITIVE.equals(status) && !FALSE_POSITIVE.equals(status) && !FALSE_NEGATIVE.equals(status)) {
             throw new RuntimeException("Trying to create an EvalMatch outside of specified types;" +
                     "check calling class implementation. Best to use the static Strings declared in EvalMatch");
@@ -26,10 +27,11 @@ public class EvalMatch {
         this.systemIndex = systemIndex;
         this.status = status;
         this.score = score;
+        this.value = value;
     }
 
     public EvalMatch(int systemIndex, String status) {
-        this(systemIndex, status, null);
+        this(systemIndex, status, null, null);
     }
 
     public EvalAnnotation createAnnotationFrom(JCas jCas, int begin, int end) {
@@ -38,6 +40,9 @@ public class EvalMatch {
         annotation.setStatus(status);
         if (score != null) {
             annotation.setScore(score);
+        }
+        if (value != null) {
+            annotation.setValue(value);
         }
         return annotation;
     }
@@ -52,5 +57,9 @@ public class EvalMatch {
 
     public Double getScore() {
         return score;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

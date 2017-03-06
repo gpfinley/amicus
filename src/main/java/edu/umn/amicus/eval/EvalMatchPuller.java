@@ -18,7 +18,7 @@ public class EvalMatchPuller extends Puller {
     @Override
     public EvalMatch pull(Annotation annotation) {
         EvalAnnotation ea = (EvalAnnotation) annotation;
-        return new EvalMatch(ea.getSystemIndex(), ea.getStatus(), ea.getScore());
+        return new EvalMatch(ea.getSystemIndex(), ea.getStatus(), ea.getScore(), ea.getValue());
     }
 
 }

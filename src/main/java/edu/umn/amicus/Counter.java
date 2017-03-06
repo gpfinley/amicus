@@ -70,6 +70,7 @@ public class Counter<T> implements Map<T, Integer> {
             @Override
             public int compare(T o1, T o2) {
                 int comp = get(o1).compareTo(get(o2));
+//                if (comp == 0 && (o1 == null || o2 == null)) return 0;
                 return comp == 0 ? ((Comparable) o1).compareTo(o2) : comp;
             }
         });

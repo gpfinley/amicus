@@ -49,7 +49,9 @@ public class EvalMatchDistiller implements AnnotationDistiller<List<EvalMatch>> 
                     evalMatches.add(new EvalMatch(i, EvalMatch.FALSE_NEGATIVE));
                 } else {
                     double matchScore = getScore(annotations.get(0), annotations.get(i));
-                    evalMatches.add(new EvalMatch(i, EvalMatch.TRUE_POSITIVE, matchScore));
+                    String valueToStore = matchScore == 1 ? "" + annotations.get(0).getValue()
+                            : annotations.get(0).getValue() + " : " + annotations.get(i).getValue();
+                    evalMatches.add(new EvalMatch(i, EvalMatch.TRUE_POSITIVE, matchScore, valueToStore));
                 }
             }
         }

@@ -44,7 +44,7 @@ public class EquivalentAnswerMapper extends Mapper {
         }
         String string = key.toString().trim().toLowerCase();
         Object val = internalMap.get(string);
-        return val == null ? string : val;
+        return val == null ? key : val;
     }
 
     /**

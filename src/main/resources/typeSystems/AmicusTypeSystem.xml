@@ -83,6 +83,10 @@
                     <name>score</name>
                     <rangeTypeName>uima.cas.Double</rangeTypeName>
                 </featureDescription>
+                <featureDescription>
+                    <name>value</name>
+                    <rangeTypeName>uima.cas.String</rangeTypeName>
+                </featureDescription>
             </features>
         </typeDescription>
 
