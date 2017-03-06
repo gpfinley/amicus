@@ -8,6 +8,7 @@ import java.util.*;
 /**
  * Created by gpfinley on 3/1/17.
  */
+@Deprecated
 public class FullOverlapAligner implements Aligner {
 
     private static Map<Annotation, Integer> sourceInput;
