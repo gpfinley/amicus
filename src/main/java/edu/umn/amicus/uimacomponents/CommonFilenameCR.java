@@ -61,7 +61,11 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
             }
             Set<String> filesThisDir = new HashSet<>();
             for (File f : dir.listFiles()) {
-                filesThisDir.add(chopExt.apply(f.getName()));
+                String baseName = chopExt.apply(f.getName());
+                while (baseName.toLowerCase().endsWith(".txt") || baseName.toLowerCase().endsWith(".rtf")) {
+                    baseName = chopExt.apply(baseName);
+                }
+                filesThisDir.add(baseName);
             }
             if (commonNames == null) {
                 commonNames = filesThisDir;
