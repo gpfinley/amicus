@@ -20,7 +20,7 @@ public class CtakesCuiPuller extends Puller {
 
     public CtakesCuiPuller(String fieldName) {
         // todo: find out the field name to use by default here
-        this.fieldName = fieldName == null ? "TODO DEFAULT CTAKES FIELDNAME" : fieldName;
+        this.fieldName = fieldName == null ? "ontologyConceptArr" : fieldName;
     }
 
     /**

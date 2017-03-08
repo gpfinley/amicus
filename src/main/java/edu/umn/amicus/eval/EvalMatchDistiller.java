@@ -2,7 +2,7 @@ package edu.umn.amicus.eval;
 
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.PreAnnotation;
-import edu.umn.amicus.distillers.AnnotationDistiller;
+import edu.umn.amicus.distillers.Distiller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * Created by gpfinley on 10/20/16.
  */
-public class EvalMatchDistiller implements AnnotationDistiller<List<EvalMatch>> {
+public class EvalMatchDistiller implements Distiller<List<EvalMatch>> {
 
     /**
      * todo: doc

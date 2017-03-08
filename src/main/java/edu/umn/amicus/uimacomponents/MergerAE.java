@@ -3,7 +3,7 @@ package edu.umn.amicus.uimacomponents;
 import edu.umn.amicus.*;
 import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.pushers.Pusher;
-import edu.umn.amicus.distillers.AnnotationDistiller;
+import edu.umn.amicus.distillers.Distiller;
 import edu.umn.amicus.pullers.Puller;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -71,7 +71,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
     private String[] outputAnnotationFields;
 
     private List<Class> typeClasses;
-    private List<AnnotationDistiller> distillers;
+    private List<Distiller> distillers;
     private List<Pusher> pushers;
     private List<Puller> pullers;
     private Aligner aligner;

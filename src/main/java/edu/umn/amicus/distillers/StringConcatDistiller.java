@@ -10,7 +10,7 @@ import java.util.List;
  *
  * Created by gpfinley on 12/9/16.
  */
-public class StringConcatDistiller implements AnnotationDistiller<String> {
+public class StringConcatDistiller implements Distiller<String> {
 
     public static String separator= "|";
 

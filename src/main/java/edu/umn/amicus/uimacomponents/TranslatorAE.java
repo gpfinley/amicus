@@ -1,7 +1,7 @@
 package edu.umn.amicus.uimacomponents;
 
 import edu.umn.amicus.*;
-import edu.umn.amicus.filters.AnnotationFilter;
+import edu.umn.amicus.filters.Filter;
 import edu.umn.amicus.mappers.Mapper;
 import edu.umn.amicus.pullers.Puller;
 import edu.umn.amicus.pushers.Pusher;
@@ -81,7 +81,7 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
 
     private List<Pusher> pushers;
 
-    private AnnotationFilter filter;
+    private Filter filter;
     private List<Mapper> mappers;
 
     @Override

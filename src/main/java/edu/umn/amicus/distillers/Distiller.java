@@ -11,7 +11,7 @@ import java.util.List;
  *
  * Created by gpfinley on 10/20/16.
  */
-public interface AnnotationDistiller<T> extends AnalysisPiece {
+public interface Distiller<T> extends AnalysisPiece {
 
     PreAnnotation<T> distill(List<PreAnnotation> annotations) throws AmicusException;
 

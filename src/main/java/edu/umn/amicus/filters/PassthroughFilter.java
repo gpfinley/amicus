@@ -5,7 +5,7 @@ package edu.umn.amicus.filters;
  *
  * Created by gpfinley on 2/17/17.
  */
-public class PassthroughFilter implements AnnotationFilter {
+public class PassthroughFilter implements Filter {
 
     @Override
     public boolean passes(Object value) {

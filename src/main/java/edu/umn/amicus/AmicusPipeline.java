@@ -9,6 +9,7 @@ import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -24,14 +25,16 @@ import java.util.List;
  */
 public class AmicusPipeline {
 
-    public AmicusPipeline(String configFilePath) throws IOException, UIMAException, AmicusException {
+    protected final CollectionReader reader;
+    protected final AnalysisEngine[] engines;
+
+    public AmicusPipeline(String configFilePath) throws IOException, ResourceInitializationException, AmicusException {
 
         AmicusPipelineConfiguration pipelineConfig;
 
         Yaml yaml = new Yaml();
         pipelineConfig = (AmicusPipelineConfiguration) yaml.load(new FileInputStream(configFilePath));
 
-        CollectionReader reader;
         List<AnalysisEngine> engines = new ArrayList<>();
         reader = CollectionReaderFactory.createReader(CommonFilenameCR.class,
                 CommonFilenameCR.SYSTEM_DATA_DIRS, pipelineConfig.aggregateInputDirectories());
@@ -41,7 +44,7 @@ public class AmicusPipeline {
                     CasAdderAE.DATA_DIR, systemConfig.dataPath,
                     CasAdderAE.READ_FROM_VIEW, systemConfig.readFromView,
                     CasAdderAE.COPY_INTO_VIEW, systemConfig.saveIntoView
-                    ));
+            ));
         }
 
         for (PipelineComponentConfig componentConfig : pipelineConfig.pipelineComponents) {
@@ -61,7 +64,7 @@ public class AmicusPipeline {
                                 MergerAE.PUSHER_CLASSES, PipelineComponentConfig.aggregateOutputPushers(mergerConfig.outputs),
                                 MergerAE.WRITE_VIEWS, PipelineComponentConfig.aggregateOutputViewNames(mergerConfig.outputs)
                         ));
-            } else if(componentConfig.getClass().equals(SummarizerConfig.class)) {
+            } else if (componentConfig.getClass().equals(SummarizerConfig.class)) {
                 SummarizerConfig summarizerConfig = (SummarizerConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(SummarizerAE.class,
@@ -74,7 +77,7 @@ public class AmicusPipeline {
                                 SummarizerAE.LISTENER_NAME, summarizerConfig.name,
                                 SummarizerAE.OUTPUT_PATH, summarizerConfig.outPath
                         ));
-            } else if(componentConfig.getClass().equals(ExporterConfig.class)) {
+            } else if (componentConfig.getClass().equals(ExporterConfig.class)) {
                 ExporterConfig exporterConfig = (ExporterConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(ExporterAE.class,
@@ -87,7 +90,7 @@ public class AmicusPipeline {
                                 ExporterAE.EXPORT_WRITER_CLASS, exporterConfig.exporterClass,
                                 ExporterAE.OUTPUT_DIRECTORY, exporterConfig.outputDirectory
                         ));
-            } else if(componentConfig.getClass().equals(TranslatorConfig.class)) {
+            } else if (componentConfig.getClass().equals(TranslatorConfig.class)) {
                 TranslatorConfig translatorConfig = (TranslatorConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(TranslatorAE.class,
@@ -107,23 +110,29 @@ public class AmicusPipeline {
                                 TranslatorAE.WRITE_VIEWS, PipelineComponentConfig.aggregateOutputViewNames(translatorConfig.outputs)
                         ));
             } else {
-                throw new AmicusException(componentConfig.getClass().getName() + " hasn't been implemented yet!");
+                throw new AmicusException(componentConfig.getClass().getName() + " is not an AMICUS pipeline component");
             }
         }
 
         engines.add(AnalysisEngineFactory.createEngine(XmiWriterAE.class,
                 XmiWriterAE.CONFIG_OUTPUT_DIR, pipelineConfig.xmiOutPath));
 
-        SimplePipeline.runPipeline(reader, engines.toArray(new AnalysisEngine[engines.size()]));
+        this.engines = engines.toArray(new AnalysisEngine[engines.size()]);
 
     }
 
+    public void run() throws UIMAException, IOException {
+        SimplePipeline.runPipeline(reader, engines);
+    }
+
     public static void main(String[] args) throws Exception {
-        // todo: remove, and show usage msg if no argument
-//        args = new String[]{"simple_test_config.yml"};
-//        args = new String[]{"example_export_pipeline_config.yml"};
-        String configFilePath = args[0];
-        new AmicusPipeline(configFilePath);
+        if (args.length == 0) {
+            System.out.println("Need to supply at least one configuration file as an argument");
+            System.exit(1);
+        }
+        for (String configFilePath : args) {
+            new AmicusPipeline(configFilePath).run();
+        }
     }
 
 }

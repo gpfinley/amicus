@@ -124,8 +124,6 @@ public class Counter<T> implements Map<T, Integer> {
             vals.add(i.get());
         }
         return vals;
-        // java 8
-//        return counts.values().stream().map(MutableInt::get).collect(Collectors.toList());
     }
 
     @Override
@@ -155,8 +153,6 @@ public class Counter<T> implements Map<T, Integer> {
             entrySet.add(new Entry(e));
         }
         return entrySet;
-        // java 8
-//        return counts.entrySet().stream().map(Entry::new).collect(Collectors.toSet());
     }
 
     @Override

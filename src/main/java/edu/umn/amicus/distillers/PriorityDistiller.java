@@ -10,7 +10,7 @@ import java.util.List;
  *
  * Created by gpfinley on 10/20/16.
  */
-public class PriorityDistiller implements AnnotationDistiller<Object> {
+public class PriorityDistiller implements Distiller<Object> {
 
     /**
      *

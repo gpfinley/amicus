@@ -5,7 +5,7 @@ package edu.umn.amicus.filters;
  *
  * Created by gpfinley on 2/27/17.
  */
-public class NonNullFilter implements AnnotationFilter {
+public class NonNullFilter implements Filter {
 
     public NonNullFilter(String pattern) { }
 

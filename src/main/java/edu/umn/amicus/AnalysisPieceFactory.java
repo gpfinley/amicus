@@ -2,11 +2,11 @@ package edu.umn.amicus;
 
 import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.PerfectOverlapAligner;
-import edu.umn.amicus.distillers.AnnotationDistiller;
+import edu.umn.amicus.distillers.Distiller;
 import edu.umn.amicus.distillers.PriorityDistiller;
 import edu.umn.amicus.export.EachSoloTsvExportWriter;
 import edu.umn.amicus.export.ExportWriter;
-import edu.umn.amicus.filters.AnnotationFilter;
+import edu.umn.amicus.filters.Filter;
 import edu.umn.amicus.filters.PassthroughFilter;
 import edu.umn.amicus.filters.RegexFilter;
 import edu.umn.amicus.mappers.Mapper;
@@ -74,12 +74,12 @@ public final class AnalysisPieceFactory {
                 alignerClassName == null ? DEFAULT_ALIGNER : alignerClassName);
     }
 
-    public static AnnotationDistiller distiller(String distillerClassName) throws AmicusException {
-        return getPieceInstance(AnnotationDistiller.class,
+    public static Distiller distiller(String distillerClassName) throws AmicusException {
+        return getPieceInstance(Distiller.class,
                 distillerClassName == null ? DEFAULT_DISTILLER : distillerClassName);
     }
 
-    public static AnnotationFilter filter(String filterClassName, String pattern) throws AmicusException {
+    public static Filter filter(String filterClassName, String pattern) throws AmicusException {
         if (filterClassName == null) {
             if (pattern != null) {
                 filterClassName = DEFAULT_FILTER;
@@ -88,7 +88,7 @@ public final class AnalysisPieceFactory {
                 filterClassName = DEFAULT_NOPATTERN_FILTER;
             }
         }
-        return getPieceInstance(AnnotationFilter.class, filterClassName, pattern);
+        return getPieceInstance(Filter.class, filterClassName, pattern);
     }
 
     public static ExportWriter exportWriter(String exporterClassName) throws AmicusException {

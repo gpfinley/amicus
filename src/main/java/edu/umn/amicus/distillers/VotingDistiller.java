@@ -5,7 +5,6 @@ import edu.umn.amicus.config.ClassConfigurationLoader;
 import edu.umn.amicus.Counter;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,7 @@ import java.util.Map;
  *
  * Created by gpfinley on 12/8/16.
  */
-public class VotingDistiller implements AnnotationDistiller<Object> {
+public class VotingDistiller implements Distiller<Object> {
 
     private static final int minVotesToAnnotate;
 

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  *
  * Created by gpfinley on 2/17/17.
  */
-public class NumberFilter implements AnnotationFilter {
+public class NumberFilter implements Filter {
 
     private static final Logger LOGGER = Logger.getLogger(NumberFilter.class.getName());
 

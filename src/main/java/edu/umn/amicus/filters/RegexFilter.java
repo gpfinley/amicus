@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  *
  * Created by gpfinley on 2/17/17.
  */
-public class RegexFilter implements AnnotationFilter {
+public class RegexFilter implements Filter {
 
     protected Pattern pattern;
 

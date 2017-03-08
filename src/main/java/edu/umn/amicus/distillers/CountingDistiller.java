@@ -2,7 +2,6 @@ package edu.umn.amicus.distillers;
 
 import edu.umn.amicus.PreAnnotation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +11,7 @@ import java.util.List;
  *
  * Created by gpfinley on 2/17/17.
  */
-public class CountingDistiller implements AnnotationDistiller<Integer> {
+public class CountingDistiller implements Distiller<Integer> {
 
     /**
      * Save all annotations into a list. Null values and annotations will be added to the list to maintain length
