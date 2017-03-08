@@ -15,3 +15,4 @@ target
 data
 lib
 .idea
+.DS_Store
