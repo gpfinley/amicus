@@ -24,7 +24,7 @@ public class CreateExampleConfiguration {
 
         AmicusPipelineConfiguration config = new AmicusPipelineConfiguration();
 
-        config._pipelineName = "Example Amicus pipeline";
+        config.pipelineName = "Example Amicus pipeline";
 
         config.allSystemsUsed = new SourceSystemConfig[] {
                 new SourceSystemConfig().useSystemName("biomedicus")
@@ -43,7 +43,7 @@ public class CreateExampleConfiguration {
 
         MergerConfig ctakesPreprocessorBean = new MergerConfig();
 
-        ctakesPreprocessorBean._mergerName = "cTAKES preprocessor";
+        ctakesPreprocessorBean.name = "cTAKES preprocessor";
         ctakesPreprocessorBean.inputs = new AnnotationInputConfig[] {
                 new AnnotationInputConfig().annotationType("org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation")
                         .annotationField("ontologyConceptArr")
@@ -58,7 +58,7 @@ public class CreateExampleConfiguration {
         };
 
         MergerConfig acronymMergerBean = new MergerConfig();
-        acronymMergerBean._mergerName = "Acronym Merger";
+        acronymMergerBean.name = "Acronym Merger";
         acronymMergerBean.alignerClass = "edu.umn.amicus.aligners.PerfectOverlapAligner";
         acronymMergerBean.inputs = new AnnotationInputConfig[]{
                 new AnnotationInputConfig().fromView("BiomedicusView")

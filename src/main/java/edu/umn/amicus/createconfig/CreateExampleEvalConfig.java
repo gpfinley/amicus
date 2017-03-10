@@ -22,7 +22,7 @@ public class CreateExampleEvalConfig {
 
         AmicusPipelineConfiguration config = new AmicusPipelineConfiguration();
 
-        config._pipelineName = "Example Amicus pipeline";
+        config.pipelineName = "Example Amicus pipeline";
 
         config.allSystemsUsed = new SourceSystemConfig[] {
                 new SourceSystemConfig().useSystemName("gold")
@@ -55,13 +55,13 @@ public class CreateExampleEvalConfig {
                 .pullerClass("edu.umn.amicus.pullers.EquivalentMapperPuller")
                 .fromView("BiomedicusView");
 
-        goldExporter._exporterName = "gold exporter";
+        goldExporter.name = "gold exporter";
         goldExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
         goldExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
         goldExporter.inputs = new AnnotationInputConfig[] {goldInput};
         goldExporter.outputDirectory = "data/out/goldExports";
 
-        biomedicusExporter._exporterName = "biomedicus exporter";
+        biomedicusExporter.name = "biomedicus exporter";
         biomedicusExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
         biomedicusExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
         biomedicusExporter.inputs = new AnnotationInputConfig[] {biomedicusInput};
@@ -76,7 +76,7 @@ public class CreateExampleEvalConfig {
         biomedicusCollector.summaryWriter = "edu.umn.amicus.summary.CounterSummaryWriter";
 
 
-        evalMerger._mergerName = "acronym eval merger";
+        evalMerger.name = "acronym eval merger";
         evalMerger.alignerClass = "edu.umn.amicus.eval.EvalPerfectOverlapAligner";
         evalMerger.inputs = new AnnotationInputConfig[] {goldInput, biomedicusInput};
         evalMerger.outputs = new AnnotationOutputConfig[] {

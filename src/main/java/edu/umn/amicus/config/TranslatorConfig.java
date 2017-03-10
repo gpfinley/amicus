@@ -1,7 +1,5 @@
 package edu.umn.amicus.config;
 
-import edu.umn.amicus.AmicusException;
-
 /**
  * A serializable bean for a single merge engine.
  * Contains methods for aggregating options across its inputs and outputs, which is needed for uimaFIT configurations.
@@ -10,16 +8,16 @@ import edu.umn.amicus.AmicusException;
  */
 public class TranslatorConfig extends PipelineComponentConfig {
 
-    public String _translatorName = "untitled translator";
+    public String name = "untitled translator";
 
     public AnnotationInputConfig input;
     public AnnotationOutputConfig[] outputs;
 
-    public String filterClassName;
+    public String filter;
     public String filterPattern;
 
     // todo: revert to single mapper??
-    public String[] mapperConfigPaths;
+    public String[] mappers;
 
     /**
      * Verify that these mergers have enough config info

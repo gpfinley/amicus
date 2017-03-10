@@ -22,7 +22,7 @@ public class CreateExampleExportConfig {
 
         AmicusPipelineConfiguration config = new AmicusPipelineConfiguration();
 
-        config._pipelineName = "Example Amicus pipeline";
+        config.pipelineName = "Example Amicus pipeline";
 
         config.allSystemsUsed = new SourceSystemConfig[] {
                 new SourceSystemConfig().useSystemName("gold")
@@ -40,7 +40,7 @@ public class CreateExampleExportConfig {
         SummarizerConfig goldCollector = new SummarizerConfig();
         SummarizerConfig biomedicusCollector = new SummarizerConfig();
 
-        goldExporter._exporterName = "gold exporter";
+        goldExporter.name = "gold exporter";
         goldExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
         goldExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
         goldExporter.inputs = new AnnotationInputConfig[] {
@@ -52,7 +52,7 @@ public class CreateExampleExportConfig {
                 };
         goldExporter.outputDirectory = "data/out/goldExports";
 
-        biomedicusExporter._exporterName = "biomedicus exporter";
+        biomedicusExporter.name = "biomedicus exporter";
         biomedicusExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
         biomedicusExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
         biomedicusExporter.inputs = new AnnotationInputConfig[] {

@@ -12,7 +12,6 @@ import org.apache.uima.util.ProgressImpl;
 
 import java.io.File;
 import java.util.*;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
@@ -41,13 +40,6 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
         super.initialize(context);
         LOGGER.info("Initializing filename reader.");
 
-        Function<String, String> chopExt = new Function<String, String>() {
-            @Override
-            public String apply(String s) {
-                return s.substring(0, s.lastIndexOf('.'));
-            }
-        };
-
         List<File> directories = new ArrayList<>();
         for (String d : dirnameStrings) {
             directories.add(new File(d));
@@ -61,9 +53,9 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
             }
             Set<String> filesThisDir = new HashSet<>();
             for (File f : dir.listFiles()) {
-                String baseName = chopExt.apply(f.getName());
+                String baseName = chopExt(f.getName());
                 while (baseName.toLowerCase().endsWith(".txt") || baseName.toLowerCase().endsWith(".rtf")) {
-                    baseName = chopExt.apply(baseName);
+                    baseName = chopExt(baseName);
                 }
                 filesThisDir.add(baseName);
             }
@@ -105,22 +97,27 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
     @Override
     public void close() { }
 
-    /**
-     * List subdirectories of this directory. Also used, for consistency, by MultiCasReader.
-     * @param directory
-     * @return
-     */
-    static List<File> getSubdirectories(File directory) {
-        if (!directory.isDirectory()) {
-            LOGGER.severe(directory + " is not a directory; check configuration parameters");
-            throw new RuntimeException();
-        }
-        List<File> subDirs = new ArrayList<>();
-        for (File f : directory.listFiles()) {
-            if (f.isDirectory()) {
-                subDirs.add(f);
-            }
-        }
-        return subDirs;
+//    /**
+//     * List subdirectories of this directory. Also used, for consistency, by MultiCasReader.
+//     * @param directory
+//     * @return
+//     */
+//    static List<File> getSubdirectories(File directory) {
+//        if (!directory.isDirectory()) {
+//            LOGGER.severe(directory + " is not a directory; check configuration parameters");
+//            throw new RuntimeException();
+//        }
+//        List<File> subDirs = new ArrayList<>();
+//        for (File f : directory.listFiles()) {
+//            if (f.isDirectory()) {
+//                subDirs.add(f);
+//            }
+//        }
+//        return subDirs;
+//    }
+
+    private static String chopExt(String orig) {
+        return orig.substring(0, orig.lastIndexOf('.'));
     }
+
 }

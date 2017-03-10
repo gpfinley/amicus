@@ -29,7 +29,7 @@
 //
 //        AmicusPipelineConfiguration config = new AmicusPipelineConfiguration();
 //
-//        config._pipelineName = "Example Amicus pipeline";
+//        config.pipelineName = "Example Amicus pipeline";
 //        config.xmiOutPath = "acronymdata/xmi_out";
 //        config.allSystemsUsed = new SourceSystemConfig[] {
 //                new SourceSystemConfig().useSystemName("gold")
@@ -72,7 +72,7 @@
 //
 //        // module details
 //
-//        clampCuiToEquiv._translatorName = "CLAMP CUI extractor";
+//        clampCuiToEquiv.name = "CLAMP CUI extractor";
 //        clampCuiToEquiv.input = new AnnotationInputConfig()
 //                .fromView("ClampView")
 //                .annotationType(ClampNameEntityUIMA.class.getName())
@@ -83,12 +83,12 @@
 //                        .annotationField("field")
 //                        .writeView("ClampMappedView")
 //        };
-//        clampCuiToEquiv.mapperConfigPaths = new String[] {
+//        clampCuiToEquiv.mappers = new String[] {
 //                "mapperConfigurations/CuiMapper.yml",
 //                "mapperConfigurations/equivalentAnswerMapperConfig.yml"
 //        };
 //
-//        ctakesCuiToEquiv._translatorName = "cTAKES CUI extractor";
+//        ctakesCuiToEquiv.name = "cTAKES CUI extractor";
 //        ctakesCuiToEquiv.input = new AnnotationInputConfig()
 //                .fromView("CtakesView")
 //                .annotationType(IdentifiedAnnotation.class.getName())
@@ -100,12 +100,12 @@
 //                        .annotationField("field")
 //                        .writeView("CtakesMappedView")
 //        };
-//        ctakesCuiToEquiv.mapperConfigPaths = new String[] {
+//        ctakesCuiToEquiv.mappers = new String[] {
 //                "mapperConfigurations/CuiMapper.yml",
 //                "mapperConfigurations/equivalentAnswerMapperConfig.yml"
 //        };
 //
-//        biomedicusStringToEquiv._translatorName = "BioMedICUS answer mapper";
+//        biomedicusStringToEquiv.name = "BioMedICUS answer mapper";
 //        biomedicusStringToEquiv.input = new AnnotationInputConfig()
 //                .fromView("BiomedicusView")
 //                .annotationType(Acronym.class.getName())
@@ -116,11 +116,11 @@
 //                        .annotationField("field")
 //                        .writeView("BiomedicusMappedView")
 //        };
-//        biomedicusStringToEquiv.mapperConfigPaths = new String[]{
+//        biomedicusStringToEquiv.mappers = new String[]{
 //                "mapperConfigurations/equivalentAnswerMapperConfig.yml"
 //        };
 //
-//        goldStringToEquiv._translatorName = "Gold answer mapper";
+//        goldStringToEquiv.name = "Gold answer mapper";
 //        goldStringToEquiv.filterPattern = ".*true$";
 //        goldStringToEquiv.input = new AnnotationInputConfig()
 //                .annotationType(TokenAnnotation.class.getName())
@@ -133,11 +133,11 @@
 //                        .annotationField("field;")
 //                        .writeView("GoldMappedView"),
 //        };
-//        goldStringToEquiv.mapperConfigPaths = new String[]{
+//        goldStringToEquiv.mappers = new String[]{
 //                "mapperConfigurations/equivalentAnswerMapperConfig.yml"
 //        };
 //
-//        merger._mergerName = "Acronym answer merger";
+//        merger.name = "Acronym answer merger";
 ////        merger.alignerClass = AllOverlapsAligner.class.getName();
 //        merger.inputs = new AnnotationInputConfig[] {
 //                new AnnotationInputConfig()
@@ -162,7 +162,7 @@
 //        };
 //
 //
-//        evalMerger._mergerName = "Eval merger";
+//        evalMerger.name = "Eval merger";
 //        // todo: implement partial overlap aligner for merger
 //        evalMerger.alignerClass = EvalPerfectOverlapAligner.class.getName();
 //        evalMerger.inputs = new AnnotationInputConfig[] {

@@ -1,7 +1,6 @@
 package edu.umn.amicus.config;
 
 import edu.umn.amicus.AmicusConfigurationException;
-import edu.umn.amicus.AmicusException;
 
 /**
  * Stores configuration for a single input system.
@@ -9,7 +8,7 @@ import edu.umn.amicus.AmicusException;
  * Created by greg on 2/7/17.
  */
 public class SourceSystemConfig {
-    public String _systemName = "untitled system";
+    public String name = "untitled system";
     public String dataPath;
     public String readFromView = "_InitialView";
     public String saveIntoView;
@@ -20,7 +19,7 @@ public class SourceSystemConfig {
      * @return this configuration
      */
     public SourceSystemConfig useSystemName(String systemName) {
-        this._systemName = systemName;
+        this.name = systemName;
         return this;
     }
 

@@ -7,7 +7,6 @@ import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
-import org.apache.uima.fit.factory.TypeSystemDescriptionFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.yaml.snakeyaml.Yaml;
@@ -52,7 +51,7 @@ public class AmicusPipeline {
                 MergerConfig mergerConfig = (MergerConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(MergerAE.class,
-                                MergerAE.MY_NAME, mergerConfig._mergerName,
+                                MergerAE.MY_NAME, mergerConfig.name,
                                 MergerAE.READ_VIEWS, PipelineComponentConfig.aggregateInputSystemNames(mergerConfig.inputs),
                                 MergerAE.INPUT_TYPES, PipelineComponentConfig.aggregateInputTypes(mergerConfig.inputs),
                                 MergerAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(mergerConfig.inputs),
@@ -81,7 +80,7 @@ public class AmicusPipeline {
                 ExporterConfig exporterConfig = (ExporterConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(ExporterAE.class,
-                                ExporterAE.MY_NAME, exporterConfig._exporterName,
+                                ExporterAE.MY_NAME, exporterConfig.name,
                                 ExporterAE.READ_VIEWS, PipelineComponentConfig.aggregateInputSystemNames(exporterConfig.inputs),
                                 ExporterAE.INPUT_TYPES, PipelineComponentConfig.aggregateInputTypes(exporterConfig.inputs),
                                 ExporterAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(exporterConfig.inputs),
@@ -94,14 +93,14 @@ public class AmicusPipeline {
                 TranslatorConfig translatorConfig = (TranslatorConfig) componentConfig;
                 engines.add(
                         AnalysisEngineFactory.createEngine(TranslatorAE.class,
-                                TranslatorAE.MY_NAME, translatorConfig._translatorName,
+                                TranslatorAE.MY_NAME, translatorConfig.name,
                                 TranslatorAE.READ_VIEW, translatorConfig.input.fromView,
                                 TranslatorAE.PULLER_CLASS, translatorConfig.input.pullerClass,
                                 TranslatorAE.INPUT_TYPE, translatorConfig.input.annotationType,
                                 TranslatorAE.INPUT_FIELD, translatorConfig.input.annotationField,
-                                TranslatorAE.FILTER_CLASS, translatorConfig.filterClassName,
+                                TranslatorAE.FILTER_CLASS, translatorConfig.filter,
                                 TranslatorAE.FILTER_PATTERN, translatorConfig.filterPattern,
-                                TranslatorAE.MAPPER_CONFIG_PATHS, translatorConfig.mapperConfigPaths,
+                                TranslatorAE.MAPPER_CONFIG_PATHS, translatorConfig.mappers,
                                 // todo: warn if any distillers are included?
 //                                TranslatorAE.DISTILLER_CLASSES, PipelineComponentConfig.aggregateOutputDistillers(translatorConfig.outputs),
                                 TranslatorAE.OUTPUT_TYPES, PipelineComponentConfig.aggregateOutputAnnotationClasses(translatorConfig.outputs),

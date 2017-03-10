@@ -10,7 +10,7 @@ import edu.umn.amicus.AmicusConfigurationException;
  */
 public class MergerConfig extends PipelineComponentConfig {
 
-    public String _mergerName = "untitled merger";
+    public String name = "untitled merger";
 
     public AnnotationInputConfig[] inputs;
     public AnnotationOutputConfig[] outputs;

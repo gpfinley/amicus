@@ -9,7 +9,7 @@ import edu.umn.amicus.Amicus;
  */
 public class ExporterConfig extends PipelineComponentConfig {
 
-    public String _exporterName = "untitled exporter";
+    public String name = "untitled exporter";
     public AnnotationInputConfig[] inputs;
     public String alignerClass = Amicus.DEFAULT_ALIGNER_CLASS_FOR_EXPORTER.getName();
     public String exporterClass = Amicus.DEFAULT_EXPORTER_CLASS.getName();

@@ -36,7 +36,7 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
     public static final String FILTER_PATTERN = "filterPattern";
     public static final String FILTER_CLASS = "filterClass";
 
-    public static final String MAPPER_CONFIG_PATHS = "mapperConfigPaths";
+    public static final String MAPPER_CONFIG_PATHS = "mappers";
 
     public static final String PUSHER_CLASSES = "pusherClasses";
     public static final String WRITE_VIEWS = "outputViewNames";

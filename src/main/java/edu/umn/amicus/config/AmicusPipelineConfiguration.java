@@ -5,7 +5,7 @@ package edu.umn.amicus.config;
  */
 public class AmicusPipelineConfiguration {
 
-    public String _pipelineName;
+    public String pipelineName;
     public SourceSystemConfig[] allSystemsUsed;
     public PipelineComponentConfig[] pipelineComponents;
     public String xmiOutPath;
