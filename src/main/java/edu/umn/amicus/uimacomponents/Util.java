@@ -1,14 +1,13 @@
 package edu.umn.amicus.uimacomponents;
 
-import edu.umn.amicus.Amicus;
-import edu.umn.amicus.DocumentID;
-import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.MismatchedSofaDataException;
+import edu.umn.amicus.*;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
+import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.resource.ResourceInitializationException;
 
 import java.util.*;
 
@@ -65,6 +64,19 @@ public final class Util {
             // todo: allow non-text data
             addedView.setSofaDataString(Amicus.getSofaData(getDocumentID(jCas)).toString(), "text");
         }
+    }
+
+    public static Class<? extends Annotation> getTypeClass(String typeClassName) throws AmicusException {
+        Class<? extends Annotation> typeClass;
+        try {
+            if (typeClassName == null) {
+                typeClassName = AnalysisPieceFactory.DEFAULT_TYPE_NAME;
+            }
+            typeClass = (Class<? extends Annotation>) Class.forName(typeClassName);
+        } catch (ClassNotFoundException e) {
+            throw new AmicusException(e);
+        }
+        return typeClass;
     }
 
 //    public static void createOutputViews(JCas jCas, String sofaData, String... views) throws CASException, MismatchedSofaDataException {

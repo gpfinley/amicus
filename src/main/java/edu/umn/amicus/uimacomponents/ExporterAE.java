@@ -92,16 +92,16 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         }
 
 
-        try {
-            typeClasses = new ArrayList<>();
-            for (int i = 0; i < numInputs; i++) {
-                typeClasses.add((Class<? extends Annotation>) Class.forName(typeClassNames[i]));
+        typeClasses = new ArrayList<>();
+        for (int i = 0; i < numInputs; i++) {
+            try {
+                typeClasses.add(Util.getTypeClass(typeClassNames[i]));
+            } catch (AmicusException e) {
+                LOGGER.severe(String.format("Could not find input type \"%s\" for Exporter \"%s\". Confirm that types are" +
+                        "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
+                        "via maven).", typeClassNames[i], myName));
+                throw new ResourceInitializationException(e);
             }
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe(String.format("Could not find input types for Exporter \"%s\". Confirm that types are" +
-                    "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
-                    "via maven).", myName));
-            throw new ResourceInitializationException(e);
         }
 
         try {

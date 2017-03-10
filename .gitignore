@@ -16,3 +16,4 @@ data
 lib
 .idea
 .DS_Store
+example_data/xmi_out

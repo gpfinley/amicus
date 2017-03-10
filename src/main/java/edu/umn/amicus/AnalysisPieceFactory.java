@@ -36,6 +36,9 @@ public final class AnalysisPieceFactory {
     public static final String DEFAULT_PULLER = Puller.class.getName();
     public static final String DEFAULT_PUSHER = Pusher.class.getName();
 
+    public static final String DEFAULT_TYPE_NAME = SingleFieldAnnotation.class.getName();
+    public static final String DEFAULT_FIELD_NAME = "field";
+
     public static final String DEFAULT_ALIGNER = PerfectOverlapAligner.class.getName();
     public static final String DEFAULT_DISTILLER = PriorityDistiller.class.getName();
 
@@ -47,25 +50,35 @@ public final class AnalysisPieceFactory {
 
     public static Puller puller(String pullerClassName, String fieldName) throws AmicusException {
         if (pullerClassName == null) {
-            if (fieldName == null) {
-                // todo: severe log, then throw back the exception and have the AE catch/rethrow it
-                throw new AmicusException("Need to provide an input annnotation field UNLESS using" +
-                        " a custom Puller implementation that can ignore them.");
-            }
             pullerClassName = DEFAULT_PULLER;
         }
-
+        if (fieldName == null) {
+            fieldName = DEFAULT_FIELD_NAME;
+        }
+//        if (pullerClassName == null) {
+//            if (fieldName == null) {
+//                throw new AmicusException("Need to provide an input annnotation field UNLESS using" +
+//                        " a custom Puller implementation that can ignore them.");
+//            }
+//            pullerClassName = DEFAULT_PULLER;
+//        }
         return getPieceInstance(Puller.class, pullerClassName, fieldName);
     }
 
     public static Pusher pusher(String pusherClassName, String typeName, String fieldName) throws AmicusException {
         if (pusherClassName == null) {
-            if (typeName == null || fieldName == null) {
-                throw new AmicusException("Need to provide output annnotation fields and types UNLESS using" +
-                        " a custom Pusher implementation that can ignore them.");
-            }
             pusherClassName = DEFAULT_PUSHER;
         }
+        if (typeName == null) {
+            typeName = DEFAULT_TYPE_NAME;
+        }
+        if (fieldName == null) {
+            fieldName = DEFAULT_FIELD_NAME;
+        }
+//            if (typeName == null || fieldName == null) {
+//                throw new AmicusException("Need to provide output annnotation fields and types UNLESS using" +
+//                        " a custom Pusher implementation that can ignore them.");
+//            }
         return getPieceInstance(Pusher.class, pusherClassName, typeName, fieldName);
     }
 

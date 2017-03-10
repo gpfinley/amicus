@@ -123,13 +123,14 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
         }
 
         try {
-            typeClass = Class.forName(typeClassName);
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe(String.format("Could not find input type \"%s\" for Merger \"%s\". Confirm that types are" +
+            typeClass = Util.getTypeClass(typeClassName);
+        } catch (AmicusException e) {
+            LOGGER.severe(String.format("Could not find input type \"%s\" for Translator \"%s\". Confirm that types are" +
                     "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
                     "via maven).", typeClassName, myName));
             throw new ResourceInitializationException(e);
         }
+
     }
 
     @Override

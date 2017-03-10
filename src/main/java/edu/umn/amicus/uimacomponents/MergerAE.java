@@ -125,15 +125,15 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         }
 
         typeClasses = new ArrayList<>();
-        try {
-            for (int i = 0; i < numInputs; i++) {
-                typeClasses.add(Class.forName(typeClassNames[i]));
+        for (int i = 0; i < numInputs; i++) {
+            try {
+                typeClasses.add(Util.getTypeClass(typeClassNames[i]));
+            } catch (AmicusException e) {
+                LOGGER.severe(String.format("Could not find input type \"%s\" for Merger \"%s\". Confirm that types are" +
+                        "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
+                        "via maven).", typeClassNames[i], myName));
+                throw new ResourceInitializationException(e);
             }
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe(String.format("Could not find input types for Merger \"%s\". Confirm that types are" +
-                    "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
-                    "via maven).", myName));
-            throw new ResourceInitializationException(e);
         }
     }
 

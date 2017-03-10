@@ -62,9 +62,11 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
     public void initialize(UimaContext context) throws ResourceInitializationException {
         super.initialize(context);
         try {
-            typeClass = (Class<? extends Annotation>) Class.forName(typeClassName);
-        } catch (ClassNotFoundException | ClassCastException e) {
-            LOGGER.severe(String.format("Could not find type %s for Summarizer \"%s\"", typeClassName, myName));
+            typeClass = Util.getTypeClass(typeClassName);
+        } catch (AmicusException e) {
+            LOGGER.severe(String.format("Could not find input type \"%s\" for Summarizer \"%s\". Confirm that types are" +
+                    "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
+                    "via maven).", typeClassName, myName));
             throw new ResourceInitializationException(e);
         }
         listener = DataListener.getDataListener(listenerName);
@@ -111,12 +113,15 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
             if (outputPath == null) {
                 System.out.println("***** Summary for Collector " + listenerName + ":\n");
                 outputStream = System.out;
+                outputPath = "standard out";
             } else {
                 outputStream = new FileOutputStream(outputPath);
             }
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
             writer.write(summaryWriter.summarize(DataListener.getDataListener(listenerName).regurgitate()).toString());
             writer.flush();
+            writer.close();
+            LOGGER.info("Saved summary to " + outputPath);
         } catch (IOException e) {
             throw new AnalysisEngineProcessException(e);
         }

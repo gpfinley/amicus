@@ -21,7 +21,7 @@ public class AnnotationOutputConfig {
      */
     public void verify() {
         if (writeView == null) {
-            throw new AmicusConfigurationException("Output configuration incomplete: need view to write to");
+            throw new AmicusConfigurationException("Output configuration incomplete: need to specify 'writeView'");
         }
     }
 

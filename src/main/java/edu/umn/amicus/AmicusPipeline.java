@@ -1,6 +1,7 @@
 package edu.umn.amicus;
 
 import edu.umn.amicus.config.*;
+import edu.umn.amicus.ui.LoggerWindow;
 import edu.umn.amicus.uimacomponents.*;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
@@ -15,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Standard pipeline, as configurable by yml file.
@@ -23,6 +25,8 @@ import java.util.List;
  * Created by gpfinley on 1/20/17.
  */
 public class AmicusPipeline {
+
+    private static final Logger LOGGER = Logger.getLogger(AmicusPipeline.class.getName());
 
     protected final CollectionReader reader;
     protected final AnalysisEngine[] engines;
@@ -126,12 +130,13 @@ public class AmicusPipeline {
 
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
-            System.out.println("Need to supply at least one configuration file as an argument");
-            System.exit(1);
+            args = LoggerWindow.useLoggingWindowAndGetPaths();
         }
         for (String configFilePath : args) {
             new AmicusPipeline(configFilePath).run();
+            LOGGER.info("Successfully processed pipeline " + configFilePath);
         }
+        LOGGER.info("Successfully processed all pipelines");
     }
 
 }

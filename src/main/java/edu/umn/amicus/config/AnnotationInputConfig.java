@@ -20,7 +20,7 @@ public class AnnotationInputConfig {
      */
     public void verify() {
         if (fromView == null) {
-            throw new AmicusConfigurationException("Input type configuration incomplete");
+            throw new AmicusConfigurationException("Input type configuration incomplete: need to specify 'fromView'");
         }
     }
 
