@@ -48,7 +48,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
 
     @ConfigurationParameter(name = READ_VIEWS)
     private String[] readViews;
-    @ConfigurationParameter(name = INPUT_TYPES)
+    @ConfigurationParameter(name = INPUT_TYPES, mandatory = false)
     private String[] typeClassNames;
     @ConfigurationParameter(name = INPUT_FIELDS, mandatory = false)
     private String[] inputFields;
@@ -87,7 +87,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         // check lengths of input and output lists to hopefully detect user-caused misalignment in config file
         // These won't be in effect when running AmicusPipeline, but might catch something if just using uimaFIT.
         try {
-            assert numInputs == typeClassNames.length;
+            assert typeClassNames == null || numInputs == typeClassNames.length;
             assert pullerClassNames == null || numInputs == pullerClassNames.length;
             assert inputFields == null || numInputs == inputFields.length;
         } catch (AssertionError e) {
@@ -124,6 +124,9 @@ public class MergerAE extends JCasAnnotator_ImplBase {
 
         }
 
+        if (typeClassNames == null) {
+            typeClassNames = new String[numInputs];
+        }
         typeClasses = new ArrayList<>();
         for (int i = 0; i < numInputs; i++) {
             try {
@@ -140,26 +143,11 @@ public class MergerAE extends JCasAnnotator_ImplBase {
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
 
-//        String sofaData;
-//        try {
-//            sofaData = (String) Util.getSofaData(jCas);
-//        } catch (CASException e) {
-//            LOGGER.severe(String.format("Could not load sofa data for Translator \"%s\"", myName));
-//            throw new AnalysisEngineProcessException(e);
-//        } catch (AmicusException e) {
-//            LOGGER.severe(String.format("No sofa data found anywhere for document %s for Translator \"%s\"",
-//                    Util.getDocumentID(jCas.getCas()), myName));
-//            throw new AnalysisEngineProcessException(e);
-//        }
         try {
-//            Util.createOutputViews(jCas, sofaData, outputViewNames);
             Util.createOutputViews(jCas, outputViewNames);
         } catch (CASException e) {
-            LOGGER.severe(String.format("Could not create output views for Translator \"%s\"", myName));
+            LOGGER.severe(String.format("Could not create output views for Merger \"%s\"", myName));
             throw new AnalysisEngineProcessException(e);
-//        } catch (MismatchedSofaDataException e) {
-//            LOGGER.warning(String.format("Inconsistent sofa data found in view %s for document %s",
-//                    jCas.getViewName(), Util.getDocumentID(jCas.getCas())));
         }
 
         try {

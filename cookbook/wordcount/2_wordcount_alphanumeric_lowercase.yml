@@ -19,7 +19,7 @@ pipelineComponents:
 - !!edu.umn.amicus.config.TranslatorConfig
   name: lowercaser
   input: {
-    annotationType: edu.umn.biomedicus.uima.type1_6.Token,
+    annotationType: edu.umn.biomedicus.uima.type1_6.ParseToken,
     annotationField: coveredText,
     fromView: BiomedicusView
   }
@@ -29,9 +29,16 @@ pipelineComponents:
   outputs:
     - {writeView: BiomedicusLowerView}
 
-- !!edu.umn.amicus.config.SummarizerConfig
-  name: Token count summarizer
-  summaryWriter: edu.umn.amicus.summary.CounterSummaryWriter
-  input: {fromView: BiomedicusLowerView}
+#- !!edu.umn.amicus.config.SummarizerConfig
+#  name: Token count macroSummarizer
+#  macroSummarizer: edu.umn.amicus.summary.CounterMacroSummarizer
+#  input: {fromView: BiomedicusLowerView}
+## Comment out the following line to display token counts rather than save to a text file
+#  outPath: token_counts.txt
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Token count macroSummarizer
+  macroSummarizer: edu.umn.amicus.summary.CounterMacroSummarizer
+  inputs: [{fromView: BiomedicusLowerView}]
 # Comment out the following line to display token counts rather than save to a text file
-  outPath: token_counts.txt
+  macroSummaryOutPath: example_data/text_out/wordcounts_alphanumeric_lower.txt

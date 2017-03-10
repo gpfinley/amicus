@@ -10,6 +10,7 @@ import java.io.IOException;
 /**
  * Created by gpfinley on 2/15/17.
  */
+@Deprecated
 public class CreateExampleEvalConfig {
 
     public static String GOLD_DATA = "/Users/gpfinley/hermes/home/gpfinley/annotations/manual-annotations";
@@ -57,23 +58,23 @@ public class CreateExampleEvalConfig {
 
         goldExporter.name = "gold exporter";
         goldExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        goldExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
+        goldExporter.microSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
         goldExporter.inputs = new AnnotationInputConfig[] {goldInput};
-        goldExporter.outputDirectory = "data/out/goldExports";
+        goldExporter.microSummaryOutDirectory = "data/out/goldExports";
 
         biomedicusExporter.name = "biomedicus exporter";
         biomedicusExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        biomedicusExporter.exporterClass = "edu.umn.amicus.export.EachSoloTsvExportWriter";
+        biomedicusExporter.microSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
         biomedicusExporter.inputs = new AnnotationInputConfig[] {biomedicusInput};
-        biomedicusExporter.outputDirectory = "data/out/biomedicusExports";
+        biomedicusExporter.microSummaryOutDirectory = "data/out/biomedicusExports";
 
         goldCollector.name = "gold collector";
         goldCollector.input = goldInput;
-        goldCollector.summaryWriter = "edu.umn.amicus.summary.CounterSummaryWriter";
+        goldCollector.summaryWriter = "edu.umn.amicus.summary.CounterMacroSummarizer";
 
         biomedicusCollector.name = "biomedicus collector";
         biomedicusCollector.input = biomedicusInput;
-        biomedicusCollector.summaryWriter = "edu.umn.amicus.summary.CounterSummaryWriter";
+        biomedicusCollector.summaryWriter = "edu.umn.amicus.summary.CounterMacroSummarizer";
 
 
         evalMerger.name = "acronym eval merger";
@@ -89,7 +90,7 @@ public class CreateExampleEvalConfig {
             };
 
         evalCollector.name = "eval collector";
-        evalCollector.summaryWriter = "edu.umn.amicus.eval.EvalPrfSummaryWriter";
+        evalCollector.summaryWriter = "edu.umn.amicus.eval.EvalPrfMacroSummarizer";
         evalCollector.input = new AnnotationInputConfig()
                 .annotationType("edu.umn.amicus.SingleFieldAnnotation")
                 .annotationField("field")

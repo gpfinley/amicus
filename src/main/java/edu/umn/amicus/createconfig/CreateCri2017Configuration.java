@@ -195,12 +195,12 @@
 //                        .pusherClass(EvalMatchPusher.class.getName())
 //        };
 //
-//        evalSummarizer.name = "Evaluation summarizer";
+//        evalSummarizer.name = "Evaluation macroSummarizer";
 //        evalSummarizer.input = new AnnotationInputConfig()
 //                .fromView("EvalIntermediateView")
 //                .annotationType(edu.umn.amicus.EvalAnnotation.class.getName())
 //                .pullerClass(EvalMatchPuller.class.getName());
-//        evalSummarizer.summaryWriter = EvalPrfSummaryWriter.class.getName();
+//        evalSummarizer.macroSummarizer = EvalPrfMacroSummarizer.class.getName();
 //        evalSummarizer.outPath = "acronym_evaluation_summary.txt";
 //
 //

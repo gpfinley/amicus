@@ -15,13 +15,14 @@ xmiOutPath: example_data/xmi_out
 
 pipelineComponents:
 
-- !!edu.umn.amicus.config.SummarizerConfig
-  name: Token count summarizer
-  summaryWriter: edu.umn.amicus.summary.CounterSummaryWriter
-  input: {
-    annotationType: edu.umn.biomedicus.uima.type1_6.Token,
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Token counter
+  macroSummarizer: edu.umn.amicus.summary.CounterMacroSummarizer
+  inputs:
+  - {
+    annotationType: edu.umn.biomedicus.uima.type1_6.ParseToken,
     annotationField: coveredText,
     fromView: BiomedicusView
   }
 # Comment out the following line to display token counts rather than save to a text file
-  outPath: token_counts.txt
+  macroSummaryOutPath: example_data/text_out/wordcounts_raw.txt

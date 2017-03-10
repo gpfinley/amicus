@@ -4,6 +4,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -11,6 +12,8 @@ import java.util.*;
  */
 public class Test {
     public static void main(String[] args) throws IOException {
+
+        System.out.println(Paths.get("hi.txt").getParent());
 
         System.out.println(Arrays.toString("field;".split(";", -1)));
 

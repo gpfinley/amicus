@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 /**
  * Created by greg on 2/10/17.
  */
+@Deprecated
 public class SummarizerConfig extends PipelineComponentConfig {
 
     private static final Logger LOGGER = Logger.getLogger(SummarizerConfig.class.getName());
@@ -21,10 +22,10 @@ public class SummarizerConfig extends PipelineComponentConfig {
         try {
             input.verify();
         } catch (AmicusConfigurationException e) {
-            LOGGER.severe("Input configuration incomplete for Summarizer " + name);
+            LOGGER.severe("Input configuration incomplete for MacroSummarizer " + name);
             throw e;
         }
-        // todo. Has to have a name. summaryWriter should be a real class
+        // todo. Has to have a name. macroSummarizer should be a real class
     }
 
 }

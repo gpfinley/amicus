@@ -4,16 +4,16 @@ import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.PerfectOverlapAligner;
 import edu.umn.amicus.distillers.Distiller;
 import edu.umn.amicus.distillers.PriorityDistiller;
-import edu.umn.amicus.export.EachSoloTsvExportWriter;
-import edu.umn.amicus.export.ExportWriter;
+import edu.umn.amicus.summary.EachSoloTsvMicroSummarizer;
+import edu.umn.amicus.summary.MicroSummarizer;
 import edu.umn.amicus.filters.Filter;
 import edu.umn.amicus.filters.PassthroughFilter;
 import edu.umn.amicus.filters.RegexFilter;
 import edu.umn.amicus.mappers.Mapper;
 import edu.umn.amicus.pullers.Puller;
 import edu.umn.amicus.pushers.Pusher;
-import edu.umn.amicus.summary.CounterSummaryWriter;
-import edu.umn.amicus.summary.SummaryWriter;
+import edu.umn.amicus.summary.CounterMacroSummarizer;
+import edu.umn.amicus.summary.MacroSummarizer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,8 +45,8 @@ public final class AnalysisPieceFactory {
     public static final String DEFAULT_FILTER = RegexFilter.class.getName();
     public static final String DEFAULT_NOPATTERN_FILTER = PassthroughFilter.class.getName();
 
-    public static final String DEFAULT_EXPORT_WRITER = EachSoloTsvExportWriter.class.getName();
-    public static final String DEFAULT_SUMMARY_WRITER = CounterSummaryWriter.class.getName();
+    public static final String DEFAULT_EXPORT_WRITER = EachSoloTsvMicroSummarizer.class.getName();
+    public static final String DEFAULT_SUMMARY_WRITER = CounterMacroSummarizer.class.getName();
 
     public static Puller puller(String pullerClassName, String fieldName) throws AmicusException {
         if (pullerClassName == null) {
@@ -104,13 +104,13 @@ public final class AnalysisPieceFactory {
         return getPieceInstance(Filter.class, filterClassName, pattern);
     }
 
-    public static ExportWriter exportWriter(String exporterClassName) throws AmicusException {
-        return getPieceInstance(ExportWriter.class,
+    public static MicroSummarizer microSummarizer(String exporterClassName) throws AmicusException {
+        return getPieceInstance(MicroSummarizer.class,
                 exporterClassName == null ? DEFAULT_EXPORT_WRITER : exporterClassName);
     }
 
-    public static SummaryWriter summaryWriter(String distillerClassName) throws AmicusException {
-        return getPieceInstance(SummaryWriter.class,
+    public static MacroSummarizer macroSummarizer(String distillerClassName) throws AmicusException {
+        return getPieceInstance(MacroSummarizer.class,
                 distillerClassName == null ? DEFAULT_SUMMARY_WRITER : distillerClassName);
     }
 

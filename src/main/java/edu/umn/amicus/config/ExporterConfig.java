@@ -1,7 +1,5 @@
 package edu.umn.amicus.config;
 
-import edu.umn.amicus.Amicus;
-
 /**
  * todo: doc
  * Serializable by YAML.
@@ -11,12 +9,16 @@ public class ExporterConfig extends PipelineComponentConfig {
 
     public String name = "untitled exporter";
     public AnnotationInputConfig[] inputs;
-    public String alignerClass = Amicus.DEFAULT_ALIGNER_CLASS_FOR_EXPORTER.getName();
-    public String exporterClass = Amicus.DEFAULT_EXPORTER_CLASS.getName();
-    public String outputDirectory;
+    public String alignerClass;
+    public String microSummarizer;
+    public String microSummaryOutDirectory;
+
+    public String macroSummarizer;
+    public String macroSummaryOutPath;
 
     @Override
     public void verify() {
+        // todo
 
     }
 

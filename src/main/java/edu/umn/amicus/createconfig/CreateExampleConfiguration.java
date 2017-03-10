@@ -14,6 +14,7 @@ import java.io.IOException;
  * Created by gpfinley on 10/24/16.
  *
  */
+@Deprecated
 public class CreateExampleConfiguration {
 
     // todo: fix this
@@ -79,7 +80,6 @@ public class CreateExampleConfiguration {
                         .annotationField("text")
                         .distillerClass("edu.umn.amicus.distillers.PriorityDistiller")
                         .pusherClass("edu.umn.amicus.pushers.SetterPusher")
-                        .writeView(Amicus.DEFAULT_MERGED_VIEW)
         };
 
 

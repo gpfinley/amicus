@@ -32,17 +32,14 @@ public class XmiWriterAE extends CasAnnotator_ImplBase {
     private static final Logger LOGGER = Logger.getLogger(XmiWriterAE.class.getName());
 
     public final static String CONFIG_OUTPUT_DIR = "outputDir";
-    public final static String TYPE_SYSTEM_VIEW = "typeSystemView";
 
     @ConfigurationParameter(name = CONFIG_OUTPUT_DIR)
     private String outputDirName;
-    @ConfigurationParameter(name = TYPE_SYSTEM_VIEW, defaultValue = Amicus.DEFAULT_MERGED_VIEW)
-    private static String typeSystemView;
 
     private Path outputDir;
 
     /**
-     * Initializes the outputDirectory.
+     * Initializes the microSummaryOutDirectory.
      *
      * @param context the uima context
      * @throws ResourceInitializationException if we fail to initialize DocumentIdOutputStreamFactory

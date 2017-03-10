@@ -3,7 +3,7 @@ package edu.umn.amicus.uimacomponents;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPieceFactory;
 import edu.umn.amicus.summary.DataListener;
-import edu.umn.amicus.summary.SummaryWriter;
+import edu.umn.amicus.summary.MacroSummarizer;
 import edu.umn.amicus.pullers.Puller;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -23,6 +23,7 @@ import java.util.logging.Logger;
  *
  * Created by gpfinley on 2/3/17.
  */
+@Deprecated
 public class SummarizerAE extends CasAnnotator_ImplBase {
 
     private static final Logger LOGGER = Logger.getLogger(SummarizerAE.class.getName());
@@ -36,7 +37,7 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
     public static final String SUMMARY_WRITER_CLASS = "summaryWriterClassName";
     public static final String OUTPUT_PATH = "outputPath";
 
-    @ConfigurationParameter(name = MY_NAME, defaultValue = "Unnamed Summarizer")
+    @ConfigurationParameter(name = MY_NAME, defaultValue = "Unnamed MacroSummarizer")
     private String myName;
 
     @ConfigurationParameter(name = READ_VIEW)
@@ -64,7 +65,7 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
         try {
             typeClass = Util.getTypeClass(typeClassName);
         } catch (AmicusException e) {
-            LOGGER.severe(String.format("Could not find input type \"%s\" for Summarizer \"%s\". Confirm that types are" +
+            LOGGER.severe(String.format("Could not find input type \"%s\" for MacroSummarizer \"%s\". Confirm that types are" +
                     "correct and that classes have been generated from a UIMA type system (easiest way is to build" +
                     "via maven).", typeClassName, myName));
             throw new ResourceInitializationException(e);
@@ -73,7 +74,7 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
         try {
             puller = AnalysisPieceFactory.puller(pullerClassName, fieldName);
         } catch(AmicusException e) {
-            LOGGER.severe(String.format("Could not instantiate puller %s for Summarizer \"%s\"", pullerClassName, myName));
+            LOGGER.severe(String.format("Could not instantiate puller %s for MacroSummarizer \"%s\"", pullerClassName, myName));
             throw new ResourceInitializationException(e);
         }
     }
@@ -92,7 +93,7 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
             try {
                 listener.listen(puller.pull(a));
             } catch (AmicusException e) {
-                LOGGER.severe(String.format("Problem pulling annotation in Summarizer \"%s\"", myName));
+                LOGGER.severe(String.format("Problem pulling annotation in MacroSummarizer \"%s\"", myName));
                 throw new AnalysisEngineProcessException(e);
             }
         }
@@ -100,11 +101,11 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
 
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
-        SummaryWriter summaryWriter;
+        MacroSummarizer macroSummarizer;
         try {
-            summaryWriter = AnalysisPieceFactory.summaryWriter(summaryWriterClassName);
+            macroSummarizer = AnalysisPieceFactory.macroSummarizer(summaryWriterClassName);
         } catch (AmicusException e) {
-            LOGGER.severe(String.format("Problem instantiating SummaryWriter \"%s\" in Summarizer \"%s\"",
+            LOGGER.severe(String.format("Problem instantiating MacroSummarizer \"%s\" in MacroSummarizer \"%s\"",
                     summaryWriterClassName, myName));
             throw new AnalysisEngineProcessException(e);
         }
@@ -118,7 +119,11 @@ public class SummarizerAE extends CasAnnotator_ImplBase {
                 outputStream = new FileOutputStream(outputPath);
             }
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-            writer.write(summaryWriter.summarize(DataListener.getDataListener(listenerName).regurgitate()).toString());
+            try {
+                writer.write(macroSummarizer.summarize(DataListener.getDataListener(listenerName).regurgitate(), null).toString());
+            } catch (AmicusException e) {
+                throw  new AnalysisEngineProcessException(e);
+            }
             writer.flush();
             writer.close();
             LOGGER.info("Saved summary to " + outputPath);
