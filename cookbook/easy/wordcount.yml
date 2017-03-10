@@ -1,0 +1,19 @@
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: BioMedICUS lower case word counter pipeline
+allSystemsUsed:
+- {name: biomedicus, dataPath: example_data/mtsamples_biomedicus, readFromView: SystemView,
+  saveIntoView: BiomedicusView}
+pipelineComponents:
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: lowercaser
+  input: {annotationField: coveredText, annotationType: edu.umn.biomedicus.uima.type1_6.Token, fromView: BiomedicusView}
+  mappers: [edu.umn.amicus.mappers.ToLowerCaseMapper]
+  outputs:
+    - {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation, writeView: BiomedicusLowerView}
+- !!edu.umn.amicus.config.SummarizerConfig
+  name: counter
+  input: {annotationField: field, annotationType: edu.umn.amicus.SingleFieldAnnotation, fromView: BiomedicusLowerView}
+  name: Token count summarizer
+  outPath: token_counts.txt
+  summaryWriter: edu.umn.amicus.summary.CounterSummaryWriter
+xmiOutPath: example_data/xmi_out
