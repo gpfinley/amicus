@@ -76,7 +76,7 @@ public class AmicusPipeline {
 //                                SummarizerAE.INPUT_FIELD, summarizerConfig.input.annotationField,
 //                                SummarizerAE.READ_VIEW, summarizerConfig.input.fromView,
 //                                SummarizerAE.PULLER_CLASS, summarizerConfig.input.pullerClass,
-//                                SummarizerAE.SUMMARY_WRITER_CLASS, summarizerConfig.macroSummarizer,
+//                                SummarizerAE.COLLECTION_SUMMARIZER_CLASS, summarizerConfig.macroSummarizer,
 //                                SummarizerAE.LISTENER_NAME, summarizerConfig.name,
 //                                SummarizerAE.OUTPUT_PATH, summarizerConfig.outPath
 //                        ));
@@ -90,10 +90,10 @@ public class AmicusPipeline {
                                 ExporterAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(exporterConfig.inputs),
                                 ExporterAE.PULLER_CLASSES, PipelineComponentConfig.aggregateInputPullers(exporterConfig.inputs),
                                 ExporterAE.ALIGNER_CLASS, exporterConfig.alignerClass,
-                                ExporterAE.EXPORT_WRITER_CLASS, exporterConfig.microSummarizer,
+                                ExporterAE.DOC_SUMMARIZER_CLASS, exporterConfig.microSummarizer,
                                 ExporterAE.OUTPUT_DIRECTORY, exporterConfig.microSummaryOutDirectory,
                                 ExporterAE.SUMMARY_OUTPUT_PATH, exporterConfig.macroSummaryOutPath,
-                                ExporterAE.SUMMARY_WRITER_CLASS, exporterConfig.macroSummarizer
+                                ExporterAE.COLLECTION_SUMMARIZER_CLASS, exporterConfig.macroSummarizer
                         ));
             } else if (componentConfig.getClass().equals(TranslatorConfig.class)) {
                 TranslatorConfig translatorConfig = (TranslatorConfig) componentConfig;

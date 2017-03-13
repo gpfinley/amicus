@@ -30,15 +30,15 @@ pipelineComponents:
     - {writeView: BiomedicusLowerView}
 
 #- !!edu.umn.amicus.config.SummarizerConfig
-#  name: Token count macroSummarizer
-#  macroSummarizer: edu.umn.amicus.summary.CounterMacroSummarizer
+#  name: Token count collectionSummarizer
+#  collectionSummarizer: edu.umn.amicus.summary.CounterCollectionSummarizer
 #  input: {fromView: BiomedicusLowerView}
 ## Comment out the following line to display token counts rather than save to a text file
 #  outPath: token_counts.txt
 
 - !!edu.umn.amicus.config.ExporterConfig
-  name: Token count macroSummarizer
-  macroSummarizer: edu.umn.amicus.summary.CounterMacroSummarizer
+  name: Token count collectionSummarizer
+  collectionSummarizer: edu.umn.amicus.summary.CounterCollectionSummarizerrizer
   inputs: [{fromView: BiomedicusLowerView}]
 # Comment out the following line to display token counts rather than save to a text file
   macroSummaryOutPath: example_data/text_out/wordcounts_alphanumeric_lower.txt

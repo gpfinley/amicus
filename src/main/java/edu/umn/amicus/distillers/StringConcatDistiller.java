@@ -1,8 +1,7 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.PreAnnotation;
-
-import java.util.List;
 
 /**
  * Distiller that will concatenate String annotations by all systems into a single annotation, with a pipe '|' separator.
@@ -28,7 +27,7 @@ public class StringConcatDistiller implements Distiller<String> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<String> distill(List<PreAnnotation> annotations) {
+    public PreAnnotation<String> distill(AlignedTuple<PreAnnotation<String>> annotations) {
         if (annotations.size() == 0) return null;
 
         int begin = Integer.MAX_VALUE;

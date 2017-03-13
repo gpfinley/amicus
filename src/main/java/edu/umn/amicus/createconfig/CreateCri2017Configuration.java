@@ -200,7 +200,7 @@
 //                .fromView("EvalIntermediateView")
 //                .annotationType(edu.umn.amicus.EvalAnnotation.class.getName())
 //                .pullerClass(EvalMatchPuller.class.getName());
-//        evalSummarizer.macroSummarizer = EvalPrfMacroSummarizer.class.getName();
+//        evalSummarizer.macroSummarizer = EvalPrfCollectionSummarizer.class.getName();
 //        evalSummarizer.outPath = "acronym_evaluation_summary.txt";
 //
 //

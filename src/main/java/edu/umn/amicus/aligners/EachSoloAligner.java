@@ -1,5 +1,6 @@
 package edu.umn.amicus.aligners;
 
+import edu.umn.amicus.AlignedTuple;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.Arrays;
@@ -14,11 +15,11 @@ import java.util.List;
  */
 public class EachSoloAligner implements Aligner {
 
-    public Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> annotations) {
+    public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> annotations) {
         return new AnnotIter(annotations);
     }
 
-    private static class AnnotIter implements Iterator<List<Annotation>> {
+    private static class AnnotIter implements Iterator<AlignedTuple<Annotation>> {
 
         private int systemCounter;
         private int withinSystemCounter;
@@ -43,8 +44,8 @@ public class EachSoloAligner implements Aligner {
         }
 
         @Override
-        public List<Annotation> next() {
-            List<Annotation> theseAnnots = Arrays.asList(new Annotation[nSystems]);
+        public AlignedTuple<Annotation> next() {
+            AlignedTuple<Annotation> theseAnnots = new AlignedTuple<>(nSystems);
             theseAnnots.set(systemCounter, annotations.get(systemCounter).get(withinSystemCounter));
 
             withinSystemCounter++;

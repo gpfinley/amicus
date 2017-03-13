@@ -1,5 +1,6 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.config.ClassConfigurationLoader;
 import edu.umn.amicus.Counter;
@@ -32,7 +33,7 @@ public class VotingDistiller implements Distiller<Object> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<Object> distill(List<PreAnnotation> annotations) {
+    public PreAnnotation<Object> distill(AlignedTuple<PreAnnotation<Object>> annotations) {
         List<Object> values = new ArrayList<>();
         for (PreAnnotation pa : annotations) {
             values.add(pa.getValue());
@@ -60,10 +61,11 @@ public class VotingDistiller implements Distiller<Object> {
         int minVotesToAnnotate;
     }
 
+    // todo: test!
     static {
         Config config;
         try {
-            config = (Config) ClassConfigurationLoader.load(VotingDistiller.class);
+            config = (Config) ClassConfigurationLoader.load(VotingDistiller.Config.class);
         } catch (FileNotFoundException e) {
             config = null;
         }

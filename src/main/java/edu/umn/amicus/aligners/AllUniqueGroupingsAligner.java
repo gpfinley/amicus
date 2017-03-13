@@ -1,5 +1,6 @@
 package edu.umn.amicus.aligners;
 
+import edu.umn.amicus.AlignedTuple;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
@@ -20,14 +21,14 @@ public class AllUniqueGroupingsAligner implements Aligner {
      * @return
      */
     @Override
-    public Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
-        Set<List<Annotation>> allSets = new LinkedHashSet<>();
-        List<List<Annotation>> annotationsAtIndex = new ArrayList<>();
+    public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
+        Set<AlignedTuple<Annotation>> allSets = new LinkedHashSet<>();
+        List<AlignedTuple<Annotation>> annotationsAtIndex = new ArrayList<>();
         for (int sysIndex = 0; sysIndex < allAnnotations.size(); sysIndex++) {
             for (Annotation annotation : allAnnotations.get(sysIndex)) {
                 // not adding all set memberships yet--just singletons
                 while (annotationsAtIndex.size() < annotation.getEnd()) {
-                    annotationsAtIndex.add(getNullList(allAnnotations.size()));
+                    annotationsAtIndex.add(new AlignedTuple<Annotation>(allAnnotations.size()));
                 }
                 for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
                     annotationsAtIndex.get(i).set(sysIndex, annotation);
@@ -35,16 +36,17 @@ public class AllUniqueGroupingsAligner implements Aligner {
             }
         }
         allSets.addAll(annotationsAtIndex);
-        allSets.remove(getNullList(allAnnotations.size()));
+        // remove a null tuple
+        allSets.remove(new AlignedTuple<Annotation>(allAnnotations.size()));
         return allSets.iterator();
     }
 
-    static List<Annotation> getNullList(int n) {
-        List<Annotation> list = new ArrayList<>();
-        for (int i=0; i<n; i++) {
-            list.add(null);
-        }
-        return list;
-    }
+//    static List<Annotation> getNullList(int n) {
+//        List<Annotation> list = new ArrayList<>();
+//        for (int i=0; i<n; i++) {
+//            list.add(null);
+//        }
+//        return list;
+//    }
 
 }

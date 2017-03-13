@@ -1,8 +1,7 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.PreAnnotation;
-
-import java.util.List;
 
 /**
  * Distiller that will take the first Annotation it comes across and ignore the others.
@@ -19,7 +18,7 @@ public class PriorityDistiller implements Distiller<Object> {
      * @param annotations
      */
     @Override
-    public PreAnnotation distill(List<PreAnnotation> annotations) {
+    public PreAnnotation<Object> distill(AlignedTuple<PreAnnotation<Object>> annotations) {
         for (PreAnnotation pa : annotations) {
             if (pa != null) {
                 return pa;

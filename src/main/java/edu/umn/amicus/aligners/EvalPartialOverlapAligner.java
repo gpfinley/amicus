@@ -1,5 +1,6 @@
 package edu.umn.amicus.aligners;
 
+import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.PartialOverlapAligner;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -16,49 +17,50 @@ import java.util.*;
 public class EvalPartialOverlapAligner implements Aligner {
 
     @Override
-    public Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
+    public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
 
         // true positives and false negatives list. These will be returned.
-        Map<Annotation, List<Annotation>> truePositiveLists = new TreeMap<>(new AnnotationBeginComparator());
-        List<List<Annotation>> falsePositiveLists = new ArrayList<>();
+        Map<Annotation, AlignedTuple<Annotation>> truePositiveTuples = new TreeMap<>(new AnnotationBeginComparator());
+        List<AlignedTuple<Annotation>> falsePositiveTuples = new ArrayList<>();
 
         int n = allAnnotations.size();
 
         for (int i=1; i<n; i++) {
+            // todo: document method (goes pairwise with a PartialOverlapAligner between gold and every system)
             List<List<Annotation>> goldAndOneHypList = new ArrayList<>();
             goldAndOneHypList.add(allAnnotations.get(0));
             goldAndOneHypList.add(allAnnotations.get(i));
-            Iterator<List<Annotation>> iter = new PartialOverlapAligner().alignAndIterate(goldAndOneHypList);
+            Iterator<AlignedTuple<Annotation>> iter = new PartialOverlapAligner().alignAndIterate(goldAndOneHypList);
             while (iter.hasNext()) {
-                List<Annotation> twoItemList = iter.next();
+                AlignedTuple<Annotation> twoItemList = iter.next();
                 Annotation goldAnnotation = twoItemList.get(0);
                 Annotation hypAnnotation = twoItemList.get(1);
                 if (goldAnnotation == null) {
                     // yield a false positive
-                    List<Annotation> thisFalsePositive = new ArrayList<>();
+                    AlignedTuple<Annotation> thisFalsePositive = new AlignedTuple<>(n);
                     for (int j=0; j<n; j++) {
-                        thisFalsePositive.add(j == i ? hypAnnotation : null);
+                        thisFalsePositive.set(j, j == i ? hypAnnotation : null);
                     }
-                    falsePositiveLists.add(thisFalsePositive);
+                    falsePositiveTuples.add(thisFalsePositive);
                 } else {
                     // yield a true positive or false negative
-                    List<Annotation> truePositiveList = truePositiveLists.get(goldAnnotation);
-                    if (truePositiveList == null) {
-                        truePositiveList = new ArrayList<>();
-                        truePositiveList.add(goldAnnotation);
+                    AlignedTuple<Annotation> truePositiveTuple = truePositiveTuples.get(goldAnnotation);
+                    if (truePositiveTuple == null) {
+                        truePositiveTuple = new AlignedTuple<>(n);
+                        truePositiveTuple.set(0, goldAnnotation);
                         for (int j=1; j<n; j++) {
-                            truePositiveList.add(null);
+                            truePositiveTuple.set(j, null);
                         }
-                        truePositiveLists.put(goldAnnotation, truePositiveList);
+                        truePositiveTuples.put(goldAnnotation, truePositiveTuple);
                     }
-                    truePositiveList.set(i, hypAnnotation);
+                    truePositiveTuple.set(i, hypAnnotation);
                 }
             }
         }
 
-        List<List<Annotation>> finalList = new ArrayList<>();
-        finalList.addAll(truePositiveLists.values());
-        finalList.addAll(falsePositiveLists);
+        List<AlignedTuple<Annotation>> finalList = new ArrayList<>();
+        finalList.addAll(truePositiveTuples.values());
+        finalList.addAll(falsePositiveTuples);
         return finalList.iterator();
     }
 

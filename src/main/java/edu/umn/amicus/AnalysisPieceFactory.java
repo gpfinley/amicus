@@ -4,16 +4,15 @@ import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.PerfectOverlapAligner;
 import edu.umn.amicus.distillers.Distiller;
 import edu.umn.amicus.distillers.PriorityDistiller;
-import edu.umn.amicus.summary.EachSoloTsvMicroSummarizer;
-import edu.umn.amicus.summary.MicroSummarizer;
+import edu.umn.amicus.summary.DocumentSummarizer;
 import edu.umn.amicus.filters.Filter;
 import edu.umn.amicus.filters.PassthroughFilter;
 import edu.umn.amicus.filters.RegexFilter;
 import edu.umn.amicus.mappers.Mapper;
 import edu.umn.amicus.pullers.Puller;
 import edu.umn.amicus.pushers.Pusher;
-import edu.umn.amicus.summary.CounterMacroSummarizer;
-import edu.umn.amicus.summary.MacroSummarizer;
+import edu.umn.amicus.summary.CollectionSummarizer;
+import edu.umn.amicus.summary.EachSoloCsvSummarizer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,8 +44,8 @@ public final class AnalysisPieceFactory {
     public static final String DEFAULT_FILTER = RegexFilter.class.getName();
     public static final String DEFAULT_NOPATTERN_FILTER = PassthroughFilter.class.getName();
 
-    public static final String DEFAULT_EXPORT_WRITER = EachSoloTsvMicroSummarizer.class.getName();
-    public static final String DEFAULT_SUMMARY_WRITER = CounterMacroSummarizer.class.getName();
+    public static final String DEFAULT_DOC_SUMMARIZER = EachSoloCsvSummarizer.class.getName();
+    public static final String DEFAULT_COLLECTION_SUMMARIZER = EachSoloCsvSummarizer.class.getName();
 
     public static Puller puller(String pullerClassName, String fieldName) throws AmicusException {
         if (pullerClassName == null) {
@@ -55,13 +54,6 @@ public final class AnalysisPieceFactory {
         if (fieldName == null) {
             fieldName = DEFAULT_FIELD_NAME;
         }
-//        if (pullerClassName == null) {
-//            if (fieldName == null) {
-//                throw new AmicusException("Need to provide an input annnotation field UNLESS using" +
-//                        " a custom Puller implementation that can ignore them.");
-//            }
-//            pullerClassName = DEFAULT_PULLER;
-//        }
         return getPieceInstance(Puller.class, pullerClassName, fieldName);
     }
 
@@ -75,10 +67,6 @@ public final class AnalysisPieceFactory {
         if (fieldName == null) {
             fieldName = DEFAULT_FIELD_NAME;
         }
-//            if (typeName == null || fieldName == null) {
-//                throw new AmicusException("Need to provide output annnotation fields and types UNLESS using" +
-//                        " a custom Pusher implementation that can ignore them.");
-//            }
         return getPieceInstance(Pusher.class, pusherClassName, typeName, fieldName);
     }
 
@@ -104,14 +92,18 @@ public final class AnalysisPieceFactory {
         return getPieceInstance(Filter.class, filterClassName, pattern);
     }
 
-    public static MicroSummarizer microSummarizer(String exporterClassName) throws AmicusException {
-        return getPieceInstance(MicroSummarizer.class,
-                exporterClassName == null ? DEFAULT_EXPORT_WRITER : exporterClassName);
+    public static DocumentSummarizer microSummarizer(String microSummarizerClassName,
+                                  String[] viewNames, String[] typeNames, String[] fieldNames) throws AmicusException {
+        return getPieceInstance(DocumentSummarizer.class,
+                microSummarizerClassName == null ? DEFAULT_DOC_SUMMARIZER : microSummarizerClassName,
+                viewNames, typeNames, fieldNames);
     }
 
-    public static MacroSummarizer macroSummarizer(String distillerClassName) throws AmicusException {
-        return getPieceInstance(MacroSummarizer.class,
-                distillerClassName == null ? DEFAULT_SUMMARY_WRITER : distillerClassName);
+    public static CollectionSummarizer macroSummarizer(String macroSummarizerClassName,
+                                  String[] viewNames, String[] typeNames, String[] fieldNames) throws AmicusException {
+        return getPieceInstance(CollectionSummarizer.class,
+                macroSummarizerClassName == null ? DEFAULT_COLLECTION_SUMMARIZER : macroSummarizerClassName,
+                viewNames, typeNames, fieldNames);
     }
 
     /**
@@ -154,6 +146,25 @@ public final class AnalysisPieceFactory {
     }
 
     /**
+     * Every analysis piece will have its own ID that is unique to the level of the implementation and its arguments.
+     * This is to prevent redundant instantiation for parallelized processing.
+     * @param implName the class name to implement
+     * @param args the arguments that will be passed to the constructor
+     * @return a String key for this piece
+     */
+    private static String getStringId(String implName, Object... args) {
+        StringBuilder idBuilder = new StringBuilder();
+        idBuilder.append(implName);
+        for (Object arg : args) {
+            idBuilder.append("_");
+            if (arg != null) {
+                idBuilder.append(arg.toString());
+            }
+        }
+        return idBuilder.toString();
+    }
+
+    /**
      * Create or fetch an AnalysisPiece. Used by static factory methods in this class.
      *
      * @param superclass the superclass of this AnalysisPiece type
@@ -162,16 +173,9 @@ public final class AnalysisPieceFactory {
      * @param <T> an AnalysisPiece implementation
      * @return a new instance or the previously created instance of implementationName
      */
-    private static <T extends AnalysisPiece> T getPieceInstance(Class<T> superclass, String implementationName, Object... args) throws AmicusException {
-        StringBuilder idBuilder = new StringBuilder();
-        idBuilder.append(implementationName);
-        for (Object arg : args) {
-            idBuilder.append("_");
-            if (arg != null) {
-                idBuilder.append(arg.toString());
-            }
-        }
-        String id = idBuilder.toString();
+    // todo: i've made it public in case API users want to use this. should i leave it that way?
+    public static <T extends AnalysisPiece> T getPieceInstance(Class<T> superclass, String implementationName, Object... args) throws AmicusException {
+        String id = getStringId(implementationName, args);
         T piece;
         try {
             piece = superclass.cast(allPieces.get(id));

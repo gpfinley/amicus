@@ -1,8 +1,7 @@
 package Aligners;
 
+import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.aligners.Aligner;
-import edu.umn.amicus.aligners.FullOverlapAligner;
-import edu.umn.amicus.aligners.PartialOverlapAligner;
 import edu.umn.amicus.aligners.RequireOverlapAligner;
 import org.apache.uima.UIMAException;
 import org.apache.uima.fit.factory.JCasFactory;
@@ -10,7 +9,6 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,7 +47,7 @@ public class PartialOverlapAlignerTest {
         bigList.add(annotationListFromString("aaaaaaaaa        bbbb   cccccccccc"));
         bigList.add(annotationListFromString("dddddddddd      eee ff  gggggggg"));
 
-        Iterator<List<Annotation>> iterator = aligner.alignAndIterate(bigList);
+        Iterator<AlignedTuple<Annotation>> iterator = aligner.alignAndIterate(bigList);
         while (iterator.hasNext()) {
             System.out.println(iterator.next());
         }

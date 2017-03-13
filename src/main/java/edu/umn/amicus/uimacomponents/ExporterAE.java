@@ -2,10 +2,9 @@ package edu.umn.amicus.uimacomponents;
 
 import edu.umn.amicus.*;
 import edu.umn.amicus.aligners.Aligner;
-import edu.umn.amicus.summary.MicroSummarizer;
+import edu.umn.amicus.summary.DocumentSummarizer;
 import edu.umn.amicus.pullers.Puller;
-import edu.umn.amicus.summary.DataListener;
-import edu.umn.amicus.summary.MacroSummarizer;
+import edu.umn.amicus.summary.CollectionSummarizer;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
@@ -40,10 +39,10 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     public static final String PULLER_CLASSES = "pullerClasses";
 
     public static final String ALIGNER_CLASS = "alignerClass";
-    public static final String EXPORT_WRITER_CLASS = "exportWriterClassName";
+    public static final String DOC_SUMMARIZER_CLASS = "documentSummarizerClassName";
     public static final String OUTPUT_DIRECTORY = "microSummaryOutDirectory";
 
-    public static final String SUMMARY_WRITER_CLASS = "summaryWriterClassName";
+    public static final String COLLECTION_SUMMARIZER_CLASS = "collectionSummarizerClassName";
     public static final String SUMMARY_OUTPUT_PATH = "macroSummaryOutPath";
 
     @ConfigurationParameter(name = MY_NAME, defaultValue = "Unnamed Exporter")
@@ -59,13 +58,13 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     private String[] pullerClassNames;
     @ConfigurationParameter(name = ALIGNER_CLASS, mandatory = false)
     private String alignerClassName;
-    @ConfigurationParameter(name = EXPORT_WRITER_CLASS, mandatory = false)
-    private String exportWriterClassName;
+    @ConfigurationParameter(name = DOC_SUMMARIZER_CLASS, mandatory = false)
+    private String documentSummarizerClassName;
     @ConfigurationParameter(name = OUTPUT_DIRECTORY, mandatory = false)
     private String outputDirectory;
 
-    @ConfigurationParameter(name = SUMMARY_WRITER_CLASS, mandatory = false)
-    private String summaryWriterClassName;
+    @ConfigurationParameter(name = COLLECTION_SUMMARIZER_CLASS, mandatory = false)
+    private String collectionSummarizerClassName;
     @ConfigurationParameter(name = SUMMARY_OUTPUT_PATH, mandatory = false)
     private String summaryOutputPath;
 
@@ -73,39 +72,54 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     private List<Class<? extends Annotation>> typeClasses;
 
     private Aligner aligner;
-    private MicroSummarizer microSummarizer;
-    private MacroSummarizer macroSummarizer;
-    private DataListener<List<PreAnnotation>> listener;
+    private DocumentSummarizer documentSummarizer;
+    private CollectionSummarizer collectionSummarizer;
 
     private boolean micro = false;
     private boolean macro = false;
+
+    private List<AlignedTuple<PreAnnotation>> collectionSummaryTuples;
+    private List<String> collectionSummaryDocIds;
 
     @Override
     public void initialize(UimaContext context) throws ResourceInitializationException {
         super.initialize(context);
 
-        if (summaryWriterClassName == null && exportWriterClassName == null) {
-            LOGGER.warning("Exporter should specify either an MicroSummarizer or a MacroSummarizer; " +
+        if (collectionSummarizerClassName == null && documentSummarizerClassName == null) {
+            LOGGER.warning("Exporter should specify either an DocumentSummarizer or a CollectionSummarizer; " +
                     "doing nothing for Exporter " + myName);
             return;
         }
 
         LOGGER.info("Initializing Exporter analysis engine.");
 
-        if (exportWriterClassName != null) {
+        if (documentSummarizerClassName != null) {
             try {
                 Files.createDirectories(Paths.get(outputDirectory));
             } catch (IOException e) {
                 throw new ResourceInitializationException(e);
             }
             try {
-                microSummarizer = AnalysisPieceFactory.microSummarizer(exportWriterClassName);
+                documentSummarizer = AnalysisPieceFactory.microSummarizer(documentSummarizerClassName, readViews, typeClassNames, fieldNames);
             } catch (AmicusException e) {
-                LOGGER.severe(String.format("Could not initialize MicroSummarizer for Exporter \"%s\"", myName));
+                LOGGER.severe(String.format("Could not initialize DocumentSummarizer for Exporter \"%s\"", myName));
                 throw new ResourceInitializationException(e);
             }
-            microSummarizer.setViewNames(readViews);
             micro = true;
+        }
+
+        // for summary
+        if (collectionSummarizerClassName != null) {
+            macro = true;
+            collectionSummaryTuples = new ArrayList<>();
+            collectionSummaryDocIds = new ArrayList<>();
+            try {
+                collectionSummarizer = AnalysisPieceFactory.macroSummarizer(collectionSummarizerClassName, readViews, typeClassNames, fieldNames);
+            } catch (AmicusException e) {
+                LOGGER.severe(String.format("Problem instantiating CollectionSummarizer \"%s\" in Exporter \"%s\"",
+                        collectionSummarizerClassName, myName));
+                throw new ResourceInitializationException(e);
+            }
         }
 
         int numInputs = readViews.length;
@@ -144,19 +158,6 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
             throw new ResourceInitializationException(e);
         }
 
-        // for summary
-        if (summaryWriterClassName != null) {
-            listener = DataListener.getDataListener(myName);
-            macro = true;
-
-            try {
-                macroSummarizer = AnalysisPieceFactory.macroSummarizer(summaryWriterClassName);
-            } catch (AmicusException e) {
-                LOGGER.severe(String.format("Problem instantiating MacroSummarizer \"%s\" in Exporter \"%s\"",
-                        summaryWriterClassName, myName));
-                throw new ResourceInitializationException(e);
-            }
-        }
     }
 
     @Override
@@ -172,18 +173,21 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         }
 
         String text;
-        List<List<PreAnnotation>> allPreAnnotations = new ArrayList<>();
+        List<AlignedTuple<PreAnnotation>> allPreAnnotations = new ArrayList<>();
         try {
-            Iterator<List<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
+            Iterator<AlignedTuple<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
             while (listIter.hasNext()) {
-                List<Annotation> annotations = listIter.next();
-                List<PreAnnotation> preannotations = new ArrayList<>();
+                AlignedTuple<Annotation> annotations = listIter.next();
+                AlignedTuple<PreAnnotation> preannotations = new AlignedTuple<>(annotations.size());
                 for (int i = 0; i < annotations.size(); i++) {
-                    preannotations.add(annotations.get(i) == null ? null :
-                            new PreAnnotation(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
+                    if (annotations.get(i) != null) {
+                        preannotations.set(i, new PreAnnotation(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
+                    }
                 }
                 if (macro) {
-                    listener.listen(preannotations, docId);
+//                    listener.listen(preannotations, docId);
+                    collectionSummaryTuples.add(preannotations);
+                    collectionSummaryDocIds.add(docId);
                 }
                 if (micro) {
                     allPreAnnotations.add(preannotations);
@@ -198,9 +202,9 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
 //
 //
 //        try {
-//            // Set up a shell iterator that will call Pullers and pass along transformed values to the microSummarizer
+//            // Set up a shell iterator that will call Pullers and pass along transformed values to the documentSummarizer
 //            final Iterator<List<Annotation>> annotationsIterator = aligner.alignAndIterate(getAnnotations(jCas));
-//            text = microSummarizer.exportContents(new Iterator<List<PreAnnotation>>() {
+//            text = documentSummarizer.summarizeDocument(new Iterator<List<PreAnnotation>>() {
 //                @Override
 //                public boolean hasNext() {
 //                    return annotationsIterator.hasNext();
@@ -232,8 +236,8 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
 //        }
 
         if (micro) {
-            text = microSummarizer.exportContents(allPreAnnotations.iterator());
-            Path filepath = Paths.get(outputDirectory).resolve(docId + "." + microSummarizer.getFileExtension());
+            text = documentSummarizer.summarizeDocument(allPreAnnotations.iterator()).toString();
+            Path filepath = Paths.get(outputDirectory).resolve(docId + "." + documentSummarizer.getFileExtension());
             Writer writer;
             try {
                 writer = new FileWriter(filepath.toFile());
@@ -287,7 +291,10 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
             }
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
             try {
-                writer.write(macroSummarizer.summarize(listener.regurgitate(), listener.regurgitateIds()).toString());
+//                writer.write(collectionSummarizer.summarizeCollection(listener.regurgitate(), listener.regurgitateIds()).toString());
+                writer.write(collectionSummarizer
+                        .summarizeCollection(collectionSummaryTuples.iterator(), collectionSummaryDocIds.iterator())
+                        .toString());
             } catch (AmicusException e) {
                 // todo log
                 throw new AnalysisEngineProcessException(e);
@@ -298,6 +305,17 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         } catch (IOException e) {
             throw new AnalysisEngineProcessException(e);
         }
+    }
+
+    /**
+     * Method is synchronized to prevent simultaneous access to the summary lists.
+     * Lists will not be ordered by document, but at least they are threadsafe this way.
+     * @param tuple
+     * @param docId
+     */
+    private synchronized void addDataSynchronized(AlignedTuple<PreAnnotation> tuple, String docId) {
+        collectionSummaryTuples.add(tuple);
+        collectionSummaryDocIds.add(docId);
     }
 
 

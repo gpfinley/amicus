@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * Created by gpfinley on 2/8/17.
  */
+@Deprecated
 public class DataListener<D> {
 
     private static ConcurrentMap<String, DataListener> dataListeners = new ConcurrentHashMap<>();

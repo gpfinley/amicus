@@ -151,12 +151,12 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         }
 
         try {
-            Iterator<List<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
+            Iterator<AlignedTuple<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
             while (listIter.hasNext()) {
-                List<Annotation> annotations = listIter.next();
-                List<PreAnnotation> preannotations = new ArrayList<>();
+                AlignedTuple<Annotation> annotations = listIter.next();
+                AlignedTuple<PreAnnotation> preannotations = new AlignedTuple<>(annotations.size());
                 for (int i = 0; i < annotations.size(); i++) {
-                    preannotations.add(annotations.get(i) == null ? null :
+                    preannotations.set(i, annotations.get(i) == null ? null :
                             new PreAnnotation(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
                 }
                 for (int i = 0; i < outputViewNames.length; i++) {

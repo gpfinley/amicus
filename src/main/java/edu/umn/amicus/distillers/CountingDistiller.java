@@ -1,8 +1,7 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.PreAnnotation;
-
-import java.util.List;
 
 /**
  * Distiller that will simply count the non-null annotations passed to it.
@@ -20,7 +19,7 @@ public class CountingDistiller implements Distiller<Integer> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<Integer> distill(List<PreAnnotation> annotations) {
+    public PreAnnotation<Integer> distill(AlignedTuple<PreAnnotation<Integer>> annotations) {
         if (annotations.size() == 0) return null;
 
         int n = 0;

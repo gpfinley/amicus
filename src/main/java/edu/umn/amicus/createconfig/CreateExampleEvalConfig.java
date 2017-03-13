@@ -70,11 +70,11 @@ public class CreateExampleEvalConfig {
 
         goldCollector.name = "gold collector";
         goldCollector.input = goldInput;
-        goldCollector.summaryWriter = "edu.umn.amicus.summary.CounterMacroSummarizer";
+        goldCollector.summaryWriter = "edu.umn.amicus.summary.CounterCollectionSummarizer";
 
         biomedicusCollector.name = "biomedicus collector";
         biomedicusCollector.input = biomedicusInput;
-        biomedicusCollector.summaryWriter = "edu.umn.amicus.summary.CounterMacroSummarizer";
+        biomedicusCollector.summaryWriter = "edu.umn.amicus.summary.CounterCollectionSummarizer";
 
 
         evalMerger.name = "acronym eval merger";
@@ -90,7 +90,7 @@ public class CreateExampleEvalConfig {
             };
 
         evalCollector.name = "eval collector";
-        evalCollector.summaryWriter = "edu.umn.amicus.eval.EvalPrfMacroSummarizer";
+        evalCollector.summaryWriter = "edu.umn.amicus.eval.EvalPrfCollectionSummarizer";
         evalCollector.input = new AnnotationInputConfig()
                 .annotationType("edu.umn.amicus.SingleFieldAnnotation")
                 .annotationField("field")

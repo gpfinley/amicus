@@ -1,5 +1,6 @@
 package edu.umn.amicus.summary;
 
+import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.Counter;
 import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.EvalMatch;
@@ -9,18 +10,28 @@ import java.util.*;
 /**
  * Created by gpfinley on 3/10/17.
  */
-public class EvalPrfMicroSummarizer extends MicroSummarizer {
+public class EvalPrfSummarizer extends Summarizer implements DocumentSummarizer, CollectionSummarizer {
 
     @Override
-    public String exportContents(Iterator<List<PreAnnotation>> preAnnotations) {
+    public String summarizeDocument(Iterator<AlignedTuple<PreAnnotation>> tuples) {
         List<EvalMatch> evalMatches = new ArrayList<>();
-        while(preAnnotations.hasNext()) {
-            evalMatches.addAll(getEvalMatches(preAnnotations.next()));
+        while(tuples.hasNext()) {
+            evalMatches.addAll(getEvalMatches(tuples.next()));
         }
         return getReport(evalMatches);
     }
 
-    public static List<EvalMatch> getEvalMatches(List<PreAnnotation> annotations) {
+    @Override
+    public String summarizeCollection(Iterator<AlignedTuple<PreAnnotation>> tuples, Iterator<String> docIds) {
+        return summarizeDocument(tuples);
+    }
+
+    @Override
+    public String getFileExtension() {
+        return "txt";
+    }
+
+    public static List<EvalMatch> getEvalMatches(AlignedTuple<PreAnnotation> annotations) {
         List<EvalMatch> evalMatches = new ArrayList<>();
         // if first (gold) is null, we have false positives. Otherwise, a mix of true positives and false negatives
         if (annotations.get(0) == null) {

@@ -1,5 +1,6 @@
 package edu.umn.amicus.aligners;
 
+import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.Counter;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -33,7 +34,7 @@ public class PartialOverlapAligner implements Aligner {
      * @param allAnnotations
      * @return
      */
-    public Iterator<List<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
+    public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
         sourceInput = new HashMap<>();
         setMemberships = new HashMap<>();
         List<Set<Annotation>> annotationsAtIndex = new ArrayList<>();
@@ -76,7 +77,7 @@ public class PartialOverlapAligner implements Aligner {
         }
 
         // for each sprawl, find the most optimal combo of alignments for that sprawl and add to the big list
-        List<List<Annotation>> allAlignments = new ArrayList<>();
+        List<AlignedTuple<Annotation>> allAlignments = new ArrayList<>();
         for (Set<Annotation> sprawl : sprawls) {
             allCombos = new ArrayList<>();
             addAllCombos(new LinkedHashSet<>(sprawl), null);
@@ -95,14 +96,11 @@ public class PartialOverlapAligner implements Aligner {
                 }
             }
             for (Set<Annotation> set : bestCombo) {
-                List<Annotation> byInputList = new ArrayList<>();
-                for (List l : allAnnotations) {
-                    byInputList.add(null);
-                }
+                AlignedTuple<Annotation> byInputTuple = new AlignedTuple<>(allAnnotations.size());
                 for (Annotation annotation : set) {
-                    byInputList.set(sourceInput.get(annotation), annotation);
+                    byInputTuple.set(sourceInput.get(annotation), annotation);
                 }
-                allAlignments.add(byInputList);
+                allAlignments.add(byInputTuple);
             }
         }
         return allAlignments.iterator();

@@ -1,5 +1,6 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.PreAnnotation;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class ListDistiller implements Distiller<List> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<List> distill(List<PreAnnotation> annotations) {
+    public PreAnnotation<List> distill(AlignedTuple<PreAnnotation<List>> annotations) {
         if (annotations.size() == 0) return null;
 
         List<Object> distilledList = new ArrayList<>();

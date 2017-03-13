@@ -22,7 +22,7 @@ public class SummarizerConfig extends PipelineComponentConfig {
         try {
             input.verify();
         } catch (AmicusConfigurationException e) {
-            LOGGER.severe("Input configuration incomplete for MacroSummarizer " + name);
+            LOGGER.severe("Input configuration incomplete for CollectionSummarizer " + name);
             throw e;
         }
         // todo. Has to have a name. macroSummarizer should be a real class
