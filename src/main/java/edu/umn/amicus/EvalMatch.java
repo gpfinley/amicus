@@ -4,7 +4,7 @@ import edu.umn.amicus.EvalAnnotation;
 import org.apache.uima.jcas.JCas;
 
 /**
- * Object to use in a PreAnnotation for a precision/recall/F-score type evaluation.
+ * Object to use in a ANA for a precision/recall/F-score type evaluation.
  *
  * Created by gpfinley on 2/3/17.
  */

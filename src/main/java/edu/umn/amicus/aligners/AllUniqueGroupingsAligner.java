@@ -1,7 +1,7 @@
 package edu.umn.amicus.aligners;
 
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.AlignedTuple;
-import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
 
@@ -21,14 +21,14 @@ public class AllUniqueGroupingsAligner implements Aligner {
      * @return
      */
     @Override
-    public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
-        Set<AlignedTuple<Annotation>> allSets = new LinkedHashSet<>();
-        List<AlignedTuple<Annotation>> annotationsAtIndex = new ArrayList<>();
+    public Iterator<AlignedTuple> alignAndIterate(List<List<ANA>> allAnnotations) {
+        Set<AlignedTuple> allSets = new LinkedHashSet<>();
+        List<AlignedTuple> annotationsAtIndex = new ArrayList<>();
         for (int sysIndex = 0; sysIndex < allAnnotations.size(); sysIndex++) {
-            for (Annotation annotation : allAnnotations.get(sysIndex)) {
+            for (ANA annotation : allAnnotations.get(sysIndex)) {
                 // not adding all set memberships yet--just singletons
                 while (annotationsAtIndex.size() < annotation.getEnd()) {
-                    annotationsAtIndex.add(new AlignedTuple<Annotation>(allAnnotations.size()));
+                    annotationsAtIndex.add(new AlignedTuple(allAnnotations.size()));
                 }
                 for (int i = annotation.getBegin(); i < annotation.getEnd(); i++) {
                     annotationsAtIndex.get(i).set(sysIndex, annotation);
@@ -37,7 +37,7 @@ public class AllUniqueGroupingsAligner implements Aligner {
         }
         allSets.addAll(annotationsAtIndex);
         // remove a null tuple
-        allSets.remove(new AlignedTuple<Annotation>(allAnnotations.size()));
+        allSets.remove(new AlignedTuple(allAnnotations.size()));
         return allSets.iterator();
     }
 

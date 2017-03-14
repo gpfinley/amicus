@@ -78,7 +78,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
     private boolean micro = false;
     private boolean macro = false;
 
-    private List<AlignedTuple<PreAnnotation>> collectionSummaryTuples;
+    private List<AlignedTuple> collectionSummaryTuples;
     private List<String> collectionSummaryDocIds;
 
     @Override
@@ -173,51 +173,42 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         }
 
         String text;
-        List<AlignedTuple<PreAnnotation>> allPreAnnotations = new ArrayList<>();
+        List<AlignedTuple> allPreAnnotations = new ArrayList<>();
         try {
-            Iterator<AlignedTuple<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
+            Iterator<AlignedTuple> listIter = aligner.alignAndIterate(getPreAnnotations(jCas));
             while (listIter.hasNext()) {
-                AlignedTuple<Annotation> annotations = listIter.next();
-                AlignedTuple<PreAnnotation> preannotations = new AlignedTuple<>(annotations.size());
-                for (int i = 0; i < annotations.size(); i++) {
-                    if (annotations.get(i) != null) {
-                        preannotations.set(i, new PreAnnotation(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
-                    }
-                }
+                AlignedTuple preAnnotations = listIter.next();
                 if (macro) {
-//                    listener.listen(preannotations, docId);
-                    collectionSummaryTuples.add(preannotations);
+                    collectionSummaryTuples.add(preAnnotations);
                     collectionSummaryDocIds.add(docId);
                 }
                 if (micro) {
-                    allPreAnnotations.add(preannotations);
+                    allPreAnnotations.add(preAnnotations);
                 }
             }
 
         } catch (AmicusException e) {
-            LOGGER.severe(String.format("Processing problem for Merger \"%s\"", myName));
+            LOGGER.severe(String.format("Processing problem for Exporter \"%s\"", myName));
             throw new AnalysisEngineProcessException(e);
         }
 
-//
-//
 //        try {
 //            // Set up a shell iterator that will call Pullers and pass along transformed values to the documentSummarizer
 //            final Iterator<List<Annotation>> annotationsIterator = aligner.alignAndIterate(getAnnotations(jCas));
-//            text = documentSummarizer.summarizeDocument(new Iterator<List<PreAnnotation>>() {
+//            text = documentSummarizer.summarizeDocument(new Iterator<List<ANA>>() {
 //                @Override
 //                public boolean hasNext() {
 //                    return annotationsIterator.hasNext();
 //                }
 //
 //                @Override
-//                public List<PreAnnotation> next() {
+//                public List<ANA> next() {
 //                    List<Annotation> annotations = annotationsIterator.next();
-//                    List<PreAnnotation> preannotations = new ArrayList<>();
+//                    List<ANA> preannotations = new ArrayList<>();
 //                    for (int i = 0; i < annotations.size(); i++) {
 //                        try {
 //                            preannotations.add(
-//                                    new PreAnnotation<>(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
+//                                    new ANA<>(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
 //                        } catch (AmicusException e) {
 //                            LOGGER.warning(String.format("Could not pull annotation! Exporter \"%s\"", myName));
 //                        }
@@ -249,8 +240,8 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         }
     }
 
-    private List<List<Annotation>> getAnnotations(JCas jCas) throws AnalysisEngineProcessException {
-        List<List<Annotation>> allAnnotations = new ArrayList<>();
+    private List<List<ANA>> getPreAnnotations(JCas jCas) throws AnalysisEngineProcessException {
+        List<List<ANA>> allAnnotations = new ArrayList<>();
         for (int i=0; i< readViews.length; i++) {
             JCas readView;
             try {
@@ -259,11 +250,19 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
                 LOGGER.severe(String.format("Couldn't access view \"%s\" in Exporter \"%s\"", readViews[i], myName));
                 throw new AnalysisEngineProcessException(e);
             }
-            List<Annotation> theseAnnotations = new ArrayList<>();
+            List<ANA> theseAnnotations = new ArrayList<>();
             allAnnotations.add(theseAnnotations);
             // Get all annotations of this class and add them to the index
             for (Annotation a : readView.getAnnotationIndex(typeClasses.get(i))) {
-                theseAnnotations.add(a);
+                Object pulled;
+                try {
+                    pulled = pullers.get(i).pull(a);
+                } catch (AmicusException e) {
+                    throw new AnalysisEngineProcessException();
+                }
+                if (pulled != null) {
+                    theseAnnotations.add(new ANA<>(pulled, a));
+                }
             }
         }
 
@@ -313,7 +312,7 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
      * @param tuple
      * @param docId
      */
-    private synchronized void addDataSynchronized(AlignedTuple<PreAnnotation> tuple, String docId) {
+    private synchronized void addDataSynchronized(AlignedTuple tuple, String docId) {
         collectionSummaryTuples.add(tuple);
         collectionSummaryDocIds.add(docId);
     }

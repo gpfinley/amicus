@@ -46,7 +46,12 @@ public class Puller implements AnalysisPiece {
                 for (String fieldName : fieldNames) {
                     objectList.add(callThisGetter(fieldName, annotation));
                 }
-                return objectList;
+                for (Object obj : objectList) {
+                    if (obj != null) {
+                        return objectList;
+                    }
+                }
+                return null;
             }
             return callThisGetter(fieldNames[0], annotation);
         } catch (ReflectiveOperationException e) {
@@ -60,8 +65,7 @@ public class Puller implements AnalysisPiece {
      * @param annotation
      * @return
      */
-    protected static Object callThisGetter(String fieldName, Annotation annotation) throws ReflectiveOperationException {
-        if (annotation == null) return null;
+    protected Object callThisGetter(String fieldName, Annotation annotation) throws ReflectiveOperationException {
         Class<? extends Annotation> clazz = annotation.getClass();
         Method toCall = clazz.getMethod(Util.getGetterFor(fieldName));
         return toCall.invoke(annotation);

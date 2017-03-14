@@ -1,7 +1,7 @@
 package edu.umn.amicus.distillers;
 
 import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.PreAnnotation;
+import edu.umn.amicus.ANA;
 
 /**
  * Distiller that will take the Annotation from the first system--
@@ -16,8 +16,8 @@ public class RequireAnnotationsDistiller implements Distiller<Object> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<Object> distill(AlignedTuple<PreAnnotation<Object>> annotations) {
-        for (PreAnnotation pa : annotations) {
+    public ANA<Object> distill(AlignedTuple annotations) {
+        for (ANA pa : annotations) {
             if (pa == null) return null;
         }
         return annotations.size() == 0 ? null : annotations.get(0);

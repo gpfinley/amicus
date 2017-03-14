@@ -1,7 +1,7 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.PreAnnotation;
 
 /**
  * Distiller that will simply count the non-null annotations passed to it.
@@ -19,13 +19,13 @@ public class CountingDistiller implements Distiller<Integer> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<Integer> distill(AlignedTuple<PreAnnotation<Integer>> annotations) {
+    public ANA<Integer> distill(AlignedTuple annotations) {
         if (annotations.size() == 0) return null;
 
         int n = 0;
         Integer begin = null;
         Integer end = null;
-        for (PreAnnotation pa : annotations) {
+        for (ANA pa : annotations) {
             if (pa != null) {
                 n++;
                 if (begin == null) {
@@ -34,7 +34,7 @@ public class CountingDistiller implements Distiller<Integer> {
                 }
             }
         }
-        return new PreAnnotation<>(n, begin, end);
+        return new ANA<>(n, begin, end);
     }
 
 }

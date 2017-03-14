@@ -1,9 +1,9 @@
 package Aligners;
 
 import edu.umn.amicus.AlignedTuple;
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.PartialOverlapAligner;
-import edu.umn.amicus.aligners.RequireOverlapAligner;
 import org.apache.uima.UIMAException;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.jcas.JCas;
@@ -20,15 +20,15 @@ import java.util.List;
  */
 public class PartialOverlapAlignerTest {
 
-    private static List<Annotation> annotationListFromString(String str) {
-        List<Annotation> annotations = new ArrayList<>();
+    private static List<ANA> annotationListFromString(String str) {
+        List<ANA> annotations = new ArrayList<>();
         char[] chars = str.toCharArray();
         String current = "";
         int start = 0;
         for (int i=0; i<=chars.length; i++) {
             if (i == chars.length || chars[i] == ' ') {
                 if (!"".equals(current)) {
-                    annotations.add(new Annot(current, start, i));
+                    annotations.add(new ANA(current, start, i));
                 }
                 start = i+1;
                 current = "";
@@ -42,13 +42,13 @@ public class PartialOverlapAlignerTest {
     public static void main(String[] args) throws Exception {
         Aligner aligner = new PartialOverlapAligner();
 
-        List<List<Annotation>> bigList = new ArrayList<>();
+        List<List<ANA>> bigList = new ArrayList<>();
 
         bigList.add(annotationListFromString("         hh     iiii j  k"));
         bigList.add(annotationListFromString("aaaaaaaaa        bbbb   cccccccccc"));
         bigList.add(annotationListFromString("dddddddddd      eee ff  gggggggg"));
 
-        Iterator<AlignedTuple<Annotation>> iterator = aligner.alignAndIterate(bigList);
+        Iterator<AlignedTuple> iterator = aligner.alignAndIterate(bigList);
         while (iterator.hasNext()) {
             System.out.println(iterator.next());
         }

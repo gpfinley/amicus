@@ -1,7 +1,6 @@
 package edu.umn.amicus.summary;
 
 import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.PreAnnotation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +21,7 @@ public class EachSoloCsvSummarizer extends CsvSummarizer implements DocumentSumm
     }
 
     @Override
-    public String summarizeDocument(Iterator<AlignedTuple<PreAnnotation>> tuples) {
+    public String summarizeDocument(Iterator<AlignedTuple> tuples) {
         return summarizeCollection(tuples, null);
     }
 
@@ -33,7 +32,7 @@ public class EachSoloCsvSummarizer extends CsvSummarizer implements DocumentSumm
      * @return
      */
     @Override
-    public String summarizeCollection(Iterator<AlignedTuple<PreAnnotation>> tuples, Iterator<String> docIds) {
+    public String summarizeCollection(Iterator<AlignedTuple> tuples, Iterator<String> docIds) {
 
         int maxFields = 1;
 
@@ -41,7 +40,7 @@ public class EachSoloCsvSummarizer extends CsvSummarizer implements DocumentSumm
         List<Integer> fieldsWrittenEachLine = new ArrayList<>();
 
         while (tuples.hasNext()) {
-            AlignedTuple<PreAnnotation> annots = tuples.next();
+            AlignedTuple annots = tuples.next();
             String docId = null;
             if (docIds != null) {
                 docId = docIds.next();
@@ -59,7 +58,7 @@ public class EachSoloCsvSummarizer extends CsvSummarizer implements DocumentSumm
                     data.add(annots.get(i).getBegin());
                     data.add(annots.get(i).getEnd());
 
-                    // If this PreAnnotation value is a List, print all the fields...and keep track of that we did
+                    // If this ANA value is a List, print all the fields...and keep track of that we did
                     if (annots.get(i).getValue() instanceof List) {
                         List multiFields = (List) annots.get(i).getValue();
                         maxFields = Math.max(multiFields.size(), maxFields);

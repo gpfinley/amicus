@@ -1,9 +1,9 @@
 package edu.umn.amicus.pushers;
 
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPiece;
-import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.uimacomponents.Util;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
@@ -59,20 +59,20 @@ public class Pusher implements AnalysisPiece {
      * ...todo: doc
      * Overriding methods might not call this.
      * @param jCas
-     * @param preAnnotation
+     * @param ana
      */
-    public void push(JCas jCas, PreAnnotation<Object> preAnnotation) throws AmicusException {
+    public void push(JCas jCas, ANA<Object> ana) throws AmicusException {
         if (setterMethods == null) {
             throw new AmicusException("Need to provide setters for included Pusher implementations; " +
                     "check configuration.");
         }
         Annotation annotation;
         try {
-            annotation = annotationConstructor.newInstance(jCas, preAnnotation.getBegin(), preAnnotation.getEnd());
+            annotation = annotationConstructor.newInstance(jCas, ana.getBegin(), ana.getEnd());
         } catch (ReflectiveOperationException e) {
             throw new AmicusException(e);
         }
-        Object value = preAnnotation.getValue();
+        Object value = ana.getValue();
         if (setterMethods.size() > 1) {
             List toSet = value instanceof List ? (List) value : buildListFromString(value.toString());
             if (toSet.size() != setterMethods.size()) {

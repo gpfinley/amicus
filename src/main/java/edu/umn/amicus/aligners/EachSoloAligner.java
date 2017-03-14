@@ -1,9 +1,8 @@
 package edu.umn.amicus.aligners;
 
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.AlignedTuple;
-import org.apache.uima.jcas.tcas.Annotation;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,11 +14,11 @@ import java.util.List;
  */
 public class EachSoloAligner implements Aligner {
 
-    public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> annotations) {
+    public Iterator<AlignedTuple> alignAndIterate(List<List<ANA>> annotations) {
         return new AnnotIter(annotations);
     }
 
-    private static class AnnotIter implements Iterator<AlignedTuple<Annotation>> {
+    private static class AnnotIter implements Iterator<AlignedTuple> {
 
         private int systemCounter;
         private int withinSystemCounter;
@@ -27,14 +26,14 @@ public class EachSoloAligner implements Aligner {
         private int nSystems;
         private int nAnnotationsThisSystem;
 
-        private final List<List<Annotation>> annotations;
+        private final List<List<ANA>> annotations;
 
-        AnnotIter(List<List<Annotation>> annotations) {
+        AnnotIter(List<List<ANA>> annotations) {
             this.annotations = annotations;
             systemCounter = 0;
             withinSystemCounter = 0;
             nSystems = annotations.size();
-            for (List<Annotation> thisSystemList : annotations) {
+            for (List<ANA> thisSystemList : annotations) {
                 if (thisSystemList.size() > 0) {
                     nAnnotationsThisSystem = thisSystemList.size();
                     break;
@@ -44,8 +43,8 @@ public class EachSoloAligner implements Aligner {
         }
 
         @Override
-        public AlignedTuple<Annotation> next() {
-            AlignedTuple<Annotation> theseAnnots = new AlignedTuple<>(nSystems);
+        public AlignedTuple next() {
+            AlignedTuple theseAnnots = new AlignedTuple(nSystems);
             theseAnnots.set(systemCounter, annotations.get(systemCounter).get(withinSystemCounter));
 
             withinSystemCounter++;

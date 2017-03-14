@@ -1,7 +1,7 @@
 package edu.umn.amicus.aligners;
 
 import edu.umn.amicus.AlignedTuple;
-import org.apache.uima.jcas.tcas.Annotation;
+import edu.umn.amicus.ANA;
 
 import java.util.*;
 
@@ -23,11 +23,11 @@ public class RequireOverlapAligner implements Aligner {
      * @return
      */
     @Override
-    public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
-        List<AlignedTuple<Annotation>> overlappingAnnotationsOnly = new ArrayList<>();
-        Iterator<AlignedTuple<Annotation>> iterator = aligner.alignAndIterate(allAnnotations);
+    public Iterator<AlignedTuple> alignAndIterate(List<List<ANA>> allAnnotations) {
+        List<AlignedTuple> overlappingAnnotationsOnly = new ArrayList<>();
+        Iterator<AlignedTuple> iterator = aligner.alignAndIterate(allAnnotations);
         while (iterator.hasNext()) {
-            AlignedTuple<Annotation> list = iterator.next();
+            AlignedTuple list = iterator.next();
             if (!list.contains(null)) {
                 overlappingAnnotationsOnly.add(list);
             }

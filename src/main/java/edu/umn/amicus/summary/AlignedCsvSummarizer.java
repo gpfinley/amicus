@@ -1,7 +1,7 @@
 package edu.umn.amicus.summary;
 
 import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.PreAnnotation;
+import edu.umn.amicus.ANA;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,12 +23,12 @@ public class AlignedCsvSummarizer extends CsvSummarizer implements DocumentSumma
      * @return
      */
     @Override
-    public String summarizeDocument(Iterator<AlignedTuple<PreAnnotation>> tuples) {
+    public String summarizeDocument(Iterator<AlignedTuple> tuples) {
         return summarizeCollection(tuples, null);
     }
 
     @Override
-    public String summarizeCollection(Iterator<AlignedTuple<PreAnnotation>> tuples, Iterator<String> docIds) {
+    public String summarizeCollection(Iterator<AlignedTuple> tuples, Iterator<String> docIds) {
         List<String> lines = new ArrayList<>();
         int nFields = 0;
 
@@ -37,11 +37,11 @@ public class AlignedCsvSummarizer extends CsvSummarizer implements DocumentSumma
             if (docIds != null) {
                 values.add(docIds.next());
             }
-            AlignedTuple<PreAnnotation> tuple = tuples.next();
+            AlignedTuple tuple = tuples.next();
             nFields = tuple.size();
             addBeginEnd:
             {
-                for (PreAnnotation annot : tuple) {
+                for (ANA annot : tuple) {
                     if (annot != null) {
                         values.add(annot.getBegin());
                         values.add(annot.getEnd());
@@ -51,7 +51,7 @@ public class AlignedCsvSummarizer extends CsvSummarizer implements DocumentSumma
                 values.add("none");
                 values.add("none");
             }
-            for (PreAnnotation annot : tuple) {
+            for (ANA annot : tuple) {
                 if (annot == null) {
                     values.add("");
                 } else {

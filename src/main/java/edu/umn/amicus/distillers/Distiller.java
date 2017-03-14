@@ -1,9 +1,9 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPiece;
-import edu.umn.amicus.PreAnnotation;
 
 /**
  * Interface for classes that take Annotations from all types/systems and distill them to a single Annotation of any Type.
@@ -12,6 +12,6 @@ import edu.umn.amicus.PreAnnotation;
  */
 public interface Distiller<T> extends AnalysisPiece {
 
-    PreAnnotation<T> distill(AlignedTuple<PreAnnotation<T>> annotations) throws AmicusException;
+    ANA<T> distill(AlignedTuple annotations) throws AmicusException;
 
 }

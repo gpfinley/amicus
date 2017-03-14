@@ -1,6 +1,6 @@
 //package edu.umn.amicus.summary;
 //
-//import edu.umn.amicus.PreAnnotation;
+//import edu.umn.amicus.ANA;
 //
 //import java.util.ArrayList;
 //import java.util.Iterator;
@@ -22,7 +22,7 @@
 //    }
 //
 //    @Override
-//    public String exportContents(Iterator<List<PreAnnotation>> annotIterator) {
+//    public String exportContents(Iterator<List<ANA>> annotIterator) {
 //
 //        int maxFields = 1;
 //
@@ -30,7 +30,7 @@
 //        List<Integer> fieldsWrittenEachLine = new ArrayList<>();
 //
 //        while (annotIterator.hasNext()) {
-//            List<PreAnnotation> annots = annotIterator.next();
+//            List<ANA> annots = annotIterator.next();
 //            for (int i=0; i<annots.size(); i++) {
 //                if (annots.get(i) != null && annots.get(i).getValue() != null) {
 //
@@ -51,7 +51,7 @@
 //                    builder.append(delimiter);
 //                    builder.append(annots.get(i).getEnd());
 //
-//                    // If this PreAnnotation value is a List, print all the fields
+//                    // If this ANA value is a List, print all the fields
 //                    if (annots.get(i).getValue() instanceof List) {
 //                        List multiFields = (List) annots.get(i).getValue();
 //                        maxFields = Math.max(multiFields.size(), maxFields);

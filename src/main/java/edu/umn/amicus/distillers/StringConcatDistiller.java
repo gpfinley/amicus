@@ -1,7 +1,7 @@
 package edu.umn.amicus.distillers;
 
 import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.PreAnnotation;
+import edu.umn.amicus.ANA;
 
 /**
  * Distiller that will concatenate String annotations by all systems into a single annotation, with a pipe '|' separator.
@@ -27,14 +27,14 @@ public class StringConcatDistiller implements Distiller<String> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<String> distill(AlignedTuple<PreAnnotation<String>> annotations) {
+    public ANA<String> distill(AlignedTuple annotations) {
         if (annotations.size() == 0) return null;
 
         int begin = Integer.MAX_VALUE;
         int end = Integer.MIN_VALUE;
 
         StringBuilder builder = new StringBuilder();
-        for (PreAnnotation preAnnot : annotations) {
+        for (ANA preAnnot : annotations) {
             if (preAnnot != null) {
                 builder.append(preAnnot.getValue());
                 builder.append("|");
@@ -43,7 +43,7 @@ public class StringConcatDistiller implements Distiller<String> {
             }
         }
         String concatenated = builder.substring(0, builder.length() - 1);
-        return new PreAnnotation<>(concatenated, begin, end);
+        return new ANA<>(concatenated, begin, end);
     }
 
 }

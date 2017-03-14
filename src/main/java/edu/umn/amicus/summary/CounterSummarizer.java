@@ -2,7 +2,6 @@ package edu.umn.amicus.summary;
 
 import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.Counter;
-import edu.umn.amicus.PreAnnotation;
 
 import java.util.*;
 
@@ -12,18 +11,18 @@ import java.util.*;
 public class CounterSummarizer extends Summarizer implements DocumentSummarizer, CollectionSummarizer {
 
     @Override
-    public String summarizeCollection(Iterator<AlignedTuple<PreAnnotation>> tuples, Iterator<String> docIds) {
+    public String summarizeCollection(Iterator<AlignedTuple> tuples, Iterator<String> docIds) {
         return summarizeDocument(tuples);
     }
 
     @Override
-    public String summarizeDocument(Iterator<AlignedTuple<PreAnnotation>> tuples) {
+    public String summarizeDocument(Iterator<AlignedTuple> tuples) {
         StringBuilder builder = new StringBuilder();
 
         List<Counter<Object>> inputCounters = null;
 
         while (tuples.hasNext()) {
-            AlignedTuple<PreAnnotation> tuple = tuples.next();
+            AlignedTuple tuple = tuples.next();
             // assuming that all tuples are the same size (Aligner contract says they are)
             if (inputCounters == null) {
                 inputCounters = new ArrayList<>();

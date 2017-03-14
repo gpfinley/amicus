@@ -1,7 +1,7 @@
 //package edu.umn.amicus.summary;
 //
 //import edu.umn.amicus.AmicusException;
-//import edu.umn.amicus.PreAnnotation;
+//import edu.umn.amicus.ANA;
 //import edu.umn.amicus.EvalMatch;
 //
 //import java.util.*;
@@ -15,10 +15,10 @@
 //public class EvalPrfCollectionSummarizer implements CollectionSummarizer {
 //
 //    @Override
-//    public String summarize(List<List<PreAnnotation>> list, List<String> docIds) throws AmicusException {
+//    public String summarize(List<List<ANA>> list, List<String> docIds) throws AmicusException {
 //
 //        List<EvalMatch> evalMatches = new ArrayList<>();
-//        for (List<PreAnnotation> preAnnotations : list) {
+//        for (List<ANA> preAnnotations : list) {
 //            evalMatches.addAll(EvalPrfSummarizer.getEvalMatches(preAnnotations));
 //        }
 //

@@ -1,8 +1,8 @@
 package edu.umn.amicus.summary;
 
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.Counter;
-import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.EvalMatch;
 
 import java.util.*;
@@ -13,7 +13,7 @@ import java.util.*;
 public class EvalPrfSummarizer extends Summarizer implements DocumentSummarizer, CollectionSummarizer {
 
     @Override
-    public String summarizeDocument(Iterator<AlignedTuple<PreAnnotation>> tuples) {
+    public String summarizeDocument(Iterator<AlignedTuple> tuples) {
         List<EvalMatch> evalMatches = new ArrayList<>();
         while(tuples.hasNext()) {
             evalMatches.addAll(getEvalMatches(tuples.next()));
@@ -22,7 +22,7 @@ public class EvalPrfSummarizer extends Summarizer implements DocumentSummarizer,
     }
 
     @Override
-    public String summarizeCollection(Iterator<AlignedTuple<PreAnnotation>> tuples, Iterator<String> docIds) {
+    public String summarizeCollection(Iterator<AlignedTuple> tuples, Iterator<String> docIds) {
         return summarizeDocument(tuples);
     }
 
@@ -31,7 +31,7 @@ public class EvalPrfSummarizer extends Summarizer implements DocumentSummarizer,
         return "txt";
     }
 
-    public static List<EvalMatch> getEvalMatches(AlignedTuple<PreAnnotation> annotations) {
+    public static List<EvalMatch> getEvalMatches(AlignedTuple annotations) {
         List<EvalMatch> evalMatches = new ArrayList<>();
         // if first (gold) is null, we have false positives. Otherwise, a mix of true positives and false negatives
         if (annotations.get(0) == null) {
@@ -85,7 +85,7 @@ public class EvalPrfSummarizer extends Summarizer implements DocumentSummarizer,
      * @param hyp
      * @return
      */
-    protected static double getScore(PreAnnotation gold, PreAnnotation hyp) {
+    protected static double getScore(ANA gold, ANA hyp) {
         if (gold.getValue() == null) {
             // todo: better logging!!!
             System.out.println("Null object in gold??");

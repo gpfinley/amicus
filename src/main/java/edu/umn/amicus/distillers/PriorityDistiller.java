@@ -1,7 +1,7 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.PreAnnotation;
 
 /**
  * Distiller that will take the first Annotation it comes across and ignore the others.
@@ -18,8 +18,8 @@ public class PriorityDistiller implements Distiller<Object> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<Object> distill(AlignedTuple<PreAnnotation<Object>> annotations) {
-        for (PreAnnotation pa : annotations) {
+    public ANA<Object> distill(AlignedTuple annotations) {
+        for (ANA pa : annotations) {
             if (pa != null) {
                 return pa;
             }

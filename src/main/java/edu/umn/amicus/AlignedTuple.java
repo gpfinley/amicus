@@ -4,14 +4,14 @@ import java.util.*;
 
 /**
  * todo doc
- * todo use in place of List<PreAnnotation> where appropriate
+ * todo use in place of List<ANA> where appropriate
  * Created by gpfinley on 3/10/17.
  */
 // todo should it implement List?
-//public class AlignedTuple implements List<PreAnnotation> {
-public class AlignedTuple<T> implements Iterable<T> {
+//public class AlignedTuple implements List<ANA> {
+public class AlignedTuple implements Iterable<ANA> {
 
-    private final List<T> list;
+    private final List<ANA> list;
 
     public AlignedTuple(int n) {
         list = new ArrayList<>();
@@ -20,19 +20,19 @@ public class AlignedTuple<T> implements Iterable<T> {
         }
     }
 
-    public AlignedTuple(List<T> list) {
+    public AlignedTuple(List<ANA> list) {
         this.list = list;
     }
 
-    public T get(int i) {
+    public ANA get(int i) {
         return list.get(i);
     }
 
-    public Iterator<T> iterator() {
+    public Iterator<ANA> iterator() {
         return list.iterator();
     }
 
-    public T set(int i, T value) {
+    public ANA set(int i, ANA value) {
         return list.set(i, value);
     }
 
@@ -40,7 +40,7 @@ public class AlignedTuple<T> implements Iterable<T> {
         return list.size();
     }
 
-    public boolean contains(T t) {
+    public boolean contains(ANA t) {
         return list.contains(t);
     }
 

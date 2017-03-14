@@ -158,14 +158,9 @@ public class MergerAE extends JCasAnnotator_ImplBase {
                 System.out.println("CASException");
             }
 
-            Iterator<AlignedTuple<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
+            Iterator<AlignedTuple> listIter = aligner.alignAndIterate(getPreAnnotations(jCas));
             while (listIter.hasNext()) {
-                AlignedTuple<Annotation> annotations = listIter.next();
-                AlignedTuple<PreAnnotation> preannotations = new AlignedTuple<>(annotations.size());
-                for (int i = 0; i < annotations.size(); i++) {
-                    preannotations.set(i, annotations.get(i) == null ? null :
-                            new PreAnnotation(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
-                }
+                AlignedTuple preannotations = listIter.next();
                 for (int i = 0; i < outputViewNames.length; i++) {
                     JCas outputView;
                     try {
@@ -173,7 +168,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
                     } catch (CASException e) {
                         throw new AnalysisEngineProcessException(e);
                     }
-                    PreAnnotation distilled = distillers.get(i).distill(preannotations);
+                    ANA distilled = distillers.get(i).distill(preannotations);
                     if (distilled != null) {
                         pushers.get(i).push(outputView, distilled);
                     }
@@ -187,8 +182,8 @@ public class MergerAE extends JCasAnnotator_ImplBase {
 
 
 
-    private List<List<Annotation>> getAnnotations(JCas jCas) throws AnalysisEngineProcessException {
-        List<List<Annotation>> allAnnotations = new ArrayList<>();
+    private List<List<ANA>> getPreAnnotations(JCas jCas) throws AnalysisEngineProcessException {
+        List<List<ANA>> allAnnotations = new ArrayList<>();
         for (int i=0; i< readViews.length; i++) {
             JCas readView;
             try {
@@ -197,11 +192,20 @@ public class MergerAE extends JCasAnnotator_ImplBase {
                 LOGGER.severe(String.format("Couldn't access view \"%s\" in Exporter \"%s\"", readViews[i], myName));
                 throw new AnalysisEngineProcessException(e);
             }
-            List<Annotation> theseAnnotations = new ArrayList<>();
+            List<ANA> theseAnnotations = new ArrayList<>();
             allAnnotations.add(theseAnnotations);
             // Get all annotations of this class and add them to the index
             for (Annotation a : (FSIndex<Annotation>) readView.getAnnotationIndex(typeClasses.get(i))) {
-                theseAnnotations.add(a);
+                Object pulled;
+                try {
+                    pulled = pullers.get(i).pull(a);
+                } catch (AmicusException e) {
+                    // todo log
+                    throw new AnalysisEngineProcessException(e);
+                }
+                if (pulled != null) {
+                    theseAnnotations.add(new ANA(pulled, a));
+                }
             }
         }
 

@@ -3,7 +3,7 @@ package edu.umn.amicus.aligners;
 import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.AnalysisPiece;
-import org.apache.uima.jcas.tcas.Annotation;
+import edu.umn.amicus.ANA;
 
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +13,6 @@ import java.util.List;
  */
 public interface Aligner extends AnalysisPiece {
 
-    Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) throws AmicusException;
+    Iterator<AlignedTuple> alignAndIterate(List<List<ANA>> allAnnotations) throws AmicusException;
 
 }

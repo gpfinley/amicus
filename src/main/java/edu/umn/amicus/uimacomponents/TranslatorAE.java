@@ -159,7 +159,7 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
         }
 
         List<Annotation> annotations = getAnnotations(jCas);
-        List<PreAnnotation<Object>> preAnnotations = new ArrayList<>();
+        List<ANA<Object>> anas = new ArrayList<>();
 
         try {
 
@@ -169,7 +169,7 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
                     for (Mapper mapper : mappers) {
                         pulled = mapper.map(pulled);
                     }
-                    preAnnotations.add(new PreAnnotation<>(pulled, annotation));
+                    anas.add(new ANA<>(pulled, annotation));
                 }
             }
 
@@ -182,8 +182,8 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
                             outputViewNames[i], myName));
                     throw new AnalysisEngineProcessException(e);
                 }
-                for (PreAnnotation preAnnotation : preAnnotations) {
-                    pushers.get(i).push(outputView, preAnnotation);
+                for (ANA ana : anas) {
+                    pushers.get(i).push(outputView, ana);
                 }
             }
         } catch (AmicusException e) {

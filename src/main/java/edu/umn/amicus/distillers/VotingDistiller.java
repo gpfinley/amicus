@@ -1,7 +1,7 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.PreAnnotation;
 import edu.umn.amicus.config.ClassConfigurationLoader;
 import edu.umn.amicus.Counter;
 
@@ -33,9 +33,9 @@ public class VotingDistiller implements Distiller<Object> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<Object> distill(AlignedTuple<PreAnnotation<Object>> annotations) {
+    public ANA<Object> distill(AlignedTuple annotations) {
         List<Object> values = new ArrayList<>();
-        for (PreAnnotation pa : annotations) {
+        for (ANA pa : annotations) {
             values.add(pa == null ? null : pa.getValue());
         }
         Counter<Object> annotationsCounter = new Counter<>(values);
@@ -48,7 +48,7 @@ public class VotingDistiller implements Distiller<Object> {
             }
         }
         if (maxCount < minVotesToAnnotate) return null;
-        for (PreAnnotation annot : annotations) {
+        for (ANA annot : annotations) {
             if (annot != null && highestCount.equals(annot.getValue())) {
                 return annot;
             }

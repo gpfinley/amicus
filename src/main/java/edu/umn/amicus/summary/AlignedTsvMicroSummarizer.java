@@ -1,6 +1,6 @@
 //package edu.umn.amicus.summary;
 //
-//import edu.umn.amicus.PreAnnotation;
+//import edu.umn.amicus.ANA;
 //
 //import java.util.ArrayList;
 //import java.util.Iterator;
@@ -22,14 +22,14 @@
 //    }
 //
 //    @Override
-//    public String exportContents(Iterator<List<PreAnnotation>> annotIterator) {
+//    public String exportContents(Iterator<List<ANA>> annotIterator) {
 //
 //        int nFields = 0;
 //
 //        List<String> lines = new ArrayList<>();
 //
 //        while (annotIterator.hasNext()) {
-//            List<PreAnnotation> annots = annotIterator.next();
+//            List<ANA> annots = annotIterator.next();
 //            nFields = annots.size();
 //
 //            StringBuilder builder = new StringBuilder();
@@ -40,7 +40,7 @@
 //            builder.append(delimiter);
 //            builder.append(annots.get(firstAnnot).getEnd());
 //
-//            for (PreAnnotation annot : annots) {
+//            for (ANA annot : annots) {
 //                builder.append(delimiter);
 //                if (annot != null) {
 //                    // give the name or number of the source system along with the begin and end

@@ -1,7 +1,7 @@
 package edu.umn.amicus.distillers;
 
+import edu.umn.amicus.ANA;
 import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.PreAnnotation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class ListDistiller implements Distiller<List> {
      * @param annotations
      */
     @Override
-    public PreAnnotation<List> distill(AlignedTuple<PreAnnotation<List>> annotations) {
+    public ANA<List> distill(AlignedTuple annotations) {
         if (annotations.size() == 0) return null;
 
         List<Object> distilledList = new ArrayList<>();
@@ -26,7 +26,7 @@ public class ListDistiller implements Distiller<List> {
         int begin = Integer.MAX_VALUE;
         int end = Integer.MIN_VALUE;
 
-        for (PreAnnotation preAnnot : annotations) {
+        for (ANA preAnnot : annotations) {
             if (preAnnot != null) {
                 distilledList.add(preAnnot.getValue());
                 if (preAnnot.getEnd() > end) end = preAnnot.getEnd();
@@ -35,7 +35,7 @@ public class ListDistiller implements Distiller<List> {
                 distilledList.add(null);
             }
         }
-        return new PreAnnotation<List>(distilledList, begin, end);
+        return new ANA<List>(distilledList, begin, end);
     }
 
 }

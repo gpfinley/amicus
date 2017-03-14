@@ -1,6 +1,6 @@
 package edu.umn.amicus.pushers;
 
-import edu.umn.amicus.PreAnnotation;
+import edu.umn.amicus.ANA;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 
@@ -11,9 +11,9 @@ import org.apache.uima.jcas.tcas.Annotation;
  */
 public class PassthroughPusher extends Pusher {
 
-    public void push(JCas jCas, PreAnnotation<Object> preAnnotation) {
+    public void push(JCas jCas, ANA<Object> ana) {
         // todo: test!!! does this actually copy to another jCas, or do we need to do something else??
-        ((Annotation) preAnnotation.getValue()).addToIndexes(jCas);
+        ((Annotation) ana.getValue()).addToIndexes(jCas);
     }
 
 }

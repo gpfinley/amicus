@@ -1,7 +1,7 @@
 package edu.umn.amicus.aligners;
 
 import edu.umn.amicus.AlignedTuple;
-import org.apache.uima.jcas.tcas.Annotation;
+import edu.umn.amicus.ANA;
 
 import java.util.*;
 
@@ -19,13 +19,13 @@ public class PerfectOverlapAligner implements Aligner {
      * @return
      */
     @Override
-    public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
-        Map<BeginEnd, AlignedTuple<Annotation>> beMap = new HashMap<>();
+    public Iterator<AlignedTuple> alignAndIterate(List<List<ANA>> allAnnotations) {
+        Map<BeginEnd, AlignedTuple> beMap = new HashMap<>();
         for (int i=0; i < allAnnotations.size(); i++) {
-            for (Annotation annotation : allAnnotations.get(i)) {
+            for (ANA annotation : allAnnotations.get(i)) {
                 BeginEnd beginEnd = new BeginEnd(annotation.getBegin(), annotation.getEnd());
                 if (!beMap.containsKey(beginEnd)) {
-                    AlignedTuple<Annotation> newList = new AlignedTuple<>(allAnnotations.size());
+                    AlignedTuple newList = new AlignedTuple(allAnnotations.size());
                     beMap.put(beginEnd, newList);
                 }
                 beMap.get(beginEnd).set(i, annotation);

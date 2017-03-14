@@ -2,7 +2,7 @@ package edu.umn.amicus.aligners;
 
 import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.AmicusException;
-import org.apache.uima.jcas.tcas.Annotation;
+import edu.umn.amicus.ANA;
 
 import java.util.*;
 
@@ -23,12 +23,12 @@ public class RequirePerfectOverlapAligner implements Aligner {
      * @return
      */
     @Override
-    public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) throws AmicusException {
+    public Iterator<AlignedTuple> alignAndIterate(List<List<ANA>> allAnnotations) throws AmicusException {
 
-        List<AlignedTuple<Annotation>> overlappingAnnotationsOnly = new ArrayList<>();
-        Iterator<AlignedTuple<Annotation>> iterator = aligner.alignAndIterate(allAnnotations);
+        List<AlignedTuple> overlappingAnnotationsOnly = new ArrayList<>();
+        Iterator<AlignedTuple> iterator = aligner.alignAndIterate(allAnnotations);
         while (iterator.hasNext()) {
-            AlignedTuple<Annotation> list = iterator.next();
+            AlignedTuple list = iterator.next();
             if (!list.contains(null)) {
                 overlappingAnnotationsOnly.add(list);
             }
