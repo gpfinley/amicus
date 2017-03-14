@@ -1,7 +1,6 @@
 package edu.umn.amicus.config;
 
 import edu.umn.amicus.AmicusConfigurationException;
-import edu.umn.amicus.AmicusException;
 
 /**
  * All necessary configuration information for a single type to be merged.
@@ -13,7 +12,7 @@ public class AnnotationInputConfig {
     public String annotationType;
     public String annotationField;
     public String fromView;
-    public String pullerClass;
+    public String puller;
 
     /**
      * Verify that these mergers have enough config info
@@ -39,7 +38,7 @@ public class AnnotationInputConfig {
         return this;
     }
     public AnnotationInputConfig pullerClass(String transformerClass) {
-        this.pullerClass = transformerClass;
+        this.puller = transformerClass;
         return this;
     }
 

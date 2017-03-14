@@ -57,16 +57,16 @@ public class CreateExampleEvalConfig {
                 .fromView("BiomedicusView");
 
         goldExporter.name = "gold exporter";
-        goldExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        goldExporter.microSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
+        goldExporter.aligner = "edu.umn.amicus.aligners.EachSoloAligner";
+        goldExporter.documentSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
         goldExporter.inputs = new AnnotationInputConfig[] {goldInput};
-        goldExporter.microSummaryOutDirectory = "data/out/goldExports";
+        goldExporter.documentSummaryOutDir = "data/out/goldExports";
 
         biomedicusExporter.name = "biomedicus exporter";
-        biomedicusExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        biomedicusExporter.microSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
+        biomedicusExporter.aligner = "edu.umn.amicus.aligners.EachSoloAligner";
+        biomedicusExporter.documentSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
         biomedicusExporter.inputs = new AnnotationInputConfig[] {biomedicusInput};
-        biomedicusExporter.microSummaryOutDirectory = "data/out/biomedicusExports";
+        biomedicusExporter.documentSummaryOutDir = "data/out/biomedicusExports";
 
         goldCollector.name = "gold collector";
         goldCollector.input = goldInput;
@@ -78,7 +78,7 @@ public class CreateExampleEvalConfig {
 
 
         evalMerger.name = "acronym eval merger";
-        evalMerger.alignerClass = "edu.umn.amicus.eval.EvalPerfectOverlapAligner";
+        evalMerger.aligner = "edu.umn.amicus.eval.EvalPerfectOverlapAligner";
         evalMerger.inputs = new AnnotationInputConfig[] {goldInput, biomedicusInput};
         evalMerger.outputs = new AnnotationOutputConfig[] {
                 new AnnotationOutputConfig()

@@ -36,20 +36,20 @@ public class VotingDistiller implements Distiller<Object> {
     public PreAnnotation<Object> distill(AlignedTuple<PreAnnotation<Object>> annotations) {
         List<Object> values = new ArrayList<>();
         for (PreAnnotation pa : annotations) {
-            values.add(pa.getValue());
+            values.add(pa == null ? null : pa.getValue());
         }
         Counter<Object> annotationsCounter = new Counter<>(values);
         int maxCount = 0;
-        Object highestCount = null;
+        Object highestCount = "no object";
         for (Map.Entry<Object, Integer> entry : annotationsCounter.entrySet()) {
-            if (entry.getValue() > maxCount) {
+            if (entry.getValue() > maxCount && entry.getKey() != null) {
                 maxCount = entry.getValue();
                 highestCount = entry.getKey();
             }
         }
         if (maxCount < minVotesToAnnotate) return null;
         for (PreAnnotation annot : annotations) {
-            if (annot.getValue().equals(highestCount)) {
+            if (annot != null && highestCount.equals(annot.getValue())) {
                 return annot;
             }
         }
@@ -58,7 +58,7 @@ public class VotingDistiller implements Distiller<Object> {
     }
 
     private static class Config {
-        int minVotesToAnnotate;
+        public int minVotesToAnnotate;
     }
 
     // todo: test!

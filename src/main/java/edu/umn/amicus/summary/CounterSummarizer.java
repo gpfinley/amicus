@@ -32,7 +32,7 @@ public class CounterSummarizer extends Summarizer implements DocumentSummarizer,
                 }
             }
             for (int i=0; i<tuple.size(); i++) {
-                inputCounters.get(i).increment(tuple.get(i));
+                inputCounters.get(i).increment(tuple.get(i).getValue());
             }
         }
 

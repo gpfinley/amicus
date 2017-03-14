@@ -9,12 +9,14 @@ public class ExporterConfig extends PipelineComponentConfig {
 
     public String name = "untitled exporter";
     public AnnotationInputConfig[] inputs;
-    public String alignerClass;
-    public String microSummarizer;
-    public String microSummaryOutDirectory;
 
-    public String macroSummarizer;
-    public String macroSummaryOutPath;
+    public String aligner;
+
+    public String documentSummarizer;
+    public String documentSummaryOutDir;
+
+    public String collectionSummarizer;
+    public String collectionSummaryOutFile;
 
     @Override
     public void verify() {

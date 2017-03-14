@@ -32,7 +32,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
     public static final String INPUT_FIELDS = "inputFields";
     public static final String PULLER_CLASSES = "pullerClasses";
 
-    public static final String ALIGNER_CLASS = "alignerClass";
+    public static final String ALIGNER_CLASS = "aligner";
 
     public static final String DISTILLER_CLASSES = "distillerClasses";
     public static final String PUSHER_CLASSES = "pusherClasses";
@@ -151,6 +151,13 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         }
 
         try {
+            // todo: debug (remove)
+            try {
+                System.out.println(Util.getDocumentID(jCas));
+            } catch (CASException e) {
+                System.out.println("CASException");
+            }
+
             Iterator<AlignedTuple<Annotation>> listIter = aligner.alignAndIterate(getAnnotations(jCas));
             while (listIter.hasNext()) {
                 AlignedTuple<Annotation> annotations = listIter.next();

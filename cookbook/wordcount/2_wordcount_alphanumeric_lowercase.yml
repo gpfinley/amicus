@@ -1,6 +1,8 @@
 # Word counter
 # Will count instances of only purely alphanumeric tokens from the BioMedICUS tokenizer.
-# Case insensitive
+# Case insensitive (converts all words to lower case).
+# Counts words over the whole collection (collectionSummarizer)
+#     and for each document (documentSummarizer, which outputs one text file summary per document)
 
 !!edu.umn.amicus.config.AmicusPipelineConfiguration
 pipelineName: BioMedICUS lower case word counter pipeline
@@ -29,16 +31,11 @@ pipelineComponents:
   outputs:
     - {writeView: BiomedicusLowerView}
 
-#- !!edu.umn.amicus.config.SummarizerConfig
-#  name: Token count collectionSummarizer
-#  collectionSummarizer: edu.umn.amicus.summary.CounterCollectionSummarizer
-#  input: {fromView: BiomedicusLowerView}
-## Comment out the following line to display token counts rather than save to a text file
-#  outPath: token_counts.txt
-
 - !!edu.umn.amicus.config.ExporterConfig
   name: Token count collectionSummarizer
-  collectionSummarizer: edu.umn.amicus.summary.CounterCollectionSummarizerrizer
   inputs: [{fromView: BiomedicusLowerView}]
 # Comment out the following line to display token counts rather than save to a text file
-  macroSummaryOutPath: example_data/text_out/wordcounts_alphanumeric_lower.txt
+  documentSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  documentSummaryOutDir: example_data/document_summary/
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: example_data/collection_summary/tokencounts_alphanumeric_lower.txt

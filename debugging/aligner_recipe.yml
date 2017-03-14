@@ -1,0 +1,63 @@
+# Word counter
+# Will count instances of all tokens from the BioMedICUS tokenizer.
+
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: BioMedICUS token counter pipeline
+
+allSystemsUsed:
+- {
+    name: biomedicus,
+    dataPath: debugging/mtsamples_biomedicus,
+    readFromView: SystemView,
+    saveIntoView: BiomedicusView
+  }
+- {
+    name: ctakes,
+    dataPath: debugging/mtsamples_ctakes,
+    readFromView: _InitialView,
+    saveIntoView: CtakesView
+  }
+- {
+    name: clamp,
+    dataPath: debugging/mtsamples_clamp,
+    readFromView: _InitialView,
+    saveIntoView: ClampView
+  }
+xmiOutPath: example_data/xmi_out
+
+pipelineComponents:
+
+- !!edu.umn.amicus.config.MergerConfig
+  name: Concept merger
+  inputs:
+  - {
+    annotationType: edu.umn.biomedicus.uima.type1_6.DictionaryConcept,
+    annotationField: identifier,
+    fromView: BiomedicusView
+  }
+  - {
+    annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
+#    annotationField: ontologyConceptArr,
+    puller: edu.umn.amicus.pullers.CtakesCuiPuller,
+    fromView: CtakesView
+  }
+  - {
+    annotationType: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA,
+    annotationField: cui,
+    fromView: ClampView
+  }
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  outputs:
+  - {
+    distiller: edu.umn.amicus.distillers.VotingDistiller,
+    writeView: MergedView
+  }
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Concept exporter
+  inputs:
+  - {
+    fromView: MergedView
+  }
+  collectionSummarizer: edu.umn.amicus.summary.EachSoloCsvSummarizer
+  collectionSummaryOutFile: debugging/concepts_voted.csv

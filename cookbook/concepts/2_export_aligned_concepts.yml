@@ -1,0 +1,53 @@
+# Concept exporter
+# Will export all aligned concept annotations from all systems
+
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: BioMedICUS token counter pipeline
+
+allSystemsUsed:
+- {
+    name: biomedicus,
+    dataPath: example_data/mtsamples_biomedicus,
+    readFromView: SystemView,
+    saveIntoView: BiomedicusView
+  }
+- {
+    name: ctakes,
+    dataPath: example_data/mtsamples_ctakes,
+    readFromView: _InitialView,
+    saveIntoView: CtakesView
+  }
+- {
+    name: clamp,
+    dataPath: example_data/mtsamples_clamp,
+    readFromView: _InitialView,
+    saveIntoView: ClampView
+  }
+xmiOutPath: example_data/xmi_out
+
+pipelineComponents:
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Concept exporter
+  inputs:
+  - {
+    annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
+    # unnecessary to specify field; CtakesCuiPuller knows which one to use
+    puller: edu.umn.amicus.pullers.CtakesCuiPuller,
+    fromView: CtakesView
+  }
+  - {
+    annotationType: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA,
+    annotationField: cui,
+    fromView: ClampView
+  }
+  - {
+    annotationType: edu.umn.biomedicus.uima.type1_6.DictionaryConcept,
+    annotationField: identifier,
+    fromView: BiomedicusView
+  }
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  documentSummarizer: edu.umn.amicus.summary.AlignedCsvSummarizer
+  documentSummaryOutDir: example_data/document_summary
+  collectionSummarizer: edu.umn.amicus.summary.AlignedCsvSummarizer
+  collectionSummaryOutFile: example_data/collection_summary/concepts_aligned.csv

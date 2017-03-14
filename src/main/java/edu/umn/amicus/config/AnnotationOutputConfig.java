@@ -11,8 +11,8 @@ import edu.umn.amicus.AmicusConfigurationException;
 public class AnnotationOutputConfig {
     public String annotationType;
     public String annotationField;
-    public String distillerClass;
-    public String pusherClass;
+    public String distiller;
+    public String pusher;
     public String writeView;
 
     /**
@@ -36,11 +36,11 @@ public class AnnotationOutputConfig {
         return this;
     }
     public AnnotationOutputConfig distillerClass(String distillerClass) {
-        this.distillerClass = distillerClass;
+        this.distiller = distillerClass;
         return this;
     }
     public AnnotationOutputConfig pusherClass(String creatorClass) {
-        this.pusherClass = creatorClass;
+        this.pusher = creatorClass;
         return this;
     }
     public AnnotationOutputConfig writeView(String writeView) {

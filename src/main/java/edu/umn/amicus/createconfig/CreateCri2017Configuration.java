@@ -93,7 +93,7 @@
 //                .fromView("CtakesView")
 //                .annotationType(IdentifiedAnnotation.class.getName())
 //                .annotationField("ontologyConceptArr")
-//                .pullerClass(CtakesCuiPuller.class.getName());
+//                .puller(CtakesCuiPuller.class.getName());
 //        ctakesCuiToEquiv.outputs = new AnnotationOutputConfig[] {
 //                new AnnotationOutputConfig()
 //                        .annotationType(SingleFieldAnnotation.class.getName())
@@ -125,7 +125,7 @@
 //        goldStringToEquiv.input = new AnnotationInputConfig()
 //                .annotationType(TokenAnnotation.class.getName())
 //                .annotationField("acronymAbbrevExpansion;isAcronymAbbrev")
-//                .pullerClass(MultipleFieldsToConcatStringPuller.class.getName())
+//                .puller(MultipleFieldsToConcatStringPuller.class.getName())
 //                .fromView("GoldView");
 //        goldStringToEquiv.outputs = new AnnotationOutputConfig[] {
 //                new AnnotationOutputConfig()
@@ -138,7 +138,7 @@
 //        };
 //
 //        merger.name = "Acronym answer merger";
-////        merger.alignerClass = AllOverlapsAligner.class.getName();
+////        merger.aligner = AllOverlapsAligner.class.getName();
 //        merger.inputs = new AnnotationInputConfig[] {
 //                new AnnotationInputConfig()
 //                        .fromView("BiomedicusMappedView")
@@ -158,13 +158,13 @@
 //                        .writeView("MergedView")
 //                        .annotationType(SingleFieldAnnotation.class.getName())
 //                        .annotationField("field")
-//                        .distillerClass(PriorityDistiller.class.getName())
+//                        .distiller(PriorityDistiller.class.getName())
 //        };
 //
 //
 //        evalMerger.name = "Eval merger";
 //        // todo: implement partial overlap aligner for merger
-//        evalMerger.alignerClass = EvalPerfectOverlapAligner.class.getName();
+//        evalMerger.aligner = EvalPerfectOverlapAligner.class.getName();
 //        evalMerger.inputs = new AnnotationInputConfig[] {
 //                new AnnotationInputConfig()
 //                        .fromView("GoldMappedView")
@@ -191,16 +191,16 @@
 //                new AnnotationOutputConfig()
 //                        .writeView("EvalIntermediateView")
 //                        .annotationType(edu.umn.amicus.EvalAnnotation.class.getName())
-//                        .distillerClass(EvalMatchDistiller.class.getName())
-//                        .pusherClass(EvalMatchPusher.class.getName())
+//                        .distiller(EvalMatchDistiller.class.getName())
+//                        .pusher(EvalMatchPusher.class.getName())
 //        };
 //
-//        evalSummarizer.name = "Evaluation macroSummarizer";
+//        evalSummarizer.name = "Evaluation collectionSummarizer";
 //        evalSummarizer.input = new AnnotationInputConfig()
 //                .fromView("EvalIntermediateView")
 //                .annotationType(edu.umn.amicus.EvalAnnotation.class.getName())
-//                .pullerClass(EvalMatchPuller.class.getName());
-//        evalSummarizer.macroSummarizer = EvalPrfCollectionSummarizer.class.getName();
+//                .puller(EvalMatchPuller.class.getName());
+//        evalSummarizer.collectionSummarizer = EvalPrfCollectionSummarizer.class.getName();
 //        evalSummarizer.outPath = "acronym_evaluation_summary.txt";
 //
 //

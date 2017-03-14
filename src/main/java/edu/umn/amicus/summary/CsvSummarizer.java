@@ -63,8 +63,8 @@ public abstract class CsvSummarizer extends Summarizer {
     }
 
     private static class Config {
-        boolean useTabs;
-        boolean usePipe;
+        public boolean useTabs;
+        public boolean usePipe;
     }
 
     static {

@@ -42,8 +42,8 @@ public class CreateExampleExportConfig {
         SummarizerConfig biomedicusCollector = new SummarizerConfig();
 
         goldExporter.name = "gold exporter";
-        goldExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        goldExporter.microSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
+        goldExporter.aligner = "edu.umn.amicus.aligners.EachSoloAligner";
+        goldExporter.documentSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
         goldExporter.inputs = new AnnotationInputConfig[] {
                 new AnnotationInputConfig()
                         .annotationType("edu.umn.biomedicus.type.TokenAnnotation")
@@ -51,11 +51,11 @@ public class CreateExampleExportConfig {
                         .pullerClass("edu.umn.amicus.pullers.EquivalentMapperPuller")
                         .fromView("GoldView")
                 };
-        goldExporter.microSummaryOutDirectory = "data/out/goldExports";
+        goldExporter.documentSummaryOutDir = "data/out/goldExports";
 
         biomedicusExporter.name = "biomedicus exporter";
-        biomedicusExporter.alignerClass = "edu.umn.amicus.aligners.EachSoloAligner";
-        biomedicusExporter.microSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
+        biomedicusExporter.aligner = "edu.umn.amicus.aligners.EachSoloAligner";
+        biomedicusExporter.documentSummarizer = "edu.umn.amicus.export.EachSoloTsvMicroSummarizer";
         biomedicusExporter.inputs = new AnnotationInputConfig[] {
                 new AnnotationInputConfig()
                         .annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")
@@ -63,7 +63,7 @@ public class CreateExampleExportConfig {
                         .pullerClass("edu.umn.amicus.pullers.EquivalentMapperPuller")
                         .fromView("BiomedicusView")
         };
-        biomedicusExporter.microSummaryOutDirectory = "data/out/biomedicusExports";
+        biomedicusExporter.documentSummaryOutDir = "data/out/biomedicusExports";
 
         goldCollector.name = "gold collector";
         goldCollector.input = new AnnotationInputConfig()

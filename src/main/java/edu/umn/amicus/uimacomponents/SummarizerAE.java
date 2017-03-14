@@ -32,7 +32,7 @@
 //    public static final String READ_VIEW = "readView";
 //    public static final String INPUT_TYPE = "typeClass";
 //    public static final String INPUT_FIELD = "fieldName";
-//    public static final String PULLER_CLASS = "pullerClass";
+//    public static final String PULLER_CLASS = "puller";
 //    public static final String LISTENER_NAME = "listenerName";
 //    public static final String COLLECTION_SUMMARIZER_CLASS = "summaryWriterClassName";
 //    public static final String OUTPUT_PATH = "outputPath";
@@ -103,7 +103,7 @@
 //    public void collectionProcessComplete() throws AnalysisEngineProcessException {
 //        CollectionSummarizer collectionSummarizer;
 //        try {
-//            collectionSummarizer = AnalysisPieceFactory.macroSummarizer(summaryWriterClassName);
+//            collectionSummarizer = AnalysisPieceFactory.collectionSummarizer(summaryWriterClassName);
 //        } catch (AmicusException e) {
 //            LOGGER.severe(String.format("Problem instantiating CollectionSummarizer \"%s\" in CollectionSummarizer \"%s\"",
 //                    summaryWriterClassName, myName));

@@ -49,7 +49,7 @@ public abstract class PipelineComponentConfig {
     public static String[] aggregateInputPullers(AnnotationInputConfig[] inputs) {
         List<String> inputTransformers = new ArrayList<>();
         for (AnnotationInputConfig inputConfig : inputs) {
-            inputTransformers.add(inputConfig.pullerClass);
+            inputTransformers.add(inputConfig.puller);
         }
         return inputTransformers.toArray(new String[inputTransformers.size()]);
     }
@@ -78,14 +78,14 @@ public abstract class PipelineComponentConfig {
     public static String[] aggregateOutputPushers(AnnotationOutputConfig[] outputs) {
         String[] creators = new String[outputs.length];
         for (int i=0; i<outputs.length; i++) {
-            creators[i] = outputs[i].pusherClass;
+            creators[i] = outputs[i].pusher;
         }
         return creators;
     }
     public static String[] aggregateOutputDistillers(AnnotationOutputConfig[] outputs) {
         String[] distillers = new String[outputs.length];
         for (int i=0; i<outputs.length; i++) {
-            distillers[i] = outputs[i].distillerClass;
+            distillers[i] = outputs[i].distiller;
         }
         return distillers;
     }

@@ -2,6 +2,7 @@ package Aligners;
 
 import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.aligners.Aligner;
+import edu.umn.amicus.aligners.PartialOverlapAligner;
 import edu.umn.amicus.aligners.RequireOverlapAligner;
 import org.apache.uima.UIMAException;
 import org.apache.uima.fit.factory.JCasFactory;
@@ -39,7 +40,7 @@ public class PartialOverlapAlignerTest {
     }
 
     public static void main(String[] args) throws Exception {
-        Aligner aligner = new RequireOverlapAligner();
+        Aligner aligner = new PartialOverlapAligner();
 
         List<List<Annotation>> bigList = new ArrayList<>();
 

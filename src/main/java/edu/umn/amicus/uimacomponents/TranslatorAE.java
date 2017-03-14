@@ -31,7 +31,7 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
     public static final String READ_VIEW = "readView";
     public static final String INPUT_TYPE = "typeClass";
     public static final String INPUT_FIELD = "inputField";
-    public static final String PULLER_CLASS = "pullerClass";
+    public static final String PULLER_CLASS = "puller";
 
     public static final String FILTER_PATTERN = "filterPattern";
     public static final String FILTER_CLASS = "filterClass";

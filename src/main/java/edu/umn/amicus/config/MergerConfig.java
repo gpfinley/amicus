@@ -15,7 +15,7 @@ public class MergerConfig extends PipelineComponentConfig {
     public AnnotationInputConfig[] inputs;
     public AnnotationOutputConfig[] outputs;
 
-    public String alignerClass;
+    public String aligner;
 
     /**
      * Verify that these mergers have enough config info

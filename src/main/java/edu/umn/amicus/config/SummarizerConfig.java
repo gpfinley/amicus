@@ -25,7 +25,7 @@ public class SummarizerConfig extends PipelineComponentConfig {
             LOGGER.severe("Input configuration incomplete for CollectionSummarizer " + name);
             throw e;
         }
-        // todo. Has to have a name. macroSummarizer should be a real class
+        // todo. Has to have a name. collectionSummarizer should be a real class
     }
 
 }

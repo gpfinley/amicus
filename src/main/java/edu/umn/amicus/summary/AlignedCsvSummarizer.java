@@ -33,9 +33,9 @@ public class AlignedCsvSummarizer extends CsvSummarizer implements DocumentSumma
         int nFields = 0;
 
         while (tuples.hasNext()) {
-            List<Object> fields = new ArrayList<>();
+            List<Object> values = new ArrayList<>();
             if (docIds != null) {
-                fields.add(docIds.next());
+                values.add(docIds.next());
             }
             AlignedTuple<PreAnnotation> tuple = tuples.next();
             nFields = tuple.size();
@@ -43,22 +43,22 @@ public class AlignedCsvSummarizer extends CsvSummarizer implements DocumentSumma
             {
                 for (PreAnnotation annot : tuple) {
                     if (annot != null) {
-                        fields.add(annot.getBegin());
-                        fields.add(annot.getEnd());
+                        values.add(annot.getBegin());
+                        values.add(annot.getEnd());
                         break addBeginEnd;
                     }
                 }
-                fields.add("none");
-                fields.add("none");
+                values.add("none");
+                values.add("none");
             }
             for (PreAnnotation annot : tuple) {
                 if (annot == null) {
-                    fields.add("");
+                    values.add("");
                 } else {
-                    fields.add(annot.getValue());
+                    values.add(annot.getValue());
                 }
             }
-            lines.add(buildLine(fields));
+            lines.add(buildLine(values));
         }
 
         // build header
@@ -69,9 +69,9 @@ public class AlignedCsvSummarizer extends CsvSummarizer implements DocumentSumma
         headerObjects.add("begin");
         headerObjects.add("end");
         for (int i=0; i<nFields; i++) {
-            String viewName = viewNames[i] == null ? "unknown_view" : viewNames[i];
-            String typeName = types[i] == null ? "unknown_type" : types[i];
-            String fieldName = fields[i] == null ? "unknown_field" : fields[i];
+            String viewName = viewNames[i] == null ? "view" : viewNames[i];
+            String typeName = types[i] == null ? "type" : types[i];
+            String fieldName = fields[i] == null ? "field" : fields[i];
             headerObjects.add(viewName + ":" + typeName + ":" + fieldName);
         }
         StringBuilder builder = new StringBuilder();

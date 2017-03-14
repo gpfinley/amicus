@@ -40,10 +40,10 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
 
     public static final String ALIGNER_CLASS = "alignerClass";
     public static final String DOC_SUMMARIZER_CLASS = "documentSummarizerClassName";
-    public static final String OUTPUT_DIRECTORY = "microSummaryOutDirectory";
+    public static final String OUTPUT_DIRECTORY = "documentSummaryOutDir";
 
     public static final String COLLECTION_SUMMARIZER_CLASS = "collectionSummarizerClassName";
-    public static final String SUMMARY_OUTPUT_PATH = "macroSummaryOutPath";
+    public static final String SUMMARY_OUTPUT_PATH = "collectionSummaryOutFile";
 
     @ConfigurationParameter(name = MY_NAME, defaultValue = "Unnamed Exporter")
     private String myName;

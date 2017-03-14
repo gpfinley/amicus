@@ -53,9 +53,9 @@ public class EachSoloCsvSummarizer extends CsvSummarizer implements DocumentSumm
                     if (docIds != null) {
                         data.add(docId);
                     }
-                    data.add(i < viewNames.length && viewNames[i] != null ? viewNames[i] : "unknown_view");
-                    data.add(i < types.length && types[i] != null ? types[i] : "unknown_type");
-                    data.add(i < fields.length && fields[i] != null ? fields[i] : "unknown_field");
+                    data.add(i < viewNames.length && viewNames[i] != null ? viewNames[i] : "");
+                    data.add(i < types.length && types[i] != null ? types[i] : "");
+                    data.add(i < fields.length && fields[i] != null ? fields[i] : "");
                     data.add(annots.get(i).getBegin());
                     data.add(annots.get(i).getEnd());
 
@@ -83,7 +83,7 @@ public class EachSoloCsvSummarizer extends CsvSummarizer implements DocumentSumm
         if (docIds != null) {
             headerObjects.add("docID");
         }
-        Collections.addAll(headerObjects, "fromView", "fromType", "fieldName", "begin", "end");
+        Collections.addAll(headerObjects, "fromView", "typeName", "fieldName", "begin", "end");
         for (int i=0; i<maxFields; i++) {
             headerObjects.add("field");
         }

@@ -32,7 +32,7 @@ public class LoggerWindow extends JFrame {
     }
 
     private LoggerWindow() {
-        super("AMICUS log");
+        super("AMICUS");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(1500, 480);
 

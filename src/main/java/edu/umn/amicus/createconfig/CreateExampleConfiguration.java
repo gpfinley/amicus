@@ -1,6 +1,5 @@
 package edu.umn.amicus.createconfig;
 
-import edu.umn.amicus.Amicus;
 import edu.umn.amicus.config.*;
 import org.yaml.snakeyaml.Yaml;
 
@@ -60,7 +59,7 @@ public class CreateExampleConfiguration {
 
         MergerConfig acronymMergerBean = new MergerConfig();
         acronymMergerBean.name = "Acronym Merger";
-        acronymMergerBean.alignerClass = "edu.umn.amicus.aligners.PerfectOverlapAligner";
+        acronymMergerBean.aligner = "edu.umn.amicus.aligners.PerfectOverlapAligner";
         acronymMergerBean.inputs = new AnnotationInputConfig[]{
                 new AnnotationInputConfig().fromView("BiomedicusView")
                         .annotationType("edu.umn.biomedicus.uima.type1_6.Acronym")

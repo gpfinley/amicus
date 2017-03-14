@@ -2,7 +2,7 @@
 # Will count instances of all tokens from the BioMedICUS tokenizer.
 
 !!edu.umn.amicus.config.AmicusPipelineConfiguration
-pipelineName: BioMedICUS lower case word counter pipeline
+pipelineName: BioMedICUS token counter pipeline
 
 allSystemsUsed:
 - {
@@ -17,12 +17,12 @@ pipelineComponents:
 
 - !!edu.umn.amicus.config.ExporterConfig
   name: Token counter
-  collectionSummarizer: edu.umn.amicus.summary.CounterCollectionSummarizerrizer
   inputs:
   - {
     annotationType: edu.umn.biomedicus.uima.type1_6.ParseToken,
     annotationField: coveredText,
     fromView: BiomedicusView
   }
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
 # Comment out the following line to display token counts rather than save to a text file
-  macroSummaryOutPath: example_data/text_out/wordcounts_raw.txt
+  collectionSummaryOutFile: example_data/collection_summary/tokencounts_raw.txt

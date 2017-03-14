@@ -60,7 +60,7 @@ public class AmicusPipeline {
                                 MergerAE.INPUT_TYPES, PipelineComponentConfig.aggregateInputTypes(mergerConfig.inputs),
                                 MergerAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(mergerConfig.inputs),
                                 MergerAE.PULLER_CLASSES, PipelineComponentConfig.aggregateInputPullers(mergerConfig.inputs),
-                                MergerAE.ALIGNER_CLASS, mergerConfig.alignerClass,
+                                MergerAE.ALIGNER_CLASS, mergerConfig.aligner,
                                 MergerAE.DISTILLER_CLASSES, PipelineComponentConfig.aggregateOutputDistillers(mergerConfig.outputs),
                                 MergerAE.OUTPUT_TYPES, PipelineComponentConfig.aggregateOutputAnnotationClasses(mergerConfig.outputs),
                                 MergerAE.OUTPUT_FIELDS, PipelineComponentConfig.aggregateOutputAnnotationFields(mergerConfig.outputs),
@@ -75,8 +75,8 @@ public class AmicusPipeline {
 //                                SummarizerAE.INPUT_TYPE, summarizerConfig.input.annotationType,
 //                                SummarizerAE.INPUT_FIELD, summarizerConfig.input.annotationField,
 //                                SummarizerAE.READ_VIEW, summarizerConfig.input.fromView,
-//                                SummarizerAE.PULLER_CLASS, summarizerConfig.input.pullerClass,
-//                                SummarizerAE.COLLECTION_SUMMARIZER_CLASS, summarizerConfig.macroSummarizer,
+//                                SummarizerAE.PULLER_CLASS, summarizerConfig.input.puller,
+//                                SummarizerAE.COLLECTION_SUMMARIZER_CLASS, summarizerConfig.collectionSummarizer,
 //                                SummarizerAE.LISTENER_NAME, summarizerConfig.name,
 //                                SummarizerAE.OUTPUT_PATH, summarizerConfig.outPath
 //                        ));
@@ -89,11 +89,11 @@ public class AmicusPipeline {
                                 ExporterAE.INPUT_TYPES, PipelineComponentConfig.aggregateInputTypes(exporterConfig.inputs),
                                 ExporterAE.INPUT_FIELDS, PipelineComponentConfig.aggregateInputFields(exporterConfig.inputs),
                                 ExporterAE.PULLER_CLASSES, PipelineComponentConfig.aggregateInputPullers(exporterConfig.inputs),
-                                ExporterAE.ALIGNER_CLASS, exporterConfig.alignerClass,
-                                ExporterAE.DOC_SUMMARIZER_CLASS, exporterConfig.microSummarizer,
-                                ExporterAE.OUTPUT_DIRECTORY, exporterConfig.microSummaryOutDirectory,
-                                ExporterAE.SUMMARY_OUTPUT_PATH, exporterConfig.macroSummaryOutPath,
-                                ExporterAE.COLLECTION_SUMMARIZER_CLASS, exporterConfig.macroSummarizer
+                                ExporterAE.ALIGNER_CLASS, exporterConfig.aligner,
+                                ExporterAE.DOC_SUMMARIZER_CLASS, exporterConfig.documentSummarizer,
+                                ExporterAE.OUTPUT_DIRECTORY, exporterConfig.documentSummaryOutDir,
+                                ExporterAE.SUMMARY_OUTPUT_PATH, exporterConfig.collectionSummaryOutFile,
+                                ExporterAE.COLLECTION_SUMMARIZER_CLASS, exporterConfig.collectionSummarizer
                         ));
             } else if (componentConfig.getClass().equals(TranslatorConfig.class)) {
                 TranslatorConfig translatorConfig = (TranslatorConfig) componentConfig;
@@ -101,7 +101,7 @@ public class AmicusPipeline {
                         AnalysisEngineFactory.createEngine(TranslatorAE.class,
                                 TranslatorAE.MY_NAME, translatorConfig.name,
                                 TranslatorAE.READ_VIEW, translatorConfig.input.fromView,
-                                TranslatorAE.PULLER_CLASS, translatorConfig.input.pullerClass,
+                                TranslatorAE.PULLER_CLASS, translatorConfig.input.puller,
                                 TranslatorAE.INPUT_TYPE, translatorConfig.input.annotationType,
                                 TranslatorAE.INPUT_FIELD, translatorConfig.input.annotationField,
                                 TranslatorAE.FILTER_CLASS, translatorConfig.filter,

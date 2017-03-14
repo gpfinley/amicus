@@ -39,7 +39,7 @@ public class XmiWriterAE extends CasAnnotator_ImplBase {
     private Path outputDir;
 
     /**
-     * Initializes the microSummaryOutDirectory.
+     * Initializes the documentSummaryOutDir.
      *
      * @param context the uima context
      * @throws ResourceInitializationException if we fail to initialize DocumentIdOutputStreamFactory

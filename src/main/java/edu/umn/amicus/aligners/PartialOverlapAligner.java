@@ -3,9 +3,11 @@ package edu.umn.amicus.aligners;
 import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.Counter;
 import org.apache.commons.lang.math.IntRange;
+import org.apache.commons.lang.mutable.MutableDouble;
 import org.apache.uima.jcas.tcas.Annotation;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Aligner that allows for partial overlaps.
@@ -17,13 +19,15 @@ import java.util.*;
  */
 public class PartialOverlapAligner implements Aligner {
 
+    private static final Logger LOGGER = Logger.getLogger(PartialOverlapAligner.class.getName());
+
     // set at the beginning: the input for each annotation
-    private Map<Annotation, Integer> sourceInput;
+//    private Map<Annotation, Integer> sourceInput;
     // all possible sets that each annotation could be a part of
-    private Map<Annotation, Set<Set<Annotation>>> setMemberships;
+//    private Map<Annotation, Set<Set<Annotation>>> setMemberships;
 
     // this variable will be changed and acted upon by a recursive method
-    private List<List<Set<Annotation>>> allCombos;
+//    private List<List<Set<Annotation>>> allCombos;
 
     /**
      * Generate alignments of annotations that fully overlap shorter annotations.
@@ -35,8 +39,14 @@ public class PartialOverlapAligner implements Aligner {
      * @return
      */
     public Iterator<AlignedTuple<Annotation>> alignAndIterate(List<List<Annotation>> allAnnotations) {
-        sourceInput = new HashMap<>();
-        setMemberships = new HashMap<>();
+        // todo: remove
+        long time = System.currentTimeMillis();
+
+        allAnnotations = removeTotalOverlapsFromSameSystem(allAnnotations);
+
+        Map<Annotation, Integer> sourceInput = new HashMap<>();
+        Map<Annotation, Set<Set<Annotation>>> setMemberships = new HashMap<>();
+
         List<Set<Annotation>> annotationsAtIndex = new ArrayList<>();
         for (int sysIndex = 0; sysIndex < allAnnotations.size(); sysIndex++) {
             for (Annotation annotation : allAnnotations.get(sysIndex)) {
@@ -53,15 +63,15 @@ public class PartialOverlapAligner implements Aligner {
             }
         }
 
-        // determine all possible set memberships for every annotation
-        for (Set<Annotation> annotationsThisIndex : annotationsAtIndex) {
+        Set<Set<Annotation>> allSetsOverAllIndices = new HashSet<>(annotationsAtIndex);
+        Set<Set<Annotation>> allLegalSets = new HashSet<>();
+        for (Set<Annotation> annotationSet : allSetsOverAllIndices) {
             // if a single input has multiple annotations at this index, split into multiple sets to try
-            // todo: test that this function actually works
-            Set<Set<Annotation>> allPossibleSetsThisIndex = getOnePerInputSets(annotationsThisIndex);
-            for (Set<Annotation> thisSet : allPossibleSetsThisIndex) {
-                for (Annotation annotation : thisSet) {
-                    setMemberships.get(annotation).add(thisSet);
-                }
+            allLegalSets.addAll(getOnePerInputSets(annotationSet, sourceInput));
+        }
+        for (Set<Annotation> thisSet : allSetsOverAllIndices) {
+            for (Annotation a : thisSet) {
+                setMemberships.get(a).add(thisSet);
             }
         }
 
@@ -71,7 +81,7 @@ public class PartialOverlapAligner implements Aligner {
         Set<Set<Annotation>> sprawls = new HashSet<>();
         while(annotationsAccountedFor.size() > 0) {
             Annotation annot = annotationsAccountedFor.iterator().next();
-            Set<Annotation> thisSprawl = getSprawlOf(annot, null);
+            Set<Annotation> thisSprawl = getSprawlOf(annot, null, setMemberships);
             annotationsAccountedFor.removeAll(thisSprawl);
             sprawls.add(thisSprawl);
         }
@@ -79,22 +89,23 @@ public class PartialOverlapAligner implements Aligner {
         // for each sprawl, find the most optimal combo of alignments for that sprawl and add to the big list
         List<AlignedTuple<Annotation>> allAlignments = new ArrayList<>();
         for (Set<Annotation> sprawl : sprawls) {
-            allCombos = new ArrayList<>();
-            addAllCombos(new LinkedHashSet<>(sprawl), null);
-            List<Set<Annotation>> bestCombo = allCombos.get(0);
-            if (allCombos.size() > 1) {
-                double bestScore = -Double.MAX_VALUE;
-                for (List<Set<Annotation>> combo : allCombos) {
-                    double score = 0;
-                    for (Set<Annotation> annots : combo) {
-                        score += calculateScore(annots);
-                    }
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestCombo = combo;
-                    }
-                }
-            }
+//            List<List<Set<Annotation>>> allCombos = new ArrayList<>();
+//            addAllCombos(new LinkedHashSet<>(sprawl), null);
+//            List<Set<Annotation>> bestCombo = allCombos.get(0);
+//            if (allCombos.size() > 1) {
+//                double bestScore = -Double.MAX_VALUE;
+//                for (List<Set<Annotation>> combo : allCombos) {
+//                    double score = 0;
+//                    for (Set<Annotation> annots : combo) {
+//                        score += calculateScore(annots);
+//                    }
+//                    if (score > bestScore) {
+//                        bestScore = score;
+//                        bestCombo = combo;
+//                    }
+//                }
+//            }
+            List<Set<Annotation>> bestCombo = getBestCombo(new LinkedHashSet<>(sprawl), null, setMemberships, null);
             for (Set<Annotation> set : bestCombo) {
                 AlignedTuple<Annotation> byInputTuple = new AlignedTuple<>(allAnnotations.size());
                 for (Annotation annotation : set) {
@@ -103,7 +114,32 @@ public class PartialOverlapAligner implements Aligner {
                 allAlignments.add(byInputTuple);
             }
         }
+
+        LOGGER.info("PartialOverlapAligner took " + ((System.currentTimeMillis() - time) / 1000.) + "s");
         return allAlignments.iterator();
+    }
+
+    private static List<List<Annotation>> removeTotalOverlapsFromSameSystem(List<List<Annotation>> allAnnotations) {
+        List<List<Annotation>> reduced = new ArrayList<>();
+        for (List<Annotation> annotations : allAnnotations) {
+            List<Annotation> newList = new ArrayList<>();
+            Set<BeginEnd> beginEnds = new HashSet<>();
+            for (Annotation annotation : annotations) {
+                if (beginEnds.add(new BeginEnd(annotation.getBegin(), annotation.getEnd()))) {
+                    newList.add(annotation);
+                }
+            }
+            reduced.add(newList);
+        }
+        return reduced;
+    }
+
+    private static double calculateComboScore(List<Set<Annotation>> combo) {
+        double score = 0;
+        for (Set<Annotation> annots : combo) {
+            score += calculateScore(annots);
+        }
+        return score;
     }
 
     private static double calculateScore(Collection<Annotation> annotations) {
@@ -146,13 +182,13 @@ public class PartialOverlapAligner implements Aligner {
      * @param currentSprawl the sprawl currently being built; can be null
      * @return a set of every annotation in the sprawl
      */
-    private Set<Annotation> getSprawlOf(Annotation annotation, Set<Annotation> currentSprawl) {
+    private static Set<Annotation> getSprawlOf(Annotation annotation, Set<Annotation> currentSprawl, Map<Annotation, Set<Set<Annotation>>> setMemberships) {
         if (currentSprawl == null) currentSprawl = new HashSet<>();
         currentSprawl.add(annotation);
         for (Set<Annotation> thisSet : setMemberships.get(annotation)) {
             for (Annotation other : thisSet) {
                 if (!currentSprawl.contains(other)) {
-                    currentSprawl.addAll(getSprawlOf(other, currentSprawl));
+                    currentSprawl.addAll(getSprawlOf(other, currentSprawl, setMemberships));
                 }
             }
         }
@@ -160,7 +196,10 @@ public class PartialOverlapAligner implements Aligner {
     }
 
     // find all possible combinations of aligned sets given annotationsLeft
-    private void addAllCombos(LinkedHashSet<Annotation> annotationsLeft, List<Set<Annotation>> builtThusFar) {
+    private static void addAllCombos(List<List<Set<Annotation>>> allCombos,
+                                     LinkedHashSet<Annotation> annotationsLeft,
+                                     List<Set<Annotation>> builtThusFar,
+                                     Map<Annotation, Set<Set<Annotation>>> setMemberships) {
         if (builtThusFar == null) {
             builtThusFar = new ArrayList<>();
         }
@@ -181,13 +220,55 @@ public class PartialOverlapAligner implements Aligner {
                 newBuiltThusFar.add(trySet);
                 LinkedHashSet<Annotation> newAnnotationsLeft = new LinkedHashSet<>(annotationsLeft);
                 newAnnotationsLeft.removeAll(trySet);
-                addAllCombos(newAnnotationsLeft, newBuiltThusFar);
+                addAllCombos(allCombos, newAnnotationsLeft, newBuiltThusFar, setMemberships);
             }
         }
     }
 
+    private static List<Set<Annotation>> getBestCombo(LinkedHashSet<Annotation> annotationsLeft,
+                                     List<Set<Annotation>> builtThusFar,
+                                     Map<Annotation, Set<Set<Annotation>>> setMemberships,
+                                     MutableDouble bestScore) {
+        if (bestScore == null) {
+            bestScore = new MutableDouble(-1);
+        }
+        if (builtThusFar == null) {
+            builtThusFar = new ArrayList<>();
+        }
+        if (annotationsLeft.size() == 0) {
+            double score = calculateComboScore(builtThusFar);
+            if (score > bestScore.doubleValue()) {
+                bestScore.setValue(score);
+                return builtThusFar;
+            }
+            return null;
+        }
+        List<Set<Annotation>> bestCombo = null;
+        Annotation annotation = annotationsLeft.iterator().next();
+        for (Set<Annotation> trySet : setMemberships.get(annotation)) {
+            tryThisSet:
+            {
+                for (Annotation otherAnnotation : trySet) {
+                    if (!annotationsLeft.contains(otherAnnotation)) {
+                        break tryThisSet;
+                    }
+                }
+                List<Set<Annotation>> newBuiltThusFar = new ArrayList<>(builtThusFar);
+                newBuiltThusFar.add(trySet);
+                LinkedHashSet<Annotation> newAnnotationsLeft = new LinkedHashSet<>(annotationsLeft);
+                newAnnotationsLeft.removeAll(trySet);
+                List<Set<Annotation>> thisCombo = getBestCombo(newAnnotationsLeft, newBuiltThusFar, setMemberships, bestScore);
+                if (thisCombo != null) {
+                    bestCombo = thisCombo;
+                }
+            }
+        }
+        return bestCombo;
+    }
+
+//    static int recursed;
     // get all possible sets at this index--with a maximum of one annotation per input (if there are any overlapping)
-    private Set<Set<Annotation>> getOnePerInputSets(Set<Annotation> annotations) {
+    private static Set<Set<Annotation>> getOnePerInputSets(Set<Annotation> annotations, Map<Annotation, Integer> sourceInput) {
         Set<Set<Annotation>> theseSets = new HashSet<>();
         Set<Integer> inputsUsed = new HashSet<>();
         boolean addThisSetAsIs = true;
@@ -196,7 +277,11 @@ public class PartialOverlapAligner implements Aligner {
             if (inputsUsed.contains(source)) {
                 Set<Annotation> newSet = new HashSet<>(annotations);
                 newSet.remove(annotation);
-                theseSets.addAll(getOnePerInputSets(newSet));
+//                recursed ++;
+//                System.out.println(recursed);
+//                System.out.println(annotation);
+//                System.out.println(annotations);
+                theseSets.addAll(getOnePerInputSets(newSet, sourceInput));
                 addThisSetAsIs = false;
             } else {
                 inputsUsed.add(source);
