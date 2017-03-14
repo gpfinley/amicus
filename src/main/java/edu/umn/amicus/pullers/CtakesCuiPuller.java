@@ -29,7 +29,7 @@ public class CtakesCuiPuller extends Puller {
      */
     @Override
     public String pull(Annotation annotation) throws AmicusException {
-        String cui = "";
+        String cui = null;
         FSArray conceptArray;
         try {
             conceptArray = (FSArray) callThisGetter(fieldName, annotation);
