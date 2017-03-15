@@ -3,12 +3,11 @@ package edu.umn.amicus;
 import java.util.*;
 
 /**
- * todo doc
- * todo use in place of List<ANA> where appropriate
+ * Data structure for holding an aligned tuple of AMICUS-native annotations.
+ * Output for Aligners, input for Distillers and Summarizers.
+ *
  * Created by gpfinley on 3/10/17.
  */
-// todo should it implement List?
-//public class AlignedTuple implements List<ANA> {
 public class AlignedTuple implements Iterable<ANA> {
 
     private final List<ANA> list;
@@ -59,11 +58,7 @@ public class AlignedTuple implements Iterable<ANA> {
         if (other instanceof AlignedTuple) {
             return list.equals(((AlignedTuple) other).list);
         }
-        if (other instanceof List) {
-            // todo; test (if this is ever going to be used?)
-            return list.equals(other);
-        }
-        return false;
+        return other instanceof List && list.equals(other);
     }
 
 }

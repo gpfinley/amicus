@@ -1,4 +1,4 @@
-package Aligners;
+package aligners;
 
 import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.ANA;

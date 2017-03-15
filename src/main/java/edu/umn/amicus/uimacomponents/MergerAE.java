@@ -71,7 +71,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
     private String[] outputAnnotationFields;
 
     private List<Class> typeClasses;
-    private List<Distiller> distillers;
+    private List<Distiller<Object>> distillers;
     private List<Pusher> pushers;
     private List<Puller> pullers;
     private Aligner aligner;
@@ -151,13 +151,6 @@ public class MergerAE extends JCasAnnotator_ImplBase {
         }
 
         try {
-            // todo: debug (remove)
-            try {
-                System.out.println(Util.getDocumentID(jCas));
-            } catch (CASException e) {
-                System.out.println("CASException");
-            }
-
             Iterator<AlignedTuple> listIter = aligner.alignAndIterate(getPreAnnotations(jCas));
             while (listIter.hasNext()) {
                 AlignedTuple preannotations = listIter.next();
@@ -168,7 +161,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
                     } catch (CASException e) {
                         throw new AnalysisEngineProcessException(e);
                     }
-                    ANA distilled = distillers.get(i).distill(preannotations);
+                    ANA<Object> distilled = distillers.get(i).distill(preannotations);
                     if (distilled != null) {
                         pushers.get(i).push(outputView, distilled);
                     }
@@ -204,7 +197,7 @@ public class MergerAE extends JCasAnnotator_ImplBase {
                     throw new AnalysisEngineProcessException(e);
                 }
                 if (pulled != null) {
-                    theseAnnotations.add(new ANA(pulled, a));
+                    theseAnnotations.add(new ANA<>(pulled, a));
                 }
             }
         }

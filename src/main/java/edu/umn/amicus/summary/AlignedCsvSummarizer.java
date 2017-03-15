@@ -2,6 +2,7 @@ package edu.umn.amicus.summary;
 
 import edu.umn.amicus.AlignedTuple;
 import edu.umn.amicus.ANA;
+import edu.umn.amicus.Voter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,23 +40,38 @@ public class AlignedCsvSummarizer extends CsvSummarizer implements DocumentSumma
             }
             AlignedTuple tuple = tuples.next();
             nFields = tuple.size();
-            addBeginEnd:
-            {
-                for (ANA annot : tuple) {
-                    if (annot != null) {
-                        values.add(annot.getBegin());
-                        values.add(annot.getEnd());
-                        break addBeginEnd;
-                    }
-                }
-                values.add("none");
-                values.add("none");
-            }
+
+//            List<Integer> begins = new ArrayList<>();
+//            List<Integer> ends = new ArrayList<>();
+//            for (ANA ana : tuple) {
+//                if (ana != null) {
+//                    begins.add(ana.getBegin());
+//                    ends.add(ana.getEnd());
+//                }
+//            }
+//            values.add(new Voter(begins).getWinner());
+//            values.add(new Voter(ends).getWinner());
+//            addBeginEnd:
+//            {
+//                for (ANA annot : tuple) {
+//                    if (annot != null) {
+//                        values.add(annot.getBegin());
+//                        values.add(annot.getEnd());
+//                        break addBeginEnd;
+//                    }
+//                }
+//                values.add("none");
+//                values.add("none");
+//            }
             for (ANA annot : tuple) {
                 if (annot == null) {
                     values.add("");
+                    values.add("");
+                    values.add("");
                 } else {
                     values.add(annot.getValue());
+                    values.add(annot.getBegin());
+                    values.add(annot.getEnd());
                 }
             }
             lines.add(buildLine(values));
@@ -66,13 +82,15 @@ public class AlignedCsvSummarizer extends CsvSummarizer implements DocumentSumma
         if (docIds != null) {
             headerObjects.add("docID");
         }
-        headerObjects.add("begin");
-        headerObjects.add("end");
+//        headerObjects.add("begin");
+//        headerObjects.add("end");
         for (int i=0; i<nFields; i++) {
             String viewName = viewNames[i] == null ? "view" : viewNames[i];
             String typeName = types[i] == null ? "type" : types[i];
             String fieldName = fields[i] == null ? "field" : fields[i];
             headerObjects.add(viewName + ":" + typeName + ":" + fieldName);
+            headerObjects.add("begin");
+            headerObjects.add("end");
         }
         StringBuilder builder = new StringBuilder();
         builder.append(buildLine(headerObjects)).append("\n");

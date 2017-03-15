@@ -70,8 +70,13 @@ public class Counter<T> implements Map<T, Integer> {
             @Override
             public int compare(T o1, T o2) {
                 int comp = get(o1).compareTo(get(o2));
-//                if (comp == 0 && (o1 == null || o2 == null)) return 0;
-                return comp == 0 ? ((Comparable) o1).compareTo(o2) : comp;
+                if (comp != 0) return comp;
+                if (o1 == null) {
+                    if (o2 == null) return 0;
+                    return 1;
+                }
+                if (o2 == null) return -1;
+                return ((Comparable) o1).compareTo(o2);
             }
         });
         for (Map.Entry<T, MutableInt> e : counts.entrySet()) {
@@ -229,8 +234,19 @@ public class Counter<T> implements Map<T, Integer> {
         }
 
         @Override
+        public String toString() {
+            return entry.toString();
+        }
+
+        @Override
         public boolean equals(Object other) {
             if (!(other instanceof Map.Entry)) return false;
+            if (((Map.Entry) other).getKey() == null) {
+                return entry.getKey() == null;
+            }
+            if (((Map.Entry) other).getValue() == null) {
+                return entry.getValue() == null;
+            }
             return ((Map.Entry) other).getKey().equals(entry.getKey())
                 && ((Map.Entry) other).getValue().equals(entry.getValue().get());
         }

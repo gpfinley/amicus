@@ -6,10 +6,10 @@ pipelineName: BioMedICUS token counter pipeline
 
 allSystemsUsed:
 - {
-    name: biomedicus,
-    dataPath: example_data/mtsamples_biomedicus,
-    readFromView: SystemView,
-    saveIntoView: BiomedicusView
+    name: clamp,
+    dataPath: example_data/mtsamples_clamp,
+    readFromView: _InitialView,
+    saveIntoView: ClampView
   }
 - {
     name: ctakes,
@@ -18,10 +18,10 @@ allSystemsUsed:
     saveIntoView: CtakesView
   }
 - {
-    name: clamp,
-    dataPath: example_data/mtsamples_clamp,
-    readFromView: _InitialView,
-    saveIntoView: ClampView
+    name: biomedicus,
+    dataPath: example_data/mtsamples_biomedicus,
+    readFromView: SystemView,
+    saveIntoView: BiomedicusView
   }
 xmiOutPath: example_data/xmi_out
 

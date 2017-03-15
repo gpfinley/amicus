@@ -20,14 +20,6 @@ public class PartialOverlapAligner implements Aligner {
 
     private static final Logger LOGGER = Logger.getLogger(PartialOverlapAligner.class.getName());
 
-    // set at the beginning: the input for each annotation
-//    private Map<Annotation, Integer> sourceInput;
-    // all possible sets that each annotation could be a part of
-//    private Map<Annotation, Set<Set<Annotation>>> setMemberships;
-
-    // this variable will be changed and acted upon by a recursive method
-//    private List<List<Set<Annotation>>> allCombos;
-
     /**
      * Generate alignments of annotations that fully overlap shorter annotations.
      * Optimize to leave as few character span units unaligned with anything as possible.
@@ -88,22 +80,6 @@ public class PartialOverlapAligner implements Aligner {
         // for each sprawl, find the most optimal combo of alignments for that sprawl and add to the big list
         List<AlignedTuple> allAlignments = new ArrayList<>();
         for (Set<ANA> sprawl : sprawls) {
-//            List<List<Set<Annotation>>> allCombos = new ArrayList<>();
-//            addAllCombos(new LinkedHashSet<>(sprawl), null);
-//            List<Set<Annotation>> bestCombo = allCombos.get(0);
-//            if (allCombos.size() > 1) {
-//                double bestScore = -Double.MAX_VALUE;
-//                for (List<Set<Annotation>> combo : allCombos) {
-//                    double score = 0;
-//                    for (Set<Annotation> annots : combo) {
-//                        score += calculateScore(annots);
-//                    }
-//                    if (score > bestScore) {
-//                        bestScore = score;
-//                        bestCombo = combo;
-//                    }
-//                }
-//            }
             List<Set<ANA>> bestCombo = getBestCombo(new LinkedHashSet<>(sprawl), null, setMemberships, null);
             for (Set<ANA> set : bestCombo) {
                 AlignedTuple byInputTuple = new AlignedTuple(allAnnotations.size());
@@ -114,7 +90,7 @@ public class PartialOverlapAligner implements Aligner {
             }
         }
 
-        LOGGER.info("PartialOverlapAligner took " + ((System.currentTimeMillis() - time) / 1000.) + "s");
+//        LOGGER.info("PartialOverlapAligner took " + ((System.currentTimeMillis() - time) / 1000.) + "s");
         return allAlignments.iterator();
     }
 
@@ -194,35 +170,35 @@ public class PartialOverlapAligner implements Aligner {
         return currentSprawl;
     }
 
-    // find all possible combinations of aligned sets given annotationsLeft
-    private static void addAllCombos(List<List<Set<ANA>>> allCombos,
-                                     LinkedHashSet<ANA> annotationsLeft,
-                                     List<Set<ANA>> builtThusFar,
-                                     Map<ANA, Set<Set<ANA>>> setMemberships) {
-        if (builtThusFar == null) {
-            builtThusFar = new ArrayList<>();
-        }
-        if (annotationsLeft.size() == 0) {
-            allCombos.add(builtThusFar);
-            return;
-        }
-        ANA annotation = annotationsLeft.iterator().next();
-        for (Set<ANA> trySet : setMemberships.get(annotation)) {
-            tryThisSet:
-            {
-                for (ANA otherAnnotation : trySet) {
-                    if (!annotationsLeft.contains(otherAnnotation)) {
-                        break tryThisSet;
-                    }
-                }
-                List<Set<ANA>> newBuiltThusFar = new ArrayList<>(builtThusFar);
-                newBuiltThusFar.add(trySet);
-                LinkedHashSet<ANA> newAnnotationsLeft = new LinkedHashSet<>(annotationsLeft);
-                newAnnotationsLeft.removeAll(trySet);
-                addAllCombos(allCombos, newAnnotationsLeft, newBuiltThusFar, setMemberships);
-            }
-        }
-    }
+//    // find all possible combinations of aligned sets given annotationsLeft
+//    private static void addAllCombos(List<List<Set<ANA>>> allCombos,
+//                                     LinkedHashSet<ANA> annotationsLeft,
+//                                     List<Set<ANA>> builtThusFar,
+//                                     Map<ANA, Set<Set<ANA>>> setMemberships) {
+//        if (builtThusFar == null) {
+//            builtThusFar = new ArrayList<>();
+//        }
+//        if (annotationsLeft.size() == 0) {
+//            allCombos.add(builtThusFar);
+//            return;
+//        }
+//        ANA annotation = annotationsLeft.iterator().next();
+//        for (Set<ANA> trySet : setMemberships.get(annotation)) {
+//            tryThisSet:
+//            {
+//                for (ANA otherAnnotation : trySet) {
+//                    if (!annotationsLeft.contains(otherAnnotation)) {
+//                        break tryThisSet;
+//                    }
+//                }
+//                List<Set<ANA>> newBuiltThusFar = new ArrayList<>(builtThusFar);
+//                newBuiltThusFar.add(trySet);
+//                LinkedHashSet<ANA> newAnnotationsLeft = new LinkedHashSet<>(annotationsLeft);
+//                newAnnotationsLeft.removeAll(trySet);
+//                addAllCombos(allCombos, newAnnotationsLeft, newBuiltThusFar, setMemberships);
+//            }
+//        }
+//    }
 
     private static List<Set<ANA>> getBestCombo(LinkedHashSet<ANA> annotationsLeft,
                                                List<Set<ANA>> builtThusFar,
