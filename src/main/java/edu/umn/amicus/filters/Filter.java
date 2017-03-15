@@ -7,6 +7,6 @@ import edu.umn.amicus.AnalysisPiece;
  */
 public interface Filter extends AnalysisPiece {
 
-    public abstract boolean passes(Object value);
+    boolean passes(Object value);
 
 }

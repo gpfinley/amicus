@@ -12,7 +12,7 @@ import java.util.*;
  *
  * Created by gpfinley on 10/21/16.
  */
-public class RequireOverlapAligner implements Aligner {
+public class RequirePartialOverlapAligner implements Aligner {
 
     private AllUniqueGroupingsAligner aligner = new AllUniqueGroupingsAligner();
 

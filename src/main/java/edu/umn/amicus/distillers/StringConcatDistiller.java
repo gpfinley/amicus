@@ -36,8 +36,8 @@ public class StringConcatDistiller implements Distiller<String> {
         StringBuilder builder = new StringBuilder();
         for (ANA preAnnot : annotations) {
             if (preAnnot != null) {
-                builder.append(preAnnot.getValue());
-                builder.append("|");
+                builder.append(preAnnot.getValue())
+                        .append("|");
                 if (preAnnot.getEnd() > end) end = preAnnot.getEnd();
                 if (preAnnot.getBegin() < begin) begin = preAnnot.getBegin();
             }
