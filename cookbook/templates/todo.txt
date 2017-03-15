@@ -1,0 +1,11 @@
+pipeline template (no modules)
+
+merger template (all of these are separate files but are not runnable as pipelines)
+translator template
+exporter template
+
+a readme on how to use/combine the templates
+
+----
+
+templates will include brief descriptions and will show the defaults
