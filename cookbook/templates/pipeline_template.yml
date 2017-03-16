@@ -1,0 +1,21 @@
+# Empty pipeline template.
+# Add modules under pipelineComponents; see other files for their templates.
+# See cookbook for funtional example pipelines and modules.
+
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: PIPELINE NAME
+
+allSystemsUsed:
+- {
+    name: SYSTEM NAME,
+    dataPath: PATH TO SYSTEM OUTPUT DATA,
+    readFromView: VIEW SYSTEM KEEPS ANNOTATIONS IN,
+    saveIntoView: AMICUS VIEW TO COPY THESE ANNOTATIONS TO
+  }
+# include more systems as necessary
+
+xmiOutPath: PATH TO SAVE XMI OUTPUT
+
+pipelineComponents:
+
+# see other templates (translator, merger, exporter) for pipeline components

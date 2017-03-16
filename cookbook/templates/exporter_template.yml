@@ -1,0 +1,29 @@
+# Insert an Exporter into your pipeline following this template.
+# All fields are optional except fromView on the inputs.
+# Defaults:
+#   annotationType: edu.umn.amicus.SingleFieldAnnotation
+#   annotationField: field
+#   puller: edu.umn.amicus.pullers.Puller
+#   aligner: edu.umn.amicus.aligners.PerfectOverlapAligner
+#   documentSummarizer: none (will not perform document summarization)
+#   collectionSummarizer: none (will not perform coll. summarization)
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: EXPORTER NAME
+
+  inputs:
+  - {
+    annotationType: TYPE NAME (JAVA PACKAGE NOTATION),
+    annotationField: NAME OF FIELD(S),
+    fromView: AMICUS VIEW TO PULL ANNOTATIONS FROM,
+    puller: PULLER IMPLEMENTATION
+  }
+  # add more inputs as necessary
+
+  aligner: ALIGNER IMPLEMENTATION
+
+  documentSummarizer: DOCUMENTSUMMARIZER IMPLEMENTATION
+  documentSummaryOutDir: PATH TO SAVE DOCUMENT SUMMARIES
+
+  collectionSummarizer: COLLECTIONSUMMARIZER IMPLEMENTATION
+  collectionSummaryOutFile: PATH TO SAVE COLLECTION SUMMARY

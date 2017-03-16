@@ -1,0 +1,37 @@
+# Insert a Translator into your pipeline following this template.
+# All fields are optional except fromView on the input
+#   and writeView on outputs.
+# Defaults:
+#   annotationType: edu.umn.amicus.SingleFieldAnnotation
+#   annotationField: field
+#   puller: edu.umn.amicus.pullers.Puller
+#   distiller: edu.umn.amicus.distillers.PriorityDistiller
+#   filter: edu.umn.amicus.filters.RegexFilter (or none if no filterPattern)
+#   filterPattern: none
+#   mappers: none (will not perform any mappings)
+#   pusher: edu.umn.amicus.pushers.Pusher
+
+- !!edu.umn.amicus.config.TranslatorConfig
+
+  name: TRANSLATOR NAME
+  input: {
+    annotationType: TYPE NAME (JAVA PACKAGE NOTATION),
+    annotationField: NAME OF FIELD(S),
+    fromView: AMICUS VIEW TO PULL ANNOTATIONS FROM,
+    puller: PULLER IMPLEMENTATION
+  }
+
+  filter: FILTER IMPLEMENTATION
+  filterPattern: PATTERN TO FILTER ON
+
+  mappers: [ONE MAPPER, ANOTHER MAPPER]
+
+  outputs:
+  - {
+    annotationType: TYPE NAME (JAVA PACKAGE NOTATION),
+    annotationField: NAME OF FIELD(S),
+    distiller: DISTILLER IMPLEMENTATION,
+    pusher: PUSHER IMPLEMENTATION,
+    writeView: VIEW TO WRITE ANNOTATIONS TO
+  }
+  # add more outputs as necessary

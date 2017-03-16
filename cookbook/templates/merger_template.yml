@@ -1,0 +1,34 @@
+# Insert a Merger into your pipeline following this template.
+# All fields are optional except fromView on the inputs
+#   and writeView on outputs.
+# Defaults:
+#   annotationType: edu.umn.amicus.SingleFieldAnnotation
+#   annotationField: field
+#   puller: edu.umn.amicus.pullers.Puller
+#   aligner: edu.umn.amicus.aligners.PerfectOverlapAligner
+#   distiller: edu.umn.amicus.distillers.PriorityDistiller
+#   pusher: edu.umn.amicus.pushers.Pusher
+
+- !!edu.umn.amicus.config.MergerConfig
+
+  name: MERGER NAME
+  inputs:
+  - {
+    annotationType: TYPE NAME (JAVA PACKAGE NOTATION),
+    annotationField: NAME OF FIELD(S),
+    fromView: AMICUS VIEW TO PULL ANNOTATIONS FROM,
+    puller: PULLER IMPLEMENTATION
+  }
+  # add more inputs as necessary
+
+  aligner: ALIGNER IMPLEMENTATION
+
+  outputs:
+  - {
+    annotationType: TYPE NAME (JAVA PACKAGE NOTATION),
+    annotationField: NAME OF FIELD(S),
+    distiller: DISTILLER IMPLEMENTATION,
+    pusher: PUSHER IMPLEMENTATION,
+    writeView: VIEW TO WRITE ANNOTATIONS TO
+  }
+  # add more outputs as necessary

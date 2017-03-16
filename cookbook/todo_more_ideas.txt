@@ -1,0 +1,58 @@
+COOKBOOK IDEAS
+
+Ideas organized by capabilities used.
+
+TRANSLATING
+
+...idea: transform concepts into DkPro format for use by coref annotator or something similar (never mind that coref in dkpro is broken)
+
+TRANSLATING: FILTERING
+
+
+TRANSLATING: MAPPING
+
+mapping CUIs to UMLS preferred strings (easy)
+...what else? something more complex/customizable?
+
+MERGING
+
+named entity voting from multiple systems?
+partial acronym experiment: just combine
+
+
+COLLECTING/EXPORTING
+
+summarize all concepts by multiple systems
+get unigram frequencies, both by doc and across systems
+can summarize concepts as encountered in different parts of the doc (again, use CLAMP sections)
+
+
+IDIOMS
+
+Filtering on a different annotation (MERGER)
+
+filter annotations based on negation from other system
+...something with number or range annotations in ctakes?
+...something with parsing? filter based on dependency parsing??
+crazy medications idea: use CLAMP section IDs and cTAKES med mentions to find differences between PMH/HPI and A/P
+
+Filtering on a different field of the same annotation (TRANSLATOR + MERGER)
+
+get only positive annotations (acrabbrevexpansion, e.g.)
+
+Enforcing minimum vote (MERGER<CountingDistiller> + TRANSLATOR<Filter> + MERGER)
+
+...
+
+Evaluating (MERGER + COLLECTOR)
+
+...
+named entity evaluation: single system (show the basic merger + collector idiom)
+named entity evaluation: multiple systems
+named entity evaluation: merged systems and multiple hypotheses (different voting schemes, etc.)
+mapping and evaluation (equivalent answer mapper)
+
+
+GRAND COMBINATION: TRANSLATING, MERGING, EVALUATING
+
+full acronym experiment: draw from three systems, combine, evaluate, export
