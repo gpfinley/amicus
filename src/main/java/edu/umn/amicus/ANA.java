@@ -15,6 +15,8 @@ public class ANA<T> {
     private final int begin;
     private final int end;
 
+    private Integer inputIndex;
+
     public ANA(T value, Annotation annotation) {
         this.value = value;
         this.begin = annotation.getBegin();
@@ -25,6 +27,14 @@ public class ANA<T> {
         this.value = value;
         this.begin = begin;
         this.end = end;
+    }
+
+    public Integer getInputIndex() {
+        return inputIndex;
+    }
+
+    public void setInputIndex(Integer inputIndex) {
+        this.inputIndex = inputIndex;
     }
 
     public T getValue() {
@@ -41,7 +51,9 @@ public class ANA<T> {
 
     @Override
     public String toString() {
-        return "(" + String.valueOf((Object) value) + ", " + begin + ":" + end + ")";
+        return "(" + String.valueOf((Object) value) + ", " + begin + ":" + end
+                + (inputIndex != null ? " from"+inputIndex : "")
+                + ")";
     }
 
     @Override
@@ -53,7 +65,9 @@ public class ANA<T> {
 
         if (begin != ana.begin) return false;
         if (end != ana.end) return false;
-        return value != null ? value.equals(ana.value) : ana.value == null;
+        if (value != null ? !value.equals(ana.value) : ana.value != null) return false;
+        return !(inputIndex != null ? !inputIndex.equals(ana.inputIndex) : ana.inputIndex != null);
+
     }
 
     @Override
@@ -61,6 +75,7 @@ public class ANA<T> {
         int result = value != null ? value.hashCode() : 0;
         result = 31 * result + begin;
         result = 31 * result + end;
+        result = 31 * result + (inputIndex != null ? inputIndex.hashCode() : 0);
         return result;
     }
 }

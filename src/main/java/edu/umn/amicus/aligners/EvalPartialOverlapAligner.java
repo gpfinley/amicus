@@ -14,6 +14,8 @@ import java.util.*;
  */
 public class EvalPartialOverlapAligner implements Aligner {
 
+    private static final PartialOverlapAligner poa = new PartialOverlapAligner();
+
     @Override
     public Iterator<AlignedTuple> alignAndIterate(List<List<ANA>> allAnnotations) {
 
@@ -28,7 +30,7 @@ public class EvalPartialOverlapAligner implements Aligner {
             List<List<ANA>> goldAndOneHypList = new ArrayList<>();
             goldAndOneHypList.add(allAnnotations.get(0));
             goldAndOneHypList.add(allAnnotations.get(i));
-            Iterator<AlignedTuple> iter = new PartialOverlapAligner().alignAndIterate(goldAndOneHypList);
+            Iterator<AlignedTuple> iter = poa.alignAndIterate(goldAndOneHypList);
             while (iter.hasNext()) {
                 AlignedTuple twoItemList = iter.next();
                 ANA goldAnnotation = twoItemList.get(0);
@@ -36,21 +38,16 @@ public class EvalPartialOverlapAligner implements Aligner {
                 if (goldAnnotation == null) {
                     // yield a false positive
                     AlignedTuple thisFalsePositive = new AlignedTuple(n);
-                    for (int j=0; j<n; j++) {
-                        thisFalsePositive.set(j, j == i ? hypAnnotation : null);
-                    }
+                    thisFalsePositive.set(i, hypAnnotation);
                     falsePositiveTuples.add(thisFalsePositive);
                 } else {
                     // yield a true positive or false negative
                     AlignedTuple truePositiveTuple = truePositiveTuples.get(goldAnnotation);
                     if (truePositiveTuple == null) {
                         truePositiveTuple = new AlignedTuple(n);
-                        truePositiveTuple.set(0, goldAnnotation);
-                        for (int j=1; j<n; j++) {
-                            truePositiveTuple.set(j, null);
-                        }
                         truePositiveTuples.put(goldAnnotation, truePositiveTuple);
                     }
+                    truePositiveTuple.set(0, goldAnnotation);
                     truePositiveTuple.set(i, hypAnnotation);
                 }
             }

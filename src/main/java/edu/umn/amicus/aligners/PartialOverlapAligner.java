@@ -41,6 +41,7 @@ public class PartialOverlapAligner implements Aligner {
         List<Set<ANA>> annotationsAtIndex = new ArrayList<>();
         for (int sysIndex = 0; sysIndex < allAnnotations.size(); sysIndex++) {
             for (ANA annotation : allAnnotations.get(sysIndex)) {
+                annotation.setInputIndex(sysIndex);
                 // not adding all set memberships yet--just singletons
                 setMemberships.put(annotation, new HashSet<Set<ANA>>());
                 setMemberships.get(annotation).add(Collections.singleton(annotation));
@@ -53,6 +54,10 @@ public class PartialOverlapAligner implements Aligner {
                 }
             }
         }
+//        for (int i=0; i<annotationsAtIndex.size(); i++) {
+//            System.out.print(i + "\t");
+//            System.out.println(annotationsAtIndex.get(i));
+//        }
 
         Set<Set<ANA>> allSetsOverAllIndices = new HashSet<>(annotationsAtIndex);
         Set<Set<ANA>> allLegalSets = new HashSet<>();
@@ -60,7 +65,7 @@ public class PartialOverlapAligner implements Aligner {
             // if a single input has multiple annotations at this index, split into multiple sets to try
             allLegalSets.addAll(getOnePerInputSets(annotationSet, sourceInput));
         }
-        for (Set<ANA> thisSet : allSetsOverAllIndices) {
+        for (Set<ANA> thisSet : allLegalSets) {
             for (ANA a : thisSet) {
                 setMemberships.get(a).add(thisSet);
             }
@@ -77,6 +82,8 @@ public class PartialOverlapAligner implements Aligner {
             sprawls.add(thisSprawl);
         }
 
+//        System.out.println(sprawls);
+
         // for each sprawl, find the most optimal combo of alignments for that sprawl and add to the big list
         List<AlignedTuple> allAlignments = new ArrayList<>();
         for (Set<ANA> sprawl : sprawls) {
@@ -89,6 +96,10 @@ public class PartialOverlapAligner implements Aligner {
                 allAlignments.add(byInputTuple);
             }
         }
+
+//        for (AlignedTuple at : allAlignments) {
+//            System.out.println(at);
+//        }
 
 //        LOGGER.info("PartialOverlapAligner took " + ((System.currentTimeMillis() - time) / 1000.) + "s");
         return allAlignments.iterator();

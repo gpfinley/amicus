@@ -20,7 +20,13 @@ public class AlignedTuple implements Iterable<ANA> {
     }
 
     public AlignedTuple(List<ANA> list) {
-        this.list = list;
+        this.list = new ArrayList<>();
+        for (int i=0; i<list.size(); i++) {
+            ANA ana = list.get(i);
+            ANA newAna = new ANA<>(ana.getValue(), ana.getBegin(), ana.getEnd());
+            newAna.setInputIndex(i);
+            this.list.add(newAna);
+        }
     }
 
     public ANA get(int i) {
@@ -32,6 +38,7 @@ public class AlignedTuple implements Iterable<ANA> {
     }
 
     public ANA set(int i, ANA value) {
+        if (value != null) value.setInputIndex(i);
         return list.set(i, value);
     }
 

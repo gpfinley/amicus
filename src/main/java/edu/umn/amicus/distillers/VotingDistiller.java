@@ -40,14 +40,11 @@ public class VotingDistiller implements Distiller<Object> {
         List<Integer> begins = new ArrayList<>();
         List<Integer> ends = new ArrayList<>();
         for (ANA pa : annotations) {
-            if (pa == null) {
-                values.add(null);
-            } else {
+            if (pa != null) {
                 values.add(pa.getValue());
                 begins.add(pa.getBegin());
                 ends.add(pa.getEnd());
             }
-            values.add(pa == null ? null : pa.getValue());
         }
         Voter<Object> voter = new Voter<>(values);
         if (voter.getWinner() == null) return null;

@@ -120,7 +120,8 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
 //    }
 
     private static String chopExt(String orig) {
-        return orig.substring(0, orig.lastIndexOf('.'));
+        int lastDot = orig.lastIndexOf('.');
+        return lastDot < 0 ? orig : orig.substring(0, lastDot);
     }
 
 }

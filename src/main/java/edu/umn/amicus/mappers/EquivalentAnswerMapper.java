@@ -1,11 +1,8 @@
 package edu.umn.amicus.mappers;
 
 import edu.umn.amicus.Amicus;
-import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.config.ClassConfigurationLoader;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -21,6 +18,8 @@ import java.util.logging.Logger;
  */
 public class EquivalentAnswerMapper extends Mapper {
 
+    private final static Logger LOGGER = Logger.getLogger(EquivalentAnswerMapper.class.getName());
+
     private List<List<String>> equivalentsList;
 
     public void initialize() {
@@ -30,7 +29,15 @@ public class EquivalentAnswerMapper extends Mapper {
                 if (internalMap.containsKey(cluster.get(i))) {
                     //todo; warn
                 }
-                internalMap.put(cluster.get(i).toLowerCase(), cluster.get(0));
+                String word = cluster.get(i).toLowerCase().trim();
+                String headword = cluster.get(0).trim();
+                if (internalMap.containsKey(word)) {
+                    LOGGER.warning(word + " appears twice in EquivalentAnswerMapper config");
+//                    internalMap.put(headword.toLowerCase(), internalMap.get(word));
+//                    cluster.set(0, String.valueOf(internalMap.get(word)));
+                } else {
+                    internalMap.put(word, headword);
+                }
             }
         }
         equivalentsList = null;
@@ -44,7 +51,7 @@ public class EquivalentAnswerMapper extends Mapper {
         }
         String string = key.toString().trim().toLowerCase();
         Object val = internalMap.get(string);
-        return val == null ? key : val;
+        return val == null ? string : val;
     }
 
     /**
