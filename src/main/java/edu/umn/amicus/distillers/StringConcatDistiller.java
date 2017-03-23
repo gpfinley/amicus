@@ -36,11 +36,13 @@ public class StringConcatDistiller implements Distiller<String> {
         StringBuilder builder = new StringBuilder();
         for (ANA preAnnot : annotations) {
             if (preAnnot != null) {
-                builder.append(preAnnot.getValue())
-                        .append("|");
+                builder.append(preAnnot.getValue());
                 if (preAnnot.getEnd() > end) end = preAnnot.getEnd();
                 if (preAnnot.getBegin() < begin) begin = preAnnot.getBegin();
+            } else {
+                builder.append("null");
             }
+            builder.append("|");
         }
         String concatenated = builder.substring(0, builder.length() - 1);
         return new ANA<>(concatenated, begin, end);
