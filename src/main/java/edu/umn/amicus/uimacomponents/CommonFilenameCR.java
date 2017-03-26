@@ -54,11 +54,8 @@ public class CommonFilenameCR extends CasCollectionReader_ImplBase {
             Set<String> filesThisDir = new HashSet<>();
             for (File f : dir.listFiles()) {
                 String baseName = chopExt(f.getName());
-                // todo: delete this (wasn't a good idea b/c then doc id doesn't correspond to filename)
-//                while (baseName.toLowerCase().endsWith(".txt") || baseName.toLowerCase().endsWith(".rtf")) {
-//                    baseName = chopExt(baseName);
-//                }
-                if (!baseName.startsWith(".")) {
+                if (!baseName.startsWith(".") && !f.isDirectory()
+                        && (f.getName().toLowerCase().endsWith("xml") || f.getName().toLowerCase().endsWith("xmi"))) {
                     filesThisDir.add(baseName);
                 }
             }
