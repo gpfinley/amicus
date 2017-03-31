@@ -3,8 +3,8 @@ package edu.umn.amicus;
 import org.apache.uima.jcas.tcas.Annotation;
 
 /**
- * 'Amicus-Native Annotation'.
- * "Struct" class for holding an Object from an annotation (probably String) along with its begin and end offsets.
+ * 'Amicus-Native Annotation':
+ * a "struct" class for holding an Object from an annotation (probably String) along with its begin and end offsets.
  * Used at intermediate stages of processing (between pulling and pushing annotations). Immutable.
  *
  * Created by gpfinley on 1/20/17.

@@ -196,7 +196,7 @@ public class TranslatorAE extends JCasAnnotator_ImplBase {
         JCas viewToRead;
         try {
             viewToRead = jCas.getView(readView);
-        } catch (CASException e) {
+        } catch (CASException | CASRuntimeException e) {
             LOGGER.severe(String.format("Couldn't find view \"%s\" for Translator \"%s\"", readView, myName));
             throw new AnalysisEngineProcessException(e);
         }

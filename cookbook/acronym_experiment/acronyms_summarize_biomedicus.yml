@@ -1,0 +1,68 @@
+# todo: discuss
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: BioMedICUS summarizer
+xmiOutPath: amicus_output/xmi_out
+allSystemsUsed:
+- {name: biomedicus,
+  dataPath: /home/gpfinley/CPEs/defaultPlaintext/ref_output,
+  readFromView: SystemView,
+  saveIntoView: BiomedicusView}
+pipelineComponents:
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: BioMedICUS extractor
+  input: {annotationType: edu.umn.biomedicus.uima.type1_6.Acronym, annotationField: text, fromView: BiomedicusView}
+  mappers: [mapperConfigurations/newEquivMapper.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
+  outputs:
+  - {writeView: BiomedicusMappedView}
+#- !!edu.umn.amicus.config.TranslatorConfig
+#  name: Biomedicus extractor
+#  input: {annotationType: edu.umn.biomedicus.type.TokenAnnotation, annotationField: acronymAbbrevExpansion, fromView: BiomedicusView}
+#  filter: edu.umn.amicus.filters.RegexNegativeFilter
+#  filterPattern: ^(\(?ign\)?|\(?unk\)?|\s*)$
+#  mappers: [mapperConfigurations/newEquivMapper.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
+#  outputs:
+#  - {writeView: BiomedicusMappedView}
+
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: Biomedicus extractor
+  input: {annotationType: edu.umn.biomedicus.uima.type1_6.Acronym, annotationField: text;coveredText, fromView: BiomedicusView}
+  filter: edu.umn.amicus.filters.RegexNegativeFilter
+  filterPattern: ^null.*$
+  outputs:
+  - {writeView: BiomedicusCoveredTextView, annotationField: ;field}
+
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: Biomedicus extractor
+  input: {annotationType: edu.umn.biomedicus.uima.type1_6.Acronym, annotationField: text;coveredText, fromView: BiomedicusView}
+  filter: edu.umn.amicus.filters.RegexNegativeFilter
+  filterPattern: ^null.*$
+  outputs:
+  - {writeView: AcrAndExpansionView, annotationField: field}
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Acronym summarizer
+  inputs:
+  - {fromView: BiomedicusMappedView}
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: amicus_output/collsummary/biomedicusacronyms.txt
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Acronym summarizer
+  inputs:
+  - {fromView: BiomedicusMappedView}
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: amicus_output/collsummary/biomedicusacronyms.txt
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: token summarizer
+  inputs:
+  - {fromView: BiomedicusCoveredTextView}
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: amicus_output/collsummary/biomedicusCoveredText.txt
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: token summarizer
+  inputs:
+  - {fromView: AcrAndExpansionView}
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: amicus_output/collsummary/biomedicusAcrAndExpansions.txt

@@ -1,0 +1,56 @@
+# Simple filtering example
+# Will count BioMedICUS acronyms only for those acronyms of three characters or more
+
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: Filtering example pipeline
+
+allSystemsUsed:
+- {
+    name: biomedicus,
+    dataPath: example_data/mtsamples_biomedicus,
+    readFromView: SystemView,
+    saveIntoView: BiomedicusView
+  }
+xmiOutPath: example_data/xmi_out
+
+pipelineComponents:
+
+
+# Filter Acronym annotations for text of 3+ characters
+- !!edu.umn.amicus.config.TranslatorConfig
+
+  name: description segment filter
+  input: {
+    annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
+    annotationField: coveredText,
+    fromView: BiomedicusView
+  }
+
+  filter: edu.umn.amicus.filters.RegexFilter
+  filterPattern: .{3,}
+
+  outputs:
+  - {
+    writeView: LongAcronymsView
+  }
+
+# Count all acronyms
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Acronym exporter
+  inputs:
+  - {
+    annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
+    annotationField: coveredText,
+    fromView: BiomedicusView
+  }
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: example_data/collection_summary/acronyms_counted.txt
+# Count the acronyms of 3+ characters
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Acronym exporter
+  inputs:
+  - {
+    fromView: LongAcronymsView
+  }
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: example_data/collection_summary/acronyms_counted_threecharsplus.txt

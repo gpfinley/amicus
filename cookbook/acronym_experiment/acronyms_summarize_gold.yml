@@ -1,0 +1,68 @@
+# todo: discuss
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: Finley et al 2017 acronyms experiment
+xmiOutPath: acronymdata/xmi_out
+allSystemsUsed:
+- {name: gold, dataPath: acronymdata/gold_processed, readFromView: SystemView, saveIntoView: GoldView}
+pipelineComponents:
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: Gold extractor
+  input: {annotationType: edu.umn.biomedicus.type.TokenAnnotation, annotationField: acronymAbbrevExpansion, fromView: GoldView}
+  filter: edu.umn.amicus.filters.RegexNegativeFilter
+  filterPattern: ^(\(?ign\)?|\(?unk\)?|\s*)$
+  mappers: [mapperConfigurations/newEquivMapper.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
+  outputs:
+  - {writeView: GoldMappedView}
+
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: Gold extractor
+  input: {annotationType: edu.umn.biomedicus.type.TokenAnnotation, annotationField: isAcronymAbbrev;coveredText, fromView: GoldView}
+  filter: edu.umn.amicus.filters.RegexFilter
+  filterPattern: ^true.*$
+  outputs:
+  - {writeView: GoldCoveredTextView, annotationField: ;field}
+
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: Gold extractor
+  input: {annotationType: edu.umn.biomedicus.type.TokenAnnotation, annotationField: acronymAbbrevExpansion;coveredText, fromView: GoldView}
+  filter: edu.umn.amicus.filters.RegexNegativeFilter
+  filterPattern: ^null.*$
+  outputs:
+  - {writeView: AcrAndExpansionView, annotationField: field}
+
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: Gold extractor
+  input: {annotationType: edu.umn.biomedicus.type.TokenAnnotation, annotationField: coveredText, fromView: GoldView}
+  filter: edu.umn.amicus.filters.RegexFilter
+  filterPattern: ^\w+$
+  mappers: [edu.umn.amicus.mappers.ToLowerCaseMapper]
+  outputs:
+  - {writeView: GoldTokensView}
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Acronym summarizer
+  inputs:
+  - {fromView: GoldMappedView}
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: acronymdata/collsummary/goldacronyms.txt
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: token summarizer
+  inputs:
+  - {fromView: GoldTokensView}
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: acronymdata/collsummary/goldtokens.txt
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: token summarizer
+  inputs:
+  - {fromView: GoldCoveredTextView}
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: acronymdata/collsummary/goldCoveredText.txt
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: token summarizer
+  inputs:
+  - {fromView: AcrAndExpansionView}
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: acronymdata/collsummary/goldAcrAndExpansions.txt

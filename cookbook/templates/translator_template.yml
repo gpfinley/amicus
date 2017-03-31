@@ -5,11 +5,11 @@
 #   annotationType: edu.umn.amicus.SingleFieldAnnotation
 #   annotationField: field
 #   puller: edu.umn.amicus.pullers.Puller
-#   distiller: edu.umn.amicus.distillers.PriorityDistiller
 #   filter: edu.umn.amicus.filters.RegexFilter (or none if no filterPattern)
 #   filterPattern: none
 #   mappers: none (will not perform any mappings)
 #   pusher: edu.umn.amicus.pushers.Pusher
+#   (a distiller will not be used, as there is only one input and no aligner)
 
 - !!edu.umn.amicus.config.TranslatorConfig
 
@@ -30,7 +30,6 @@
   - {
     annotationType: TYPE NAME (JAVA PACKAGE NOTATION),
     annotationField: NAME OF FIELD(S),
-    distiller: DISTILLER IMPLEMENTATION,
     pusher: PUSHER IMPLEMENTATION,
     writeView: VIEW TO WRITE ANNOTATIONS TO
   }

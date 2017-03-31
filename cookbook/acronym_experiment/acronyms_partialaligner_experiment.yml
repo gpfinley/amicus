@@ -1,0 +1,160 @@
+# todo: discuss
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: Finley et al 2017 acronyms experiment
+xmiOutPath: acronymdata/xmi_out_poa
+allSystemsUsed:
+- {name: gold, dataPath: acronymdata/gold_processed, readFromView: SystemView, saveIntoView: GoldView}
+- {name: biomedicus, dataPath: acronymdata/biomedicus-old, readFromView: SystemView,
+  saveIntoView: BiomedicusView}
+- {name: ctakes, dataPath: acronymdata/ctakes, readFromView: _InitialView,
+  saveIntoView: CtakesView}
+- {name: clamp, dataPath: acronymdata/clamp, readFromView: _InitialView, saveIntoView: ClampView}
+pipelineComponents:
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: CLAMP CUI extractor
+  input: {annotationField: cui, annotationType: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA,
+    fromView: ClampView}
+  mappers: [mapperConfigurations/CuiMapper.yml, mapperConfigurations/newEquivMapper.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
+  outputs:
+  - {writeView: ClampMappedView}
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: cTAKES CUI extractor
+  input: {annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
+    puller: edu.umn.amicus.pullers.CtakesCuiPuller,
+    fromView: CtakesView}
+  mappers: [mapperConfigurations/CuiMapper.yml, mapperConfigurations/newEquivMapper.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
+  outputs:
+  - {writeView: CtakesMappedView}
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: BioMedICUS extractor
+  input: {annotationType: edu.umn.biomedicus.uima.type1_6.Acronym, annotationField: text, fromView: BiomedicusView}
+  mappers: [mapperConfigurations/newEquivMapper.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
+  outputs:
+  - {writeView: BiomedicusMappedView}
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: Gold extractor
+  input: {annotationType: edu.umn.biomedicus.type.TokenAnnotation, annotationField: acronymAbbrevExpansion, fromView: GoldView}
+  filter: edu.umn.amicus.filters.RegexNegativeFilter
+  # remove ign, (ign), unk, (unk), and empty or whitespace-only strings
+  filterPattern: ^(\(?ign\)?|\(?unk\)?|\s*)$
+#  filterPattern: ^(ign|.*[^s]ign|.*unk).*$
+  mappers: [mapperConfigurations/newEquivMapper.yml, edu.umn.amicus.mappers.ToLowerCaseMapper]
+  outputs:
+  - {writeView: GoldMappedView}
+- !!edu.umn.amicus.config.MergerConfig
+  name: Acronym answer merger
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  inputs:
+  - {fromView: BiomedicusMappedView}
+  - {fromView: CtakesMappedView}
+  - {fromView: ClampMappedView}
+  outputs:
+  - {
+#    distiller: edu.umn.amicus.distillers.VotingDistiller,
+    writeView: BtcView}
+
+- !!edu.umn.amicus.config.MergerConfig
+  name: Acronym answer merger
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  inputs:
+  - {fromView: BiomedicusMappedView}
+  - {fromView: ClampMappedView}
+  - {fromView: CtakesMappedView}
+  outputs:
+  - {
+    writeView: BctView}
+
+- !!edu.umn.amicus.config.MergerConfig
+  name: Acronym answer merger
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  inputs:
+  - {fromView: BiomedicusMappedView}
+  - {fromView: ClampMappedView}
+  outputs:
+  - {
+    writeView: BcView}
+
+- !!edu.umn.amicus.config.MergerConfig
+  name: Acronym answer merger
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  inputs:
+  - {fromView: BiomedicusMappedView}
+  - {fromView: CtakesMappedView}
+  outputs:
+  - {
+    writeView: BtView}
+
+- !!edu.umn.amicus.config.MergerConfig
+  name: Acronym answer merger
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  inputs:
+  - {fromView: ClampMappedView}
+  - {fromView: CtakesMappedView}
+  outputs:
+  - {writeView: CtView}
+
+- !!edu.umn.amicus.config.MergerConfig
+  name: Acronym answer merger
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  inputs:
+  - {fromView: CtakesMappedView}
+  - {fromView: ClampMappedView}
+  outputs:
+  - {writeView: TcView}
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Eval exporter
+  inputs:
+  - {fromView: GoldMappedView}
+  - {fromView: BtcView}
+  - {fromView: BctView}
+  - {fromView: BtView}
+  - {fromView: BcView}
+  - {fromView: TcView}
+  - {fromView: CtView}
+  - {fromView: BiomedicusMappedView}
+  - {fromView: CtakesMappedView}
+  - {fromView: ClampMappedView}
+  aligner: edu.umn.amicus.aligners.EvalPartialOverlapAligner
+
+  documentSummarizer: edu.umn.amicus.summary.EvalPrfSummarizer
+  documentSummaryOutDir: acronymdata/docsummary_poa
+
+  collectionSummarizer: edu.umn.amicus.summary.EvalPrfSummarizer
+  collectionSummaryOutFile: acronymdata/collsummary/collection_summary_poa.txt
+
+# Extract the short forms of all acronyms
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: Gold acronyms extractor
+  input: {annotationType: edu.umn.biomedicus.type.TokenAnnotation, annotationField: isAcronymAbbrev;coveredText, fromView: GoldView}
+  filter: edu.umn.amicus.filters.RegexFilter
+  filterPattern: ^true.*$
+  outputs:
+  - {writeView: GoldAcronymsView, annotationField: ;field}
+
+# Find all alignments between hypothesized acronyms and their short forms and concatenate them into a single annotation
+- !!edu.umn.amicus.config.MergerConfig
+  name: HypAndGold merger
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  inputs:
+  - {fromView: BtcView}
+  - {fromView: GoldAcronymsView}
+  outputs:
+  - {distiller: edu.umn.amicus.distillers.StringConcatDistiller,
+    writeView: HypAndGoldView}
+
+# Find all short forms for which there was no corresponding hypothesis annotation
+- !!edu.umn.amicus.config.TranslatorConfig
+  name: Missed acronyms translator
+  input: {fromView: HypAndGoldView}
+  filter: edu.umn.amicus.filters.RegexFilter
+  filterPattern: ^null.*$
+  outputs:
+  - {writeView: MissedView, annotationField: ;field}
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Missed acronyms exporter
+  inputs:
+  - {fromView: MissedView}
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: acronymdata/collsummary/missed_acronyms_summary_poa.txt

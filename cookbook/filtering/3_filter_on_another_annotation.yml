@@ -1,0 +1,84 @@
+# Filter on another annotation
+# Will count BioMedICUS acronyms present only in "description" sections as determined by CLAMP.
+
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: Filtering example pipeline
+
+allSystemsUsed:
+- {
+    name: clamp,
+    dataPath: example_data/mtsamples_clamp,
+    readFromView: _InitialView,
+    saveIntoView: ClampView
+  }
+- {
+    name: biomedicus,
+    dataPath: example_data/mtsamples_biomedicus,
+    readFromView: SystemView,
+    saveIntoView: BiomedicusView
+  }
+xmiOutPath: example_data/xmi_out
+
+pipelineComponents:
+
+
+# Find all CLAMP markings of the description section of a note
+- !!edu.umn.amicus.config.TranslatorConfig
+
+  name: description segment filter
+  input: {
+    annotationType: org.apache.ctakes.typesystem.type.textspan.Segment,
+    annotationField: preferredText,
+    fromView: ClampView
+  }
+
+  filter: edu.umn.amicus.filters.RegexFilter
+  filterPattern: description
+
+  outputs:
+  - {
+    writeView: DescriptionOnlyView
+  }
+
+# Find all BioMedICUS abbreviations that overlap with description sections
+# Does not use a Filter implementation directly; relies on the Aligner
+- !!edu.umn.amicus.config.MergerConfig
+
+  name: Description-only abbreviations "filter"
+  inputs:
+  - {
+    annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
+    annotationField: coveredText,
+    fromView: BiomedicusView
+  }
+  - {
+    fromView: DescriptionOnlyView
+  }
+
+  aligner: edu.umn.amicus.aligners.RequirePartialOverlapAligner
+
+  outputs:
+  - {
+    writeView: DescriptionAcronymsView
+  }
+
+# Count all abbreviations
+- !!edu.umn.amicus.config.ExporterConfig
+  name: All abbrs exporter exporter
+  inputs:
+  - {
+    annotationType: edu.umn.biomedicus.uima.type1_6.Acronym,
+    annotationField: coveredText,
+    fromView: BiomedicusView
+  }
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: example_data/collection_summary/acronyms_counted.txt
+# Count the abbreviations in just descriptions
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Only abbrs in CLAMP descriptions exporter
+  inputs:
+  - {
+    fromView: DescriptionAcronymsView
+  }
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: example_data/collection_summary/acronyms_counted_descr_only.txt

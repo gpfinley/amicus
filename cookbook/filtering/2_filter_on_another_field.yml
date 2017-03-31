@@ -1,0 +1,46 @@
+# Filter on another field
+# Will count cTAKES tokens that are verbs
+
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: Filtering example pipeline
+
+allSystemsUsed:
+- {
+    name: ctakes,
+    dataPath: example_data/mtsamples_ctakes,
+    readFromView: _InitialView,
+    saveIntoView: CtakesView
+  }
+xmiOutPath: example_data/xmi_out
+
+pipelineComponents:
+
+# Filter tokens: keep them if their part of speech starts with VB
+# Configured to write to two fields, the first of which is empty to consume the part of speech
+- !!edu.umn.amicus.config.TranslatorConfig
+
+  name: description segment filter
+  input: {
+    annotationType: org.apache.ctakes.typesystem.type.syntax.BaseToken,
+    annotationField: partOfSpeech;coveredText,
+    fromView: CtakesView
+  }
+
+  filter: edu.umn.amicus.filters.RegexFilter
+  filterPattern: VB.*
+
+  outputs:
+  - {
+    annotationField: ;field,
+    writeView: VerbsView
+  }
+
+# Count all verbs
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Verb exporter
+  inputs:
+  - {
+    fromView: VerbsView
+  }
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: example_data/collection_summary/verbs.txt

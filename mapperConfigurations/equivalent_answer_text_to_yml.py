@@ -1,3 +1,5 @@
+# Simple script to make it easier to manually create equivalent answer configurations.
+#
 # Read in a text file of groups of terms and convert into a representation
 #   that can be read in as an EquivalentAnswerMapper config file.
 # The text file should have each term on its own line, with an extra newline
@@ -6,6 +8,7 @@
 import os
 import sys
 import re
+
 
 def wrap_if_necessary(term):
     if ',' in term or ':' in term:
