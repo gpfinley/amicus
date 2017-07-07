@@ -94,6 +94,9 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         LOGGER.info("Initializing Exporter analysis engine.");
 
         if (documentSummarizerClassName != null) {
+            if (outputDirectory == null) {
+                outputDirectory = "amicusExporterDefaultOutput";
+            }
             try {
                 Files.createDirectories(Paths.get(outputDirectory));
             } catch (IOException e) {
@@ -191,40 +194,6 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
             LOGGER.severe(String.format("Processing problem for Exporter \"%s\"", myName));
             throw new AnalysisEngineProcessException(e);
         }
-
-//        try {
-//            // Set up a shell iterator that will call Pullers and pass along transformed values to the documentSummarizer
-//            final Iterator<List<Annotation>> annotationsIterator = aligner.alignAndIterate(getAnnotations(jCas));
-//            text = documentSummarizer.summarizeDocument(new Iterator<List<ANA>>() {
-//                @Override
-//                public boolean hasNext() {
-//                    return annotationsIterator.hasNext();
-//                }
-//
-//                @Override
-//                public List<ANA> next() {
-//                    List<Annotation> annotations = annotationsIterator.next();
-//                    List<ANA> preannotations = new ArrayList<>();
-//                    for (int i = 0; i < annotations.size(); i++) {
-//                        try {
-//                            preannotations.add(
-//                                    new ANA<>(pullers.get(i).pull(annotations.get(i)), annotations.get(i)));
-//                        } catch (AmicusException e) {
-//                            LOGGER.warning(String.format("Could not pull annotation! Exporter \"%s\"", myName));
-//                        }
-//                    }
-//                    return preannotations;
-//                }
-//
-//                @Override
-//                public void remove() {
-//                    annotationsIterator.remove();
-//                }
-//            });
-//        } catch (AmicusException e) {
-//            LOGGER.severe(String.format("Processing exception for Exporter \"%s\"", myName));
-//            throw new AnalysisEngineProcessException(e);
-//        }
 
         if (micro) {
             text = documentSummarizer.summarizeDocument(allPreAnnotations.iterator()).toString();
