@@ -97,7 +97,11 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Colle
             // this is where you set a name to the array of values
             for (int i = 0; i < valueMat.size(); i++) {
                 // Use the name of the UIMA field if the user hasn't configured enough elasticsearch field names for this class config
-                xContentBuilder.startArray(i >= esFieldNames.length ? fields[i] : esFieldNames[i]);
+                String field = i >= esFieldNames.length ? fields[i] : esFieldNames[i];
+                if (field == null) {
+                    field = "field" + i;
+                }
+                xContentBuilder.startArray(field);
                 for (String value : valueMat.get(i)) {
                     xContentBuilder.value(value);
                 }
