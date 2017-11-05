@@ -66,8 +66,8 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Colle
                 lastDocId = docId;
             }
             for (int i=0; i<tuple.size(); i++) {
-                String value = String.valueOf(tuple.get(i));
-                if (value != null && value.length() > 0) {
+                String value = String.valueOf(tuple.get(i).getValue());
+                if (value != null && value.length() > 0 && !"null".equals(value)) {
                     valuesMatrix.get(i).add(value);
                 }
             }
