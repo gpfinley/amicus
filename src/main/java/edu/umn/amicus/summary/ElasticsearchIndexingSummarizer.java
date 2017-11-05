@@ -1,6 +1,6 @@
 package edu.umn.amicus.summary;
 
-import edu.umn.amicus.AlignedTuple;
+import edu.umn.amicus.util.AlignedTuple;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.config.ClassConfigurationLoader;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;

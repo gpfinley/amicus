@@ -1,4 +1,4 @@
-package edu.umn.amicus;
+package edu.umn.amicus.util;
 
 /**
  * Simple exception indicating that all Views do not share the same string data.

@@ -1,7 +1,7 @@
 package edu.umn.amicus.mappers;
 
 import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.AnalysisPiece;
+import edu.umn.amicus.util.AnalysisPiece;
 
 import java.util.ArrayList;
 import java.util.Collection;

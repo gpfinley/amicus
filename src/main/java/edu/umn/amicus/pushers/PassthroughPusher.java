@@ -1,6 +1,6 @@
 package edu.umn.amicus.pushers;
 
-import edu.umn.amicus.ANA;
+import edu.umn.amicus.util.ANA;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 

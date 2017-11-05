@@ -1,7 +1,7 @@
 package edu.umn.amicus.aligners;
 
-import edu.umn.amicus.ANA;
-import edu.umn.amicus.AlignedTuple;
+import edu.umn.amicus.util.ANA;
+import edu.umn.amicus.util.AlignedTuple;
 
 import java.util.*;
 

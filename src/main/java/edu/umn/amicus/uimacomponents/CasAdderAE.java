@@ -1,7 +1,7 @@
 package edu.umn.amicus.uimacomponents;
 
 import edu.umn.amicus.Amicus;
-import edu.umn.amicus.MismatchedSofaDataException;
+import edu.umn.amicus.util.MismatchedSofaDataException;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.*;
 import org.apache.uima.cas.impl.XCASDeserializer;

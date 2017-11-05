@@ -2,11 +2,10 @@ package edu.umn.amicus.pullers;
 
 import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.AnalysisPiece;
+import edu.umn.amicus.util.AnalysisPiece;
 import edu.umn.amicus.uimacomponents.Util;
 import org.apache.uima.jcas.tcas.Annotation;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;

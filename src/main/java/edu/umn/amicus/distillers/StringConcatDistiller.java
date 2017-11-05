@@ -1,7 +1,7 @@
 package edu.umn.amicus.distillers;
 
-import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.ANA;
+import edu.umn.amicus.util.AlignedTuple;
+import edu.umn.amicus.util.ANA;
 
 /**
  * Distiller that will concatenate String annotations by all systems into a single annotation, with a pipe '|' separator.

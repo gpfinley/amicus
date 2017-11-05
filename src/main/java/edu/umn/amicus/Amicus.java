@@ -1,5 +1,6 @@
 package edu.umn.amicus;
 
+import edu.umn.amicus.util.MismatchedSofaDataException;
 import org.yaml.snakeyaml.Yaml;
 
 import java.nio.file.Path;

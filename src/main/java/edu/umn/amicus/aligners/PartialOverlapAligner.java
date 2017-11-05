@@ -1,8 +1,8 @@
 package edu.umn.amicus.aligners;
 
-import edu.umn.amicus.ANA;
-import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.Counter;
+import edu.umn.amicus.util.ANA;
+import edu.umn.amicus.util.AlignedTuple;
+import edu.umn.amicus.util.Counter;
 import org.apache.commons.lang.mutable.MutableDouble;
 
 import java.util.*;

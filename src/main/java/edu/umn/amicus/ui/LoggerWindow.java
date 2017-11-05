@@ -86,7 +86,6 @@ public class LoggerWindow extends JFrame {
     }
 
     public static String[] useLoggingWindowAndGetPaths() throws Exception {
-        // todo: find alternative to Collection kludge to get around final variable restriction
         final List<String> paths = new ArrayList<>();
         SwingUtilities.invokeAndWait(new Runnable() {
             @Override

@@ -1,4 +1,4 @@
-package edu.umn.amicus;
+package edu.umn.amicus.util;
 
 import edu.umn.amicus.EvalAnnotation;
 import org.apache.uima.jcas.JCas;

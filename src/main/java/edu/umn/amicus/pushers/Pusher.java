@@ -1,9 +1,9 @@
 package edu.umn.amicus.pushers;
 
-import edu.umn.amicus.ANA;
+import edu.umn.amicus.util.ANA;
 import edu.umn.amicus.Amicus;
 import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.AnalysisPiece;
+import edu.umn.amicus.util.AnalysisPiece;
 import edu.umn.amicus.uimacomponents.Util;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;

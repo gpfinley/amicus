@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 
 /**
  * All summarizers that implement delimited output should use this.
- * The name reflects the most
  *
  * Created by gpfinley on 3/13/17.
  */

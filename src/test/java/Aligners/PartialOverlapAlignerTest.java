@@ -1,7 +1,7 @@
 package aligners;
 
-import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.ANA;
+import edu.umn.amicus.util.AlignedTuple;
+import edu.umn.amicus.util.ANA;
 import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.PartialOverlapAligner;
 import org.apache.uima.UIMAException;

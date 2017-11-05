@@ -1,9 +1,9 @@
 package edu.umn.amicus.summary;
 
-import edu.umn.amicus.ANA;
-import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.Counter;
-import edu.umn.amicus.EvalMatch;
+import edu.umn.amicus.util.ANA;
+import edu.umn.amicus.util.AlignedTuple;
+import edu.umn.amicus.util.Counter;
+import edu.umn.amicus.util.EvalMatch;
 
 import java.util.*;
 

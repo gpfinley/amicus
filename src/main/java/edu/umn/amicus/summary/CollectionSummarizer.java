@@ -1,8 +1,8 @@
 package edu.umn.amicus.summary;
 
-import edu.umn.amicus.AlignedTuple;
+import edu.umn.amicus.util.AlignedTuple;
 import edu.umn.amicus.AmicusException;
-import edu.umn.amicus.AnalysisPiece;
+import edu.umn.amicus.util.AnalysisPiece;
 
 import java.util.Iterator;
 

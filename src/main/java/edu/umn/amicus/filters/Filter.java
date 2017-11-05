@@ -1,6 +1,6 @@
 package edu.umn.amicus.filters;
 
-import edu.umn.amicus.AnalysisPiece;
+import edu.umn.amicus.util.AnalysisPiece;
 
 /**
  * Created by greg on 2/16/17.

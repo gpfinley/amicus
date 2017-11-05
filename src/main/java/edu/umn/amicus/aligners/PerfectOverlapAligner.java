@@ -1,13 +1,12 @@
 package edu.umn.amicus.aligners;
 
-import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.ANA;
+import edu.umn.amicus.util.AlignedTuple;
+import edu.umn.amicus.util.ANA;
 
 import java.util.*;
 
 /**
  * Aligner that will generate tuples of annotations only if they overlap in both begin and end
- * // todo: will only use the last-iterated annotation from each system if there is perfect overlap in a single input. allow this? warn?
  *
  * Created by gpfinley on 10/21/16.
  */

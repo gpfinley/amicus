@@ -1,5 +1,5 @@
-import edu.umn.amicus.Counter;
-import edu.umn.amicus.Voter;
+import edu.umn.amicus.util.Counter;
+import edu.umn.amicus.util.Voter;
 
 import java.util.ArrayList;
 import java.util.List;

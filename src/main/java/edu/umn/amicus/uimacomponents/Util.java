@@ -1,13 +1,13 @@
 package edu.umn.amicus.uimacomponents;
 
 import edu.umn.amicus.*;
+import edu.umn.amicus.util.AnalysisPieceFactory;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.JFSIndexRepository;
 import org.apache.uima.jcas.tcas.Annotation;
-import org.apache.uima.resource.ResourceInitializationException;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package edu.umn.amicus;
+package edu.umn.amicus.util;
 
 /**
  * Any interchangeable mini-module used by AMICUS.

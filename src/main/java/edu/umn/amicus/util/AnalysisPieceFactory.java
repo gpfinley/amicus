@@ -1,5 +1,7 @@
-package edu.umn.amicus;
+package edu.umn.amicus.util;
 
+import edu.umn.amicus.Amicus;
+import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.aligners.Aligner;
 import edu.umn.amicus.aligners.PerfectOverlapAligner;
 import edu.umn.amicus.distillers.Distiller;
@@ -13,6 +15,7 @@ import edu.umn.amicus.pullers.Puller;
 import edu.umn.amicus.pushers.Pusher;
 import edu.umn.amicus.summary.CollectionSummarizer;
 import edu.umn.amicus.summary.EachSoloCsvSummarizer;
+import edu.umn.amicus.SingleFieldAnnotation;
 
 import java.io.File;
 import java.io.FileInputStream;

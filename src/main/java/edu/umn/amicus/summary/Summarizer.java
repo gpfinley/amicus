@@ -1,6 +1,6 @@
 package edu.umn.amicus.summary;
 
-import edu.umn.amicus.AnalysisPiece;
+import edu.umn.amicus.util.AnalysisPiece;
 
 /**
  * Simple base class for keeping Exporter data on hand for any class that does summary.

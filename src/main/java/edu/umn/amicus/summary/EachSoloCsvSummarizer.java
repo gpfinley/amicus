@@ -1,6 +1,6 @@
 package edu.umn.amicus.summary;
 
-import edu.umn.amicus.AlignedTuple;
+import edu.umn.amicus.util.AlignedTuple;
 
 import java.util.ArrayList;
 import java.util.Collections;

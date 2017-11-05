@@ -1,4 +1,4 @@
-package edu.umn.amicus;
+package edu.umn.amicus.util;
 
 /**
  * Vote by plurality rule on a value. In cases of ties, will take the one that occurs first.
@@ -8,7 +8,6 @@ package edu.umn.amicus;
 public class Voter<T> {
 
     private final T voted;
-//    private final Counter<T> counter;
     private final int maxCount;
 
     public Voter(Iterable<T> items) {

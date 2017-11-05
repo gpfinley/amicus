@@ -1,15 +1,13 @@
 package edu.umn.amicus.distillers;
 
-import edu.umn.amicus.ANA;
-import edu.umn.amicus.AlignedTuple;
-import edu.umn.amicus.Voter;
+import edu.umn.amicus.util.ANA;
+import edu.umn.amicus.util.AlignedTuple;
+import edu.umn.amicus.util.Voter;
 import edu.umn.amicus.config.ClassConfigurationLoader;
-import edu.umn.amicus.Counter;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Distiller that will take the annotation with the greatest post-transformation agreement among systems.
