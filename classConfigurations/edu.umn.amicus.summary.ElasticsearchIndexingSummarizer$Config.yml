@@ -1,0 +1,7 @@
+!!edu.umn.amicus.summary.ElasticsearchIndexingSummarizer$Config
+#esFieldNames:
+esHost: "http://localhost"
+esIndexName: "amicusdocs"
+esTypeName: "amicusdoc"
+esIdField: "id"
+esPort: 9200
