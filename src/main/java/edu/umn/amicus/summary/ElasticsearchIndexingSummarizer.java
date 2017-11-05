@@ -28,7 +28,7 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Colle
     private static String esIndexName = "amicusdocs";
     private static String esTypeName = "amicusdoc";
     private static String esIdField = "docId";
-    private static int esPort = 9200;
+    private static int esPort = 9300;
 
     public ElasticsearchIndexingSummarizer(String[] viewNames, String[] types, String[] fields) {
         super(viewNames, types, fields);
@@ -61,11 +61,15 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Colle
             if (!docId.equals(lastDocId)) {
                 if (lastDocId != null) {
                     bulkRequestBuilder.add(indexRequestBuilder.setSource(addToIndices(valuesMatrix, lastDocId)));
+                    bulkRequestBuilder.execute();
+                    bulkRequestBuilder = client.prepareBulk();
                 }
                 valuesMatrix = initValuesMatrix(tuple.size());
                 lastDocId = docId;
             }
             for (int i=0; i<tuple.size(); i++) {
+                if (tuple.get(i) == null || tuple.get(i).getValue() == null)
+                    continue;
                 String value = String.valueOf(tuple.get(i).getValue());
                 if (value != null && value.length() > 0 && !"null".equals(value)) {
                     valuesMatrix.get(i).add(value);
