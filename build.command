@@ -1,4 +1,4 @@
 #!/bin/bash
-
+# For Mac OS X
 cd $(dirname $0)
-mvn clean package && mv target/amicus.jar . && chmod +x amicus.jar
+./build.sh
