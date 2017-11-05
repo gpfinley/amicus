@@ -62,7 +62,7 @@ pipelineComponents:
     fromView: MergedView
   }
 
-  mappers: [edu.umn.amicus.mappers.CuiMapper]
+  mappers: [mapperConfigurations/CuiMapper.yml]
 
   outputs:
   - {
