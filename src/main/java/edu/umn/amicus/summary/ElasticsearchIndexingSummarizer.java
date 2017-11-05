@@ -105,6 +105,7 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Colle
                 for (String value : valueMat.get(i)) {
                     xContentBuilder.value(value);
                 }
+                xContentBuilder.endArray();
             }
             return xContentBuilder.endObject();
         } catch (IOException e) {
