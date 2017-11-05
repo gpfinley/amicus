@@ -23,16 +23,12 @@ import java.util.*;
  */
 public class ElasticsearchIndexingSummarizer extends Summarizer implements CollectionSummarizer {
 
-    private static final String[] esFieldNames;
-    private static final String esHost;
-    private static final String esIndexName;
-    private static final String esTypeName;
-    private static final String esIdField;
-    private static final int esPort;
-
-//    protected ElasticsearchIndexingSummarizer() {
-//        super();
-//    }
+    private static String[] esFieldNames = new String[]{};
+    private static String esHost = "localhost";
+    private static String esIndexName = "amicusdocs";
+    private static String esTypeName = "amicusdoc";
+    private static String esIdField = "docId";
+    private static int esPort = 9200;
 
     public ElasticsearchIndexingSummarizer(String[] viewNames, String[] types, String[] fields) {
         super(viewNames, types, fields);
@@ -118,7 +114,7 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Colle
         public String esIndexName;
         public String esTypeName;
         public String esIdField;
-        public int esPort;
+        public Integer esPort;
     }
 
     static {
@@ -128,20 +124,25 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Colle
         } catch (FileNotFoundException e) {
             config = null;
         }
-        if (config == null) {
-            esFieldNames = new String[]{};
-            esHost = "http://localhost";
-            esIndexName = "amicusdocs";
-            esTypeName = "amicusdoc";
-            esIdField = "id";
-            esPort = 9200;
-        } else {
-            esFieldNames = config.esFieldNames;
-            esHost = config.esHost;
-            esIndexName = config.esIndexName;
-            esTypeName = config.esTypeName;
-            esIdField = config.esIdField;
-            esPort = config.esPort;
+        if (config != null) {
+            if (config.esFieldNames != null) {
+                esFieldNames = config.esFieldNames;
+            }
+            if (config.esHost != null) {
+                esHost = config.esHost;
+            }
+            if (config.esIndexName != null) {
+                esIndexName = config.esIndexName;
+            }
+            if (config.esTypeName != null) {
+                esTypeName = config.esTypeName;
+            }
+            if (config.esIdField != null) {
+                esIdField = config.esIdField;
+            }
+            if (config.esPort != null) {
+                esPort = config.esPort;
+            }
         }
     }
 
