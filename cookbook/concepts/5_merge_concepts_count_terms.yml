@@ -1,0 +1,79 @@
+# Concept merger
+# Merges concepts across systems using voting and partial overlap.
+# Writes the counts of all plaintext concept strings
+# NOTE: you will need to point the mapperConfiguration for CuiMapper to your local MRCONSO.RRF file (UMLS access required)
+
+!!edu.umn.amicus.config.AmicusPipelineConfiguration
+pipelineName: "Example for systems demonstration: merge concepts, convert from CUIs, count"
+
+allSystemsUsed:
+- {
+    name: clamp,
+    dataPath: example_data/mtsamples_clamp,
+    readFromView: _InitialView,
+    saveIntoView: ClampView
+  }
+- {
+    name: ctakes,
+    dataPath: example_data/mtsamples_ctakes,
+    readFromView: _InitialView,
+    saveIntoView: CtakesView
+  }
+- {
+    name: biomedicus,
+    dataPath: example_data/mtsamples_biomedicus,
+    readFromView: SystemView,
+    saveIntoView: BiomedicusView
+  }
+xmiOutPath: example_data/xmi_out
+
+pipelineComponents:
+
+- !!edu.umn.amicus.config.MergerConfig
+  name: Concept merger
+  inputs:
+  - {
+    annotationType: org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation,
+    # unnecessary to specify field; CtakesCuiPuller knows which one to use
+    puller: edu.umn.amicus.pullers.CtakesCuiPuller,
+    fromView: CtakesView
+  }
+  - {
+    annotationType: edu.uth.clamp.nlp.typesystem.ClampNameEntityUIMA,
+    annotationField: cui,
+    fromView: ClampView
+  }
+  - {
+    annotationType: edu.umn.biomedicus.uima.type1_6.DictionaryConcept,
+    annotationField: identifier,
+    fromView: BiomedicusView
+  }
+  aligner: edu.umn.amicus.aligners.PartialOverlapAligner
+  outputs:
+  - {
+    distiller: edu.umn.amicus.distillers.VotingDistiller,
+    writeView: MergedView
+  }
+
+- !!edu.umn.amicus.config.TranslatorConfig
+
+  name: Cui mapper
+  input: {
+    fromView: MergedView
+  }
+
+  mappers: [edu.umn.amicus.mappers.CuiMapper]
+
+  outputs:
+  - {
+    writeView: CuiStringformView
+  }
+
+- !!edu.umn.amicus.config.ExporterConfig
+  name: Concept exporter
+  inputs:
+  - {
+    fromView: CuiStringformView
+  }
+  collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
+  collectionSummaryOutFile: example_data/collection_summary/concepts_Eng_counted.csv
