@@ -1,13 +1,12 @@
 package edu.umn.amicus.summary;
 
-import edu.umn.amicus.util.AlignedTuple;
 import edu.umn.amicus.AmicusException;
 import edu.umn.amicus.config.ClassConfigurationLoader;
+import edu.umn.amicus.util.AlignedTuple;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.Nullable;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
@@ -16,13 +15,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Adds specified fields to an Elasticsearch index.
  *
  */
-public class ElasticsearchIndexingSummarizer extends Summarizer implements DocumentSummarizer, CollectionSummarizer {
+public class ElasticsearchIndexingCollectionSummarizer extends Summarizer implements CollectionSummarizer {
 
     private static String[] esFieldNames = new String[]{};
     private static String esHost = "localhost";
@@ -31,59 +32,8 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Docum
     private static String esIdField = "docId";
     private static int esPort = 9300;
 
-    public ElasticsearchIndexingSummarizer(String[] viewNames, String[] types, String[] fields) {
+    public ElasticsearchIndexingCollectionSummarizer(String[] viewNames, String[] types, String[] fields) {
         super(viewNames, types, fields);
-    }
-
-    @Override
-    public String getFileExtension() {
-        return "log";
-    }
-
-    @Override
-    public String summarizeDocument(Iterator<AlignedTuple> tuples, String docId, String docText) throws AmicusException {
-
-        Client client;
-        try {
-            client = TransportClient.builder().build()
-                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(esHost), esPort));
-        } catch (UnknownHostException e) {
-            throw new AmicusException(e);
-        }
-
-        BulkRequestBuilder bulkRequestBuilder = client.prepareBulk();
-
-        IndexRequestBuilder indexRequestBuilder = client.prepareIndex()
-                .setIndex(esIndexName)
-                .setType(esTypeName)
-                .setId(docId);
-
-        List<List<String>> valuesLol = null;
-        while (tuples.hasNext()) {
-            AlignedTuple tuple = tuples.next();
-            if (valuesLol == null) {
-                valuesLol = initValuesListOfLists(tuple.size());
-            }
-            for (int i=0; i<tuple.size(); i++) {
-                if (tuple.get(i) == null || tuple.get(i).getValue() == null)
-                    continue;
-                String value = String.valueOf(tuple.get(i).getValue());
-                if (value != null && value.length() > 0 && !"null".equals(value)) {
-                    valuesLol.get(i).add(value);
-                }
-            }
-        }
-        XContentBuilder xcb = buildContent(valuesLol, docId, docText);
-        bulkRequestBuilder.add(indexRequestBuilder.setSource(xcb));
-        bulkRequestBuilder.execute();
-        client.close();
-
-        try {
-            return xcb.string();
-        } catch (IOException e) {
-            // todo: is this the way to return a stack trace?
-            return e.toString();
-        }
     }
 
     @Override
@@ -106,17 +56,17 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Docum
         // Go through all tuples and save annotations across each document
         // Whenever the document changes, save all additions to the bulk request builder and start a new doc (matrix)
         String lastDocId = null;
-        List<List<String>> valuesLol = null;
+        List<List<String>> valuesMatrix = null;
         while (tuples.hasNext()) {
             AlignedTuple tuple = tuples.next();
             String docId = docIds.next();
             if (!docId.equals(lastDocId)) {
                 if (lastDocId != null) {
-                    bulkRequestBuilder.add(indexRequestBuilder.setSource(buildContent(valuesLol, lastDocId)));
+                    bulkRequestBuilder.add(indexRequestBuilder.setSource(addToIndices(valuesMatrix, lastDocId)));
                     bulkRequestBuilder.execute();
                     bulkRequestBuilder = client.prepareBulk();
                 }
-                valuesLol = initValuesListOfLists(tuple.size());
+                valuesMatrix = initValuesMatrix(tuple.size());
                 lastDocId = docId;
             }
             for (int i=0; i<tuple.size(); i++) {
@@ -124,11 +74,11 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Docum
                     continue;
                 String value = String.valueOf(tuple.get(i).getValue());
                 if (value != null && value.length() > 0 && !"null".equals(value)) {
-                    valuesLol.get(i).add(value);
+                    valuesMatrix.get(i).add(value);
                 }
             }
         }
-        bulkRequestBuilder.add(indexRequestBuilder.setSource(buildContent(valuesLol, lastDocId)));
+        bulkRequestBuilder.add(indexRequestBuilder.setSource(addToIndices(valuesMatrix, lastDocId)));
 
         bulkRequestBuilder.execute();
         client.close();
@@ -137,26 +87,19 @@ public class ElasticsearchIndexingSummarizer extends Summarizer implements Docum
         return "";
     }
 
-    private static List<List<String>> initValuesListOfLists(int n) {
-        List<List<String>> valuesLol = new ArrayList<>();
+    private static List<List<String>> initValuesMatrix(int n) {
+        List<List<String>> valuesMatrix = new ArrayList<>();
         for (int i=0; i<n; i++) {
-            valuesLol.add(new ArrayList<String>());
+            valuesMatrix.add(new ArrayList<String>());
         }
-        return valuesLol;
+        return valuesMatrix;
     }
 
-    private XContentBuilder buildContent(List<List<String>> valueMat, String docId) throws AmicusException {
-        return buildContent(valueMat, docId, null);
-    }
-
-    private XContentBuilder buildContent(List<List<String>> valueMat, String docId, @Nullable String docText) throws AmicusException {
+    private XContentBuilder addToIndices(List<List<String>> valueMat, String docId) throws AmicusException {
         try {
             XContentBuilder xContentBuilder = XContentFactory.jsonBuilder()
                     .startObject()
                     .field(esIdField, docId);
-            if (docText != null) {
-                xContentBuilder.field("documentText", docText);
-            }
             // this is where you set a name to the array of values
             for (int i = 0; i < valueMat.size(); i++) {
                 // Use the name of the UIMA field if the user hasn't configured enough elasticsearch field names for this class config
