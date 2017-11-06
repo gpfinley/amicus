@@ -23,16 +23,12 @@ public class PartialOverlapAligner implements Aligner {
     /**
      * Generate alignments of annotations that fully overlap shorter annotations.
      * Optimize to leave as few character span units unaligned with anything as possible.
-     * The algorithm:
-     * // todo: describe!!!
+     * The algorithm: ... ...
      *
      * @param allAnnotations
      * @return
      */
     public Iterator<AlignedTuple> alignAndIterate(List<List<ANA>> allAnnotations) {
-        // todo: remove
-        long time = System.currentTimeMillis();
-
         allAnnotations = removeTotalOverlapsFromSameSystem(allAnnotations);
 
         Map<ANA, Integer> sourceInput = new HashMap<>();
@@ -54,10 +50,6 @@ public class PartialOverlapAligner implements Aligner {
                 }
             }
         }
-//        for (int i=0; i<annotationsAtIndex.size(); i++) {
-//            System.out.print(i + "\t");
-//            System.out.println(annotationsAtIndex.get(i));
-//        }
 
         Set<Set<ANA>> allSetsOverAllIndices = new HashSet<>(annotationsAtIndex);
         Set<Set<ANA>> allLegalSets = new HashSet<>();
@@ -82,8 +74,6 @@ public class PartialOverlapAligner implements Aligner {
             sprawls.add(thisSprawl);
         }
 
-//        System.out.println(sprawls);
-
         // for each sprawl, find the most optimal combo of alignments for that sprawl and add to the big list
         List<AlignedTuple> allAlignments = new ArrayList<>();
         for (Set<ANA> sprawl : sprawls) {
@@ -97,11 +87,6 @@ public class PartialOverlapAligner implements Aligner {
             }
         }
 
-//        for (AlignedTuple at : allAlignments) {
-//            System.out.println(at);
-//        }
-
-//        LOGGER.info("PartialOverlapAligner took " + ((System.currentTimeMillis() - time) / 1000.) + "s");
         return allAlignments.iterator();
     }
 
@@ -252,7 +237,6 @@ public class PartialOverlapAligner implements Aligner {
         return bestCombo;
     }
 
-//    static int recursed;
     // get all possible sets at this index--with a maximum of one annotation per input (if there are any overlapping)
     private static Set<Set<ANA>> getOnePerInputSets(Set<ANA> annotations, Map<ANA, Integer> sourceInput) {
         Set<Set<ANA>> theseSets = new HashSet<>();
@@ -263,10 +247,6 @@ public class PartialOverlapAligner implements Aligner {
             if (inputsUsed.contains(source)) {
                 Set<ANA> newSet = new HashSet<>(annotations);
                 newSet.remove(annotation);
-//                recursed ++;
-//                System.out.println(recursed);
-//                System.out.println(annotation);
-//                System.out.println(annotations);
                 theseSets.addAll(getOnePerInputSets(newSet, sourceInput));
                 addThisSetAsIs = false;
             } else {

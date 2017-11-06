@@ -35,27 +35,6 @@ public class RequirePerfectOverlapAligner implements Aligner {
         }
         return overlappingAnnotationsOnly.iterator();
 
-//        Map<BeginEnd, List<Annotation>> beMap = new HashMap<>();
-//        for (int i=0; i < allAnnotations.size(); i++) {
-//            for (Annotation annotation : allAnnotations.get(i)) {
-//                BeginEnd beginEnd = new BeginEnd(annotation.getBegin(), annotation.getEnd());
-//                if (!beMap.containsKey(beginEnd)) {
-//                    List<Annotation> newList = new ArrayList<>();
-//                    for (List<Annotation> a : allAnnotations) {
-//                        newList.add(null);
-//                    }
-//                    beMap.put(beginEnd, newList);
-//                }
-//                beMap.get(beginEnd).set(i, annotation);
-//            }
-//        }
-//        List<List<Annotation>> finalList = new ArrayList<>();
-//        for (List<Annotation> aList : beMap.values()) {
-//            if (!aList.contains(null)) {
-//                finalList.add(aList);
-//            }
-//        }
-//        return finalList.iterator();
     }
 
 }

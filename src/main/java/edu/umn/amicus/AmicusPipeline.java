@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 
 /**
  * Standard pipeline, as configurable by yml file.
- * todo: more doc
  *
  * Created by gpfinley on 1/20/17.
  */
@@ -67,19 +66,6 @@ public class AmicusPipeline {
                                 MergerAE.PUSHER_CLASSES, PipelineComponentConfig.aggregateOutputPushers(mergerConfig.outputs),
                                 MergerAE.WRITE_VIEWS, PipelineComponentConfig.aggregateOutputViewNames(mergerConfig.outputs)
                         ));
-//            } else if (componentConfig.getClass().equals(SummarizerConfig.class)) {
-//                SummarizerConfig summarizerConfig = (SummarizerConfig) componentConfig;
-//                engines.add(
-//                        AnalysisEngineFactory.createEngine(SummarizerAE.class,
-//                                SummarizerAE.MY_NAME, summarizerConfig.name,
-//                                SummarizerAE.INPUT_TYPE, summarizerConfig.input.annotationType,
-//                                SummarizerAE.INPUT_FIELD, summarizerConfig.input.annotationField,
-//                                SummarizerAE.READ_VIEW, summarizerConfig.input.fromView,
-//                                SummarizerAE.PULLER_CLASS, summarizerConfig.input.puller,
-//                                SummarizerAE.COLLECTION_SUMMARIZER_CLASS, summarizerConfig.collectionSummarizer,
-//                                SummarizerAE.LISTENER_NAME, summarizerConfig.name,
-//                                SummarizerAE.OUTPUT_PATH, summarizerConfig.outPath
-//                        ));
             } else if (componentConfig.getClass().equals(ExporterConfig.class)) {
                 ExporterConfig exporterConfig = (ExporterConfig) componentConfig;
                 engines.add(
@@ -107,8 +93,6 @@ public class AmicusPipeline {
                                 TranslatorAE.FILTER_CLASS, translatorConfig.filter,
                                 TranslatorAE.FILTER_PATTERN, translatorConfig.filterPattern,
                                 TranslatorAE.MAPPER_CONFIG_PATHS, translatorConfig.mappers,
-                                // todo: warn if any distillers are included?
-//                                TranslatorAE.DISTILLER_CLASSES, PipelineComponentConfig.aggregateOutputDistillers(translatorConfig.outputs),
                                 TranslatorAE.OUTPUT_TYPES, PipelineComponentConfig.aggregateOutputAnnotationClasses(translatorConfig.outputs),
                                 TranslatorAE.OUTPUT_FIELDS, PipelineComponentConfig.aggregateOutputAnnotationFields(translatorConfig.outputs),
                                 TranslatorAE.PUSHER_CLASSES, PipelineComponentConfig.aggregateOutputPushers(translatorConfig.outputs),

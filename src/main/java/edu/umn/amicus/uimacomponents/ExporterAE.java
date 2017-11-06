@@ -199,14 +199,13 @@ public class ExporterAE extends JCasAnnotator_ImplBase {
         }
 
         if (micro) {
-            text = documentSummarizer.summarizeDocument(allPreAnnotations.iterator()).toString();
-            Path filepath = Paths.get(outputDirectory).resolve(docId + "." + documentSummarizer.getFileExtension());
-            Writer writer;
             try {
-                writer = new FileWriter(filepath.toFile());
+                text = documentSummarizer.summarizeDocument(allPreAnnotations.iterator(), docId, jCas.getDocumentText()).toString();
+                Path filepath = Paths.get(outputDirectory).resolve(docId + "." + documentSummarizer.getFileExtension());
+                Writer writer = new FileWriter(filepath.toFile());
                 writer.write(text);
                 writer.close();
-            } catch (IOException e) {
+            } catch (IOException | AmicusException e) {
                 throw new AnalysisEngineProcessException(e);
             }
         }

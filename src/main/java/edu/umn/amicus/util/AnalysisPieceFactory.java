@@ -176,7 +176,6 @@ public final class AnalysisPieceFactory {
      * @param <T> an AnalysisPiece implementation
      * @return a new instance or the previously created instance of implementationName
      */
-    // todo: i've made it public in case API users want to use this. should i leave it that way?
     public static <T extends AnalysisPiece> T getPieceInstance(Class<T> superclass, String implementationName, Object... args) throws AmicusException {
         String id = getStringId(implementationName, args);
         T piece;
