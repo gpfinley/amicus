@@ -6,17 +6,20 @@ import edu.umn.amicus.util.Counter;
 import java.util.*;
 
 /**
+ * Generate a simple summary by counting all instances of possible annotation values.
+ * Will print the token counts for each type in descending order of frequency.
+ *
  * Created by greg on 2/10/17.
  */
 public class CounterSummarizer extends Summarizer implements DocumentSummarizer, CollectionSummarizer {
 
     @Override
     public String summarizeCollection(Iterator<AlignedTuple> tuples, Iterator<String> docIds) {
-        return summarizeDocument(tuples);
+        return summarizeDocument(tuples, null, null);
     }
 
     @Override
-    public String summarizeDocument(Iterator<AlignedTuple> tuples) {
+    public String summarizeDocument(Iterator<AlignedTuple> tuples, String docId, String fileText) {
         StringBuilder builder = new StringBuilder();
 
         List<Counter<Object>> inputCounters = null;

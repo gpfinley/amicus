@@ -13,7 +13,7 @@ import java.util.*;
 public class EvalPrfSummarizer extends Summarizer implements DocumentSummarizer, CollectionSummarizer {
 
     @Override
-    public String summarizeDocument(Iterator<AlignedTuple> tuples) {
+    public String summarizeDocument(Iterator<AlignedTuple> tuples, String docId, String docText) {
         List<EvalMatch> evalMatches = new ArrayList<>();
         while(tuples.hasNext()) {
             evalMatches.addAll(getEvalMatches(tuples.next()));
@@ -23,7 +23,7 @@ public class EvalPrfSummarizer extends Summarizer implements DocumentSummarizer,
 
     @Override
     public String summarizeCollection(Iterator<AlignedTuple> tuples, Iterator<String> docIds) {
-        return summarizeDocument(tuples);
+        return summarizeDocument(tuples, null, null);
     }
 
     @Override

@@ -7,6 +7,7 @@ import edu.umn.amicus.util.AnalysisPiece;
 import java.util.Iterator;
 
 /**
+ * Interface for summarizers that operate on the entire collection.
  * Created by gpfinley on 2/8/17.
  */
 public interface CollectionSummarizer extends AnalysisPiece {

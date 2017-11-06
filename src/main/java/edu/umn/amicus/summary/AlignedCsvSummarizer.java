@@ -23,7 +23,7 @@ public class AlignedCsvSummarizer extends CsvSummarizer implements DocumentSumma
      * @return
      */
     @Override
-    public String summarizeDocument(Iterator<AlignedTuple> tuples) {
+    public String summarizeDocument(Iterator<AlignedTuple> tuples, String docId, String text) {
         return summarizeCollection(tuples, null);
     }
 

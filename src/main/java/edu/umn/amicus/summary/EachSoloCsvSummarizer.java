@@ -21,7 +21,7 @@ public class EachSoloCsvSummarizer extends CsvSummarizer implements DocumentSumm
     }
 
     @Override
-    public String summarizeDocument(Iterator<AlignedTuple> tuples) {
+    public String summarizeDocument(Iterator<AlignedTuple> tuples, String docId, String docText) {
         return summarizeCollection(tuples, null);
     }
 
