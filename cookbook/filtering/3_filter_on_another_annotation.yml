@@ -1,5 +1,5 @@
 # Filter on another annotation
-# Will count BioMedICUS acronyms present only in "description" sections as determined by CLAMP.
+# Will count BioMedICUS acronyms present only in "medications" sections as determined by CLAMP.
 
 !!edu.umn.amicus.config.AmicusPipelineConfiguration
 pipelineName: Filtering example pipeline
@@ -22,10 +22,10 @@ xmiOutPath: example_data/xmi_out
 pipelineComponents:
 
 
-# Find all CLAMP markings of the description section of a note
+# Find all CLAMP markings of the medications section of a note
 - !!edu.umn.amicus.config.TranslatorConfig
 
-  name: description segment filter
+  name: medication segment filter
   input: {
     annotationType: org.apache.ctakes.typesystem.type.textspan.Segment,
     annotationField: preferredText,
@@ -33,14 +33,14 @@ pipelineComponents:
   }
 
   filter: edu.umn.amicus.filters.RegexFilter
-  filterPattern: description
+  filterPattern: medications
 
   outputs:
   - {
     writeView: DescriptionOnlyView
   }
 
-# Find all BioMedICUS abbreviations that overlap with description sections
+# Find all BioMedICUS abbreviations that overlap with medication sections
 # Does not use a Filter implementation directly; relies on the Aligner
 - !!edu.umn.amicus.config.MergerConfig
 
@@ -73,12 +73,12 @@ pipelineComponents:
   }
   collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
   collectionSummaryOutFile: example_data/collection_summary/acronyms_counted.txt
-# Count the abbreviations in just descriptions
+# Count the abbreviations in just medication
 - !!edu.umn.amicus.config.ExporterConfig
-  name: Only abbrs in CLAMP descriptions exporter
+  name: Only abbrs in CLAMP medication exporter
   inputs:
   - {
     fromView: DescriptionAcronymsView
   }
   collectionSummarizer: edu.umn.amicus.summary.CounterSummarizer
-  collectionSummaryOutFile: example_data/collection_summary/acronyms_counted_descr_only.txt
+  collectionSummaryOutFile: example_data/collection_summary/acronyms_counted_medication_only.txt
